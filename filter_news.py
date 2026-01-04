@@ -5,7 +5,10 @@ def filter_news(root_dir):
     negative_keywords = [
         "Trump", "politics", "death", "murder", "war", "Orban Viktor", 
         "Magyar Peter", "Meszaros Lőrinc", "crysis", "catastrophe", 
-        "tragedy", "rejtvény", "háború", "betegség", "vírus"
+        "tragedy", "rejtvény", "háború", "betegség", "vírus", "politika",
+         "ukrán", "ukrajna", "Orbán Viktor", "Mészáros Lőrinc", "Magyar Péter",
+          "halál", "meghalt", "halott", "eltűnt", "katasztrófa", "tragédia", "börtön",
+           "gyilkosság", "Putyin", "Putin", "Oroszország", "Pintér Sándor", "tűz ütött ki", 
     ]
     
     # Iterate through all subdirectories in the root output directory
