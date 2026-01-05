@@ -24,7 +24,9 @@ import time
 import random
 import sys
 import base64
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 # Set console encoding
 if sys.stdout.encoding != 'utf-8':
@@ -36,11 +38,15 @@ if sys.stdout.encoding != 'utf-8':
 
 # --- CONFIGURATION ---
 BASE_OUTPUT_DIR = 'Output'
+MAX_WORKERS = 20  # Number of parallel threads for image scraping/downloading
 USER_AGENTS = [
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0'
 ]
+
+# Thread-safe print lock
+print_lock = threading.Lock()
 
 def slugify(value, allow_unicode=False):
     value = str(value)
@@ -145,13 +151,124 @@ def scrape_image_from_url(url):
         if response.status_code >= 400: return None
         
         soup = BeautifulSoup(response.content, 'html.parser')
-        og_image = soup.find('meta', property='og:image')
-        if og_image and og_image.get('content'): return og_image['content']
-        twitter_image = soup.find('meta', name='twitter:image')
-        if twitter_image and twitter_image.get('content'): return twitter_image['content']
+        if og_image and og_image.get('content'): 
+            image_url = og_image['content']
+        else:
+            twitter_image = soup.find('meta', name='twitter:image')
+            if twitter_image and twitter_image.get('content'): 
+                image_url = twitter_image['content']
+        
+        if image_url:
+            # Fix for sg.hu malformed double URLs (e.g. https://sg.hu/https://media.sg.hu/...)
+            if 'https://sg.hu/https://' in image_url:
+                image_url = image_url.replace('https://sg.hu/', '')
+            
+            return urljoin(url, image_url)
         return None
     except:
         return None
+
+def process_single_item(args):
+    """Process a single news item - download and upload image. Thread-safe."""
+    i, item, total, images_dir, folder_path, api_key = args
+    
+    result = {
+        'index': i,
+        'updated': False,
+        'uploaded': False,
+        'new_image_url': None,
+        'clear_image': False
+    }
+    
+    current_image = item.get('image', '')
+    title = item.get('title', f"news_{i}")
+    
+    # 1. Check if already ImgBB
+    if 'ibb.co' in current_image or 'imgbb.com' in current_image:
+        with print_lock:
+            print(f"[{i+1}/{total}] OK (Already ImgBB): {title[:30]}")
+        return result
+    
+    with print_lock:
+        print(f"[{i+1}/{total}] Processing: {title[:30]}")
+    
+    local_path_rel = item.get('local_image_path', '')
+    full_local_path = os.path.join(folder_path, local_path_rel) if local_path_rel else None
+    
+    fpath = None
+    
+    # 2. Check if we have a valid local file already
+    if full_local_path and os.path.exists(full_local_path):
+        with print_lock:
+            print(f"    [{i+1}] -> Using existing local file: {local_path_rel}")
+        fpath = full_local_path
+    else:
+        # 3. Need to download
+        slug = slugify(title)[:60]
+        source_url = clean_url(item.get('sourceLink', ''))
+        download_success = False
+        
+        # Attempt 1: Existing URL
+        if current_image and current_image.startswith('http'):
+            target_url = current_image
+            referer = source_url 
+            fname, downloaded_path = download_image(target_url, images_dir, slug, referer)
+            if downloaded_path:
+                fpath = downloaded_path
+                result['updated'] = True
+                download_success = True
+            else:
+                with print_lock:
+                    print(f"    [{i+1}] Existing image download failed. Trying scrape...")
+        
+        # Attempt 2: Scrape if not successful yet
+        if not download_success and source_url:
+            scraped = scrape_image_from_url(source_url)
+            if scraped:
+                target_url = scraped
+                referer = source_url
+                fname, downloaded_path = download_image(target_url, images_dir, slug, referer)
+                if downloaded_path:
+                    fpath = downloaded_path
+                    result['updated'] = True
+                    download_success = True
+                else:
+                    with print_lock:
+                        print(f"    [{i+1}] Scraped image download failed.")
+            else:
+                if not download_success:
+                    with print_lock:
+                        print(f"    [{i+1}] No image found via scraping.")
+
+    # 4. Upload to ImgBB if we have a file
+    upload_success = False
+    if fpath and api_key:
+        imgbb_url = upload_to_imgbb(fpath, api_key)
+        if imgbb_url:
+            result['new_image_url'] = imgbb_url
+            result['uploaded'] = True
+            result['updated'] = True
+            upload_success = True
+        else:
+            with print_lock:
+                print(f"    [{i+1}] ImgBB Upload failed.")
+    elif not api_key:
+        with print_lock:
+            print(f"    [{i+1}] Skipping upload (No API Key)")
+    elif not fpath:
+        with print_lock:
+            print(f"    [{i+1}] Skipping upload (No file)")
+    
+    # CRITICAL: If not ImgBB, clear the image field to avoid external hotlinks
+    if not upload_success and api_key:
+        if item.get('image') and 'ibb.co' not in item.get('image', ''):
+            with print_lock:
+                print(f"    [{i+1}] Clearing non-ImgBB image link due to failure.")
+            result['clear_image'] = True
+            result['updated'] = True
+    
+    return result
+
 
 def process_date_folder(date_folder, api_key):
     folder_path = os.path.join(BASE_OUTPUT_DIR, date_folder)
@@ -159,7 +276,7 @@ def process_date_folder(date_folder, api_key):
     images_dir = os.path.join(folder_path, 'Images')
     
     if not os.path.exists(data_path): return
-    print(f"\nProcessing {date_folder}...")
+    print(f"\nProcessing {date_folder} with {MAX_WORKERS} parallel threads...")
     print(f"API Key present: {'Yes' if api_key else 'No'}")
     os.makedirs(images_dir, exist_ok=True)
     
@@ -167,66 +284,45 @@ def process_date_folder(date_folder, api_key):
         with open(data_path, 'r', encoding='utf-8') as f:
             news_items = json.load(f)
         
+        total = len(news_items)
         updated_count = 0
         imgbb_count = 0
         
+        # Cleanup local_image_path first (sequential, quick)
+        for item in news_items:
+            if 'local_image_path' in item:
+                del item['local_image_path']
+                updated_count += 1
+        
+        # Prepare tasks for parallel processing
+        tasks = []
         for i, item in enumerate(news_items):
-            current_image = item.get('image', '')
-            title = item.get('title', f"news_{i}")
+            tasks.append((i, item, total, images_dir, folder_path, api_key))
+        
+        # Process in parallel with MAX_WORKERS threads
+        results = []
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            future_to_idx = {executor.submit(process_single_item, task): task[0] for task in tasks}
             
-            # 1. Check if already ImgBB
-            if 'ibb.co' in current_image or 'imgbb.com' in current_image:
-                print(f"[{i+1}/{len(news_items)}] OK (Already ImgBB): {title[:30]}")
-                continue
-
-            print(f"[{i+1}/{len(news_items)}] Processing: {title[:30]}")
-            
-            local_path_rel = item.get('local_image_path', '')
-            full_local_path = os.path.join(folder_path, local_path_rel) if local_path_rel else None
-            
-            fpath = None
-            
-            # 2. Check if we have a valid local file already
-            if full_local_path and os.path.exists(full_local_path):
-                print(f"    -> Using existing local file: {local_path_rel}")
-                fpath = full_local_path
-            else:
-                # 3. Need to download
-                slug = slugify(title)[:60]
-                source_url = clean_url(item.get('sourceLink', ''))
-                target_url = None
-                referer = None
-                
-                if current_image and current_image.startswith('http'):
-                    target_url = current_image
-                    referer = source_url
-                elif source_url:
-                    scraped = scrape_image_from_url(source_url)
-                    if scraped:
-                        target_url = scraped
-                        referer = source_url
-                
-                if target_url:
-                    fname, downloaded_path = download_image(target_url, images_dir, slug, referer)
-                    if downloaded_path:
-                        fpath = downloaded_path
-                        # Save local path
-                        item['local_image_path'] = f"Images/{fname}"
-                        updated_count += 1 # Mark as updated to save local path at least
-                else:
-                    print(f"    WARNING: No image source found.")
-
-            # 4. Upload to ImgBB if we have a file
-            if fpath and api_key:
-                imgbb_url = upload_to_imgbb(fpath, api_key)
-                if imgbb_url:
-                    item['image'] = imgbb_url
-                    imgbb_count += 1
-                    updated_count += 1
-            elif not api_key:
-                print("    Skipping upload (No API Key)")
-            elif not fpath:
-                print("    Skipping upload (No file)")
+            for future in as_completed(future_to_idx):
+                try:
+                    result = future.result(timeout=120)  # 2 min timeout per item
+                    results.append(result)
+                except Exception as e:
+                    idx = future_to_idx[future]
+                    with print_lock:
+                        print(f"    [{idx+1}] Error: {e}")
+        
+        # Apply results to news_items
+        for result in results:
+            idx = result['index']
+            if result['new_image_url']:
+                news_items[idx]['image'] = result['new_image_url']
+                imgbb_count += 1
+            if result['clear_image']:
+                news_items[idx]['image'] = ""
+            if result['updated']:
+                updated_count += 1
         
         if updated_count > 0:
             with open(data_path, 'w', encoding='utf-8') as f:

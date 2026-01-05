@@ -3,8 +3,10 @@ import re
 from history_manager import HistoryManager
 
 def filter_news(root_dir, history):
+    # Note: "war" removed - caused false positives on "software", "hardware", "warranty", etc.
+    # "háború" (Hungarian) is kept for actual war content
     negative_keywords = [
-        "Trump", "politics", "death", "murder", "war", "Orban Viktor", 
+        "Trump", "politics", "death", "murder", "Orban Viktor", 
         "Magyar Peter", "Meszaros Lőrinc", "crysis", "catastrophe", 
         "tragedy", "rejtvény", "háború", "betegség", "vírus", "politika",
          "ukrán", "ukrajna", "Orbán Viktor", "Mészáros Lőrinc", "Magyar Péter",

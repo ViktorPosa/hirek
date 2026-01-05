@@ -183,6 +183,25 @@ def main():
         print("Error: No feeds found in input.txt")
         return
 
+from google_rss_resolver import resolve_google_news_urls_batch
+
+# ... (rest of imports)
+
+# ... (parse_input_file remains same)
+
+# ... (fetch_feed_items remains same)
+
+def main():
+    print(f"Reading {INPUT_FILE}...")
+    config = parse_input_file(INPUT_FILE)
+    
+    if not config["api_key"]:
+        print("Error: API_KEY missing in input.txt")
+        return
+    if not config["feeds"]:
+        print("Error: No feeds found in input.txt")
+        return
+
     print(f"Found {len(config['feeds'])} feeds. Fetching...")
     
     all_rss_items = []
@@ -193,11 +212,26 @@ def main():
         for res in results:
             all_rss_items.extend(res)
 
+    print(f"Initial raw articles parsed: {len(all_rss_items)}")
+
+    # --- GOOGLE RSS RESOLVER INTEGRATION ---
+    print("Resolving Google News URLs...")
+    # Extract links list
+    raw_links = [item['link'] for item in all_rss_items]
+    
+    # Resolve efficiently in batch
+    resolved_links = resolve_google_news_urls_batch(raw_links, max_workers=10, show_progress=True)
+    
+    # Update items with real links
+    for i, item in enumerate(all_rss_items):
+        item['link'] = resolved_links[i]
+    # ---------------------------------------
+
     # Deduplicate by link
     unique_items = {i['link']: i for i in all_rss_items}.values()
     all_rss_items = list(unique_items)
     
-    print(f"Total unique articles found: {len(all_rss_items)}")
+    print(f"Total unique articles found after deduplication: {len(all_rss_items)}")
 
     print(f"Total unique articles found: {len(all_rss_items)}")
     
