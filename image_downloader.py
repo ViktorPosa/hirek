@@ -143,18 +143,24 @@ def scrape_image_from_url(url):
     try:
         url = clean_url(url)
         if not url or not url.startswith('http'): return None
-        print(f"    Scraping source: {url}")
-        time.sleep(random.uniform(0.5, 1.0))
+        with print_lock:
+            print(f"    Scraping source: {url[:60]}...")
+        time.sleep(random.uniform(0.3, 0.6))
         headers = get_headers()
         response = requests.get(url, headers=headers, timeout=10)
         # Handle simple errors, but don't crash
         if response.status_code >= 400: return None
         
         soup = BeautifulSoup(response.content, 'html.parser')
+        image_url = None
+        
+        # Try og:image first
+        og_image = soup.find('meta', property='og:image')
         if og_image and og_image.get('content'): 
             image_url = og_image['content']
         else:
-            twitter_image = soup.find('meta', name='twitter:image')
+            # Fallback to twitter:image
+            twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
             if twitter_image and twitter_image.get('content'): 
                 image_url = twitter_image['content']
         
