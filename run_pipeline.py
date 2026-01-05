@@ -15,8 +15,11 @@ PIPELINE_STEPS = [
     ("summarizer.py", "Summarizing Articles", "summarize"),
     ("post_processor.py", "Cleaning and Formatting", "process"),
     ("filter_news.py", "Filtering Summarized News", "newsfilter"),
+    ("weather_generator.py", "Generating Weather Forecast", "weather"),
+    ("market_generator.py", "Generating Market Analysis", "market"),
     ("tag_generator.py", "Generating Tags", "tags")
 ]
+
 
 
 
@@ -50,7 +53,10 @@ def main():
     parser.add_argument("--skip-summarize", action="store_true", help="Skip summarization (summarizer.py)")
     parser.add_argument("--skip-process", action="store_true", help="Skip post-processing (post_processor.py)")
     parser.add_argument("--skip-newsfilter", action="store_true", help="Skip news content filtering (filter_news.py)")
+    parser.add_argument("--skip-weather", action="store_true", help="Skip weather generation (weather_generator.py)")
+    parser.add_argument("--skip-market", action="store_true", help="Skip market analysis (market_generator.py)")
     parser.add_argument("--skip-tags", action="store_true", help="Skip tag generation (tag_generator.py)")
+
 
 
     
