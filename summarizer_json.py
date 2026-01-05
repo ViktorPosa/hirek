@@ -67,16 +67,19 @@ def validate_news_item(item, idx):
     
     # Check required fields
     for field in REQUIRED_FIELDS:
-        if field not in fixed_item:
-            errors.append(f"Item {idx}: Missing field '{field}'")
-            # Try to provide defaults
+        # Special handling for image - it is optional in prompt now
+        if field == 'image':
+            if field not in fixed_item or fixed_item.get(field) is None:
+                fixed_item[field] = ""
+            # Do NOT error if image is empty
+        elif not fixed_item.get(field):
+            # Try to provide defaults for other fields
             if field == 'tags':
                 fixed_item['tags'] = []
-            elif field == 'image':
-                fixed_item['image'] = ""
             else:
                 fixed_item[field] = ""
-    
+                errors.append(f"Item {idx}: Missing field '{field}'")
+
     # Validate section
     if 'section' in fixed_item:
         section = fixed_item['section']
@@ -104,7 +107,7 @@ def validate_news_item(item, idx):
                 'lifestyle': 'eletmod',
                 'bulvár': 'bulvar',
             }
-            if section.lower() in section_map:
+            if isinstance(section, str) and section.lower() in section_map:
                 fixed_item['section'] = section_map[section.lower()]
             else:
                 errors.append(f"Item {idx}: Invalid section '{section}'")
@@ -122,8 +125,8 @@ def validate_news_item(item, idx):
     if 'tags' in fixed_item and isinstance(fixed_item['tags'], list):
         fixed_item['tags'] = [t.strip().strip('#') for t in fixed_item['tags']]
     
-    # Validate URLs
-    for url_field in ['image', 'sourceLink']:
+    # Validate URLs (skip image validation as it can be empty)
+    for url_field in ['sourceLink']:
         if url_field in fixed_item and fixed_item[url_field]:
             url = fixed_item[url_field]
             if not url.startswith(('http://', 'https://', '')):

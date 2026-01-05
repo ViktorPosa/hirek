@@ -52,6 +52,8 @@ def main():
     parser.add_argument("--skip-summarize", action="store_true", help="Skip summarization (summarizer_json.py)")
     parser.add_argument("--skip-weather", action="store_true", help="Skip weather generation (weather_generator.py)")
     parser.add_argument("--skip-market", action="store_true", help="Skip market analysis (market_generator.py)")
+    parser.add_argument("--skip-images", action="store_true", help="Skip image downloading (image_downloader.py)")
+    parser.add_argument("--skip-tags", action="store_true", help="Skip tag generation (tag_generator_json.py)")
     parser.add_argument("--skip-ajanlott", action="store_true", help="Skip recommendation generation (ajanlott_generator.py)")
 
 
@@ -76,6 +78,20 @@ def main():
         
     # Pass this path to subprocesses via environment variable
     os.environ['DAILY_OUTPUT_DIR'] = daily_output_dir
+
+    # Load API Keys from input.txt
+    input_file = os.path.join(current_dir, 'Input', 'input.txt')
+    if os.path.exists(input_file):
+        try:
+            with open(input_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("IMGBB_API_KEY="):
+                        key = line.split('=', 1)[1].strip()
+                        os.environ['IMGBB_API_KEY'] = key
+                        print("Loaded ImgBB API Key from input.txt")
+                        break
+        except Exception as e:
+            print(f"Warning: Could not read input.txt: {e}")
 
     
     for script, description, arg_name in PIPELINE_STEPS:
