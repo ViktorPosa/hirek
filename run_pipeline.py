@@ -15,6 +15,7 @@ PIPELINE_STEPS = [
     ("summarizer_json.py", "Summarizing to JSON", "summarize"),
     ("weather_generator.py", "Generating Weather Forecast", "weather"),
     ("market_generator.py", "Generating Market Analysis", "market"),
+    ("image_downloader.py", "Downloading Images", "images"),
     ("tag_generator_json.py", "Generating Tags JSON", "tags"),
     ("ajanlott_generator.py", "Generating Recommendations", "ajanlott"),
 ]
