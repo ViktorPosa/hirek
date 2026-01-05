@@ -103,6 +103,27 @@ class HistoryManager:
             
         self.save()
 
+    def mark_processing_error(self, url, reason):
+        """Marks a URL as having a processing error after max retries.
+        
+        Args:
+            url (str): The link URL.
+            reason (str): Explanation why processing failed.
+        """
+        if url not in self.history:
+            self.history[url] = {
+                'first_seen': datetime.datetime.now().isoformat(),
+                'status': 'PROCESSING_ERROR',
+                'summarized': False
+            }
+        
+        record = self.history[url]
+        record['last_updated'] = datetime.datetime.now().isoformat()
+        record['status'] = 'PROCESSING_ERROR'
+        record['error_reason'] = reason
+            
+        self.save()
+
     def get_stats(self):
         total = len(self.history)
         positive = len([r for r in self.history.values() if r.get('status') in ['POSITIVE', 'NEUTRAL']])

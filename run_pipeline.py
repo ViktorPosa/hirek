@@ -12,14 +12,12 @@ PIPELINE_STEPS = [
     ("mimofilter.py", "Fetching and Filtering News", "filter"),
     ("sorter.py", "Sorting Links", "sort"),
     ("link_filter.py", "Pre-Filtering Negative Links", "linkfilter"),
-    ("summarizer.py", "Summarizing Articles", "summarize"),
-    ("post_processor.py", "Cleaning and Formatting", "process"),
-    ("filter_news.py", "Filtering Summarized News", "newsfilter"),
+    ("summarizer_json.py", "Summarizing to JSON", "summarize"),
     ("weather_generator.py", "Generating Weather Forecast", "weather"),
     ("market_generator.py", "Generating Market Analysis", "market"),
-    ("tag_generator.py", "Generating Tags", "tags")
+    ("tag_generator_json.py", "Generating Tags JSON", "tags"),
+    ("ajanlott_generator.py", "Generating Recommendations", "ajanlott"),
 ]
-
 
 
 
@@ -50,19 +48,17 @@ def main():
     parser.add_argument("--skip-filter", action="store_true", help="Skip fetching and filtering (mimofilter.py)")
     parser.add_argument("--skip-sort", action="store_true", help="Skip sorting links (sorter.py)")
     parser.add_argument("--skip-linkfilter", action="store_true", help="Skip link pre-filtering (link_filter.py)")
-    parser.add_argument("--skip-summarize", action="store_true", help="Skip summarization (summarizer.py)")
-    parser.add_argument("--skip-process", action="store_true", help="Skip post-processing (post_processor.py)")
-    parser.add_argument("--skip-newsfilter", action="store_true", help="Skip news content filtering (filter_news.py)")
+    parser.add_argument("--skip-summarize", action="store_true", help="Skip summarization (summarizer_json.py)")
     parser.add_argument("--skip-weather", action="store_true", help="Skip weather generation (weather_generator.py)")
     parser.add_argument("--skip-market", action="store_true", help="Skip market analysis (market_generator.py)")
-    parser.add_argument("--skip-tags", action="store_true", help="Skip tag generation (tag_generator.py)")
-
+    parser.add_argument("--skip-ajanlott", action="store_true", help="Skip recommendation generation (ajanlott_generator.py)")
 
 
     
     args = parser.parse_args()
 
-    print("Starting News Processing Pipeline...")
+    print("Starting News Processing Pipeline (JSON Version)")
+    print("=" * 50)
     total_start = time.time()
 
     
@@ -72,15 +68,10 @@ def main():
     # Set up daily output directory
     today = datetime.date.today().strftime('%Y-%m-%d')
     daily_output_dir = os.path.join(current_dir, 'Output', today)
-    tartalom_dir = os.path.join(daily_output_dir, 'Tartalom')
     
     if not os.path.exists(daily_output_dir):
         os.makedirs(daily_output_dir)
         print(f"Created daily directory: {daily_output_dir}")
-        
-    if not os.path.exists(tartalom_dir):
-        os.makedirs(tartalom_dir)
-        print(f"Created daily content directory: {tartalom_dir}")
         
     # Pass this path to subprocesses via environment variable
     os.environ['DAILY_OUTPUT_DIR'] = daily_output_dir
@@ -106,6 +97,7 @@ def main():
     print(f"\n{'='*50}")
     print(f"PIPELINE COMPLETED SUCCESSFULLY")
     print(f"Total time: {total_elapsed:.2f} seconds")
+    print(f"Output format: JSON (data.json, piacok.json, idojaras.json)")
     print(f"{'='*50}")
 
 if __name__ == "__main__":
