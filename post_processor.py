@@ -10,6 +10,8 @@ import datetime
 # --- CONFIGURATION ---
 # Configuration
 INPUT_FILE = os.path.join('Input', 'input.txt')
+INPUT_DIR = 'Input'
+
 
 DAILY_OUTPUT_DIR = os.environ.get('DAILY_OUTPUT_DIR')
 if not DAILY_OUTPUT_DIR:

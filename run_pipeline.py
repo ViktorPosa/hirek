@@ -1,15 +1,24 @@
+import subprocess
 import sys
+import time
+import os
+import datetime
 import argparse
+
 
 # Script definitions with their corresponding skip flag name
 # (script_file, description, arg_name)
 PIPELINE_STEPS = [
     ("mimofilter.py", "Fetching and Filtering News", "filter"),
     ("sorter.py", "Sorting Links", "sort"),
+    ("link_filter.py", "Pre-Filtering Negative Links", "linkfilter"),
     ("summarizer.py", "Summarizing Articles", "summarize"),
     ("post_processor.py", "Cleaning and Formatting", "process"),
+    ("filter_news.py", "Filtering Summarized News", "newsfilter"),
     ("tag_generator.py", "Generating Tags", "tags")
 ]
+
+
 
 
 def run_script(script_name, description):
@@ -37,9 +46,13 @@ def main():
     parser = argparse.ArgumentParser(description="Run the News Processing Pipeline.")
     parser.add_argument("--skip-filter", action="store_true", help="Skip fetching and filtering (mimofilter.py)")
     parser.add_argument("--skip-sort", action="store_true", help="Skip sorting links (sorter.py)")
+    parser.add_argument("--skip-linkfilter", action="store_true", help="Skip link pre-filtering (link_filter.py)")
     parser.add_argument("--skip-summarize", action="store_true", help="Skip summarization (summarizer.py)")
     parser.add_argument("--skip-process", action="store_true", help="Skip post-processing (post_processor.py)")
+    parser.add_argument("--skip-newsfilter", action="store_true", help="Skip news content filtering (filter_news.py)")
     parser.add_argument("--skip-tags", action="store_true", help="Skip tag generation (tag_generator.py)")
+
+
     
     args = parser.parse_args()
 

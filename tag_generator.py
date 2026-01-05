@@ -28,8 +28,21 @@ def main():
         print(f"Directory {TARGET_DIR} not found.")
         return
 
-    # Files to process (exclude existing _cimke.txt files if any)
+    # First, delete any existing _cimke.txt files
+    existing_tag_files = [f for f in os.listdir(TARGET_DIR) if f.endswith('_cimke.txt')]
+    if existing_tag_files:
+        print(f"Deleting {len(existing_tag_files)} existing tag files...")
+        for tag_file in existing_tag_files:
+            tag_path = os.path.join(TARGET_DIR, tag_file)
+            try:
+                os.remove(tag_path)
+                print(f"  Deleted: {tag_file}")
+            except Exception as e:
+                print(f"  Error deleting {tag_file}: {e}")
+
+    # Files to process (exclude _cimke.txt files)
     files = [f for f in os.listdir(TARGET_DIR) if f.endswith('.txt') and '_cimke.txt' not in f]
+
     
     for filename in files:
         print(f"Processing {filename}...")
@@ -64,10 +77,26 @@ def main():
                 output_filename = f"{base_name}_cimke.txt"
                 output_path = os.path.join(TARGET_DIR, output_filename)
                 
-                # Write tags comma separated as per "tartalma pedig legyen ... a [Tagek]-ből az első tag"
-                # User requested # prefix for words.
-                # Assuming format: #Tag1, #Tag2, ...
-                content_to_write = ", ".join([f"#{t}" for t in tags_list])
+                # Write tags comma separated
+                # Tags may already have # prefix, so check before adding
+                # Also deduplicate tags (case-insensitive)
+                formatted_tags = []
+                seen_tags = set()
+                for t in tags_list:
+                    t = t.strip()
+                    tag_lower = t.lower()
+                    if tag_lower in seen_tags:
+                        continue
+                    seen_tags.add(tag_lower)
+                    
+                    if t.startswith('#'):
+                        formatted_tags.append(t)
+                    else:
+                        formatted_tags.append(f"#{t}")
+                
+                content_to_write = ", ".join(formatted_tags)
+
+
 
                 
                 with open(output_path, 'w', encoding='utf-8') as f:
