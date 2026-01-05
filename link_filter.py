@@ -1,6 +1,7 @@
 import os
 import re
 import datetime
+from history_manager import HistoryManager
 
 # --- CONFIGURATION ---
 DAILY_OUTPUT_DIR = os.environ.get('DAILY_OUTPUT_DIR')
@@ -42,7 +43,7 @@ def is_blacklisted(url):
             return True, keyword
     return False, None
 
-def filter_file(filepath):
+def filter_file(filepath, history):
     """Filter out blacklisted links from a category file."""
     if not os.path.exists(filepath):
         return 0, 0
@@ -65,6 +66,8 @@ def filter_file(filepath):
             is_bad, keyword = is_blacklisted(url)
             if is_bad:
                 print(f"  [FILTERED] '{keyword}' in: {url[:80]}...")
+                # Log to history.json with reason
+                history.mark_filtered(url, "link_filter", f"URL contains blacklisted keyword: {keyword}")
                 removed_count += 1
                 continue
         
@@ -85,6 +88,8 @@ def main():
         print(f"Error: Directory {DAILY_OUTPUT_DIR} not found.")
         return
     
+    history = HistoryManager()
+    
     # Find all .txt files in the daily output directory (not in Tartalom)
     files = [f for f in os.listdir(DAILY_OUTPUT_DIR) 
              if f.endswith('.txt') and os.path.isfile(os.path.join(DAILY_OUTPUT_DIR, f))]
@@ -95,7 +100,7 @@ def main():
     for filename in files:
         filepath = os.path.join(DAILY_OUTPUT_DIR, filename)
         print(f"\nProcessing {filename}...")
-        kept, removed = filter_file(filepath)
+        kept, removed = filter_file(filepath, history)
         total_kept += kept
         total_removed += removed
         print(f"  Kept: {kept}, Removed: {removed}")

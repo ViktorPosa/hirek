@@ -80,14 +80,40 @@ class HistoryManager:
             
         self.save()
 
+    def mark_filtered(self, url, filter_source, reason):
+        """Marks a URL as filtered out with the reason.
+        
+        Args:
+            url (str): The link URL.
+            filter_source (str): Which filter removed it ('link_filter' or 'news_filter').
+            reason (str): Explanation why it was filtered.
+        """
+        if url not in self.history:
+            self.history[url] = {
+                'first_seen': datetime.datetime.now().isoformat(),
+                'status': 'FILTERED',
+                'summarized': False
+            }
+        
+        record = self.history[url]
+        record['last_updated'] = datetime.datetime.now().isoformat()
+        record['status'] = 'FILTERED'
+        record['filtered_by'] = filter_source
+        record['filter_reason'] = reason
+            
+        self.save()
+
     def get_stats(self):
         total = len(self.history)
         positive = len([r for r in self.history.values() if r.get('status') in ['POSITIVE', 'NEUTRAL']])
         negative = len([r for r in self.history.values() if r.get('status') == 'NEGATIVE'])
+        filtered = len([r for r in self.history.values() if r.get('status') == 'FILTERED'])
         summarized = len([r for r in self.history.values() if r.get('summarized')])
         return {
             "total_links": total,
             "positive_neutral": positive,
             "negative": negative,
+            "filtered": filtered,
             "summarized": summarized
         }
+
