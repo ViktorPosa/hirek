@@ -358,6 +358,55 @@ def add_fooldal_section(all_news):
     return all_news
 
 
+def get_primary_section(item):
+    """Gets the primary (first) section from a news item."""
+    section = item.get('section', '')
+    if isinstance(section, list) and len(section) > 0:
+        return section[0]
+    return section if isinstance(section, str) else ''
+
+
+def randomize_within_sections(all_news):
+    """
+    Groups news by their primary section and randomizes within each group.
+    Returns a list where sections are grouped together, but items within each section are randomized.
+    Each news item keeps all its original fields intact.
+    """
+    import random
+    
+    # Define section order for consistent output
+    section_order = ['fooldal', 'belfold_kulfold', 'tech', 'tudomany', 'uzlet', 'szorakozas', 'eletmod', 'bulvar', 'sport']
+    
+    # Group news by primary section
+    section_groups = {}
+    for item in all_news:
+        primary_section = get_primary_section(item)
+        if primary_section not in section_groups:
+            section_groups[primary_section] = []
+        section_groups[primary_section].append(item)
+    
+    # Randomize within each section group
+    for section in section_groups:
+        random.shuffle(section_groups[section])
+    
+    # Build result in section order
+    result = []
+    
+    # First add sections in defined order
+    for section in section_order:
+        if section in section_groups:
+            result.extend(section_groups[section])
+            del section_groups[section]
+    
+    # Add any remaining sections not in the order list
+    for section in section_groups:
+        result.extend(section_groups[section])
+    
+    print(f"  Randomized news within {len(section_groups) + len([s for s in section_order if s in section_groups or s not in section_groups])} sections")
+    
+    return result
+
+
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -387,6 +436,10 @@ def main():
     
     # Add fooldal section to random 30 items
     all_news = add_fooldal_section(all_news)
+    
+    # Randomize news within sections (group by section, randomize within groups)
+    print("Randomizing news within sections...")
+    all_news = randomize_within_sections(all_news)
     
     # Write unified data.json
     output_path = os.path.join(OUTPUT_DIR, 'data.json')

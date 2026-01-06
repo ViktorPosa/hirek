@@ -3,6 +3,7 @@ import requests
 import datetime
 import json
 import re
+import time
 import concurrent.futures
 import threading
 
@@ -16,8 +17,8 @@ if not DAILY_OUTPUT_DIR:
 
 OUTPUT_DIR = DAILY_OUTPUT_DIR
 
-API_URL = "https://api.xiaomimimo.com/v1/chat/completions"
-MODEL_NAME = "mimo-v2-flash"
+API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_API_KEY = "AIzaSyDqvul5imv3Qnc6FV-o3AoBV3nomg7Zk0E"
 MAX_WORKERS = 20  # Parallel processing threads
 
 # Cities to generate weather for (updated list)
@@ -48,7 +49,7 @@ def load_api_key():
     return None
 
 def generate_for_city(api_key, city):
-    """Generates weather forecast for a single city."""
+    """Generates weather forecast for a single city using Gemini API."""
     today = datetime.date.today().strftime('%Y. %m. %d.')
     
     prompt = f"""Mai dátum: {today}
@@ -67,22 +68,23 @@ FONTOS:
 - Csak az előrejelzés szövegét add vissza, semmi mást!
 - Ne használj idézőjeleket!"""
 
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
-    }
-
+    # Gemini API format
+    url = f"{API_URL}?key={GEMINI_API_KEY}"
+    
     data = {
-        "model": MODEL_NAME,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.3,
-        "stream": False 
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }],
+        "generationConfig": {
+            "temperature": 0.3
+        }
     }
 
     try:
-        response = requests.post(API_URL, headers=headers, json=data, timeout=60)
+        response = requests.post(url, json=data, timeout=60)
         response.raise_for_status()
-        content = response.json()['choices'][0]['message']['content']
+        result = response.json()
+        content = result['candidates'][0]['content']['parts'][0]['text']
         # Clean up the response
         content = content.strip().strip('"').strip("'")
         return content
@@ -131,21 +133,16 @@ def main():
     print(f"Weather Generator running for: {DAILY_OUTPUT_DIR}")
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    api_key = load_api_key()
-    if not api_key:
-        print("No API key found. Exiting.")
-        return
+    api_key = load_api_key()  # Not used for Gemini, but kept for compatibility
     
     all_forecasts = {}
     
-    # Process cities in parallel
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(process_city, api_key, city): city for city in CITIES}
-        
-        for future in concurrent.futures.as_completed(futures):
-            city, forecast = future.result()
-            if forecast:
-                all_forecasts[city] = forecast
+    # Process cities sequentially to respect Gemini rate limits
+    for city in CITIES:
+        city, forecast = process_city(api_key, city)
+        if forecast:
+            all_forecasts[city] = forecast
+        time.sleep(2)  # Rate limit delay for Gemini API
     
     # Write all forecasts to JSON file
     output_path = os.path.join(OUTPUT_DIR, 'idojaras.json')
