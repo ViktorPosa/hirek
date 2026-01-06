@@ -3,6 +3,8 @@ import requests
 import datetime
 import json
 import re
+import concurrent.futures
+import threading
 
 # --- CONFIGURATION ---
 INPUT_DIR = 'Input'
@@ -16,6 +18,7 @@ OUTPUT_DIR = DAILY_OUTPUT_DIR
 
 API_URL = "https://api.xiaomimimo.com/v1/chat/completions"
 MODEL_NAME = "mimo-v2-flash"
+MAX_WORKERS = 20  # Parallel processing threads
 
 # Symbols to generate analysis for
 SYMBOLS = [
@@ -26,6 +29,14 @@ SYMBOLS = [
 ]
 
 VALID_SENTIMENTS = ["Bullish", "Bearish", "Semleges"]
+
+# Thread-safe print lock
+print_lock = threading.Lock()
+
+def safe_print(msg):
+    """Thread-safe print function."""
+    with print_lock:
+        print(msg)
 
 def load_api_key():
     """Loads API Key from input.txt."""
@@ -78,7 +89,7 @@ FONTOS:
         response.raise_for_status()
         return response.json()['choices'][0]['message']['content']
     except Exception as e:
-        print(f"    ERROR: {e}")
+        safe_print(f"    ERROR ({symbol}): {e}")
         return None
 
 def validate_and_fix(content, symbol):
@@ -129,6 +140,27 @@ def validate_and_fix(content, symbol):
     
     return parsed, True, []
 
+def process_symbol(api_key, symbol, name):
+    """Process a single symbol with retries. Returns (symbol, parsed_data) or (symbol, None)."""
+    safe_print(f"  Generating for {symbol} ({name})...")
+    
+    max_attempts = 3
+    parsed = None
+    for attempt in range(max_attempts):
+        content = generate_for_symbol(api_key, symbol, name)
+        parsed, is_valid, errors = validate_and_fix(content, symbol)
+        
+        if is_valid:
+            safe_print(f"    [OK] {symbol}: Valid JSON format")
+            return symbol, parsed
+        else:
+            safe_print(f"    [FAIL] {symbol}: Invalid format (attempt {attempt+1}/{max_attempts}). Errors: {errors}")
+            if attempt < max_attempts - 1:
+                safe_print(f"    {symbol}: Retrying...")
+    
+    safe_print(f"    [WARN] {symbol}: Failed after {max_attempts} attempts.")
+    return symbol, parsed
+
 def main():
     print(f"Market Generator running for: {DAILY_OUTPUT_DIR}")
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -140,24 +172,12 @@ def main():
     
     all_analyses = {}
     
-    for symbol, name in SYMBOLS:
-        print(f"\n  Generating for {symbol} ({name})...")
+    # Process symbols in parallel
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {executor.submit(process_symbol, api_key, symbol, name): symbol for symbol, name in SYMBOLS}
         
-        max_attempts = 3
-        for attempt in range(max_attempts):
-            content = generate_for_symbol(api_key, symbol, name)
-            parsed, is_valid, errors = validate_and_fix(content, symbol)
-            
-            if is_valid:
-                print(f"    [OK] Valid JSON format")
-                all_analyses[symbol] = parsed
-                break
-            else:
-                print(f"    [FAIL] Invalid format (attempt {attempt+1}/{max_attempts}). Errors: {errors}")
-                if attempt < max_attempts - 1:
-                    print(f"    Retrying...")
-        else:
-            print(f"    [WARN] Failed after {max_attempts} attempts.")
+        for future in concurrent.futures.as_completed(futures):
+            symbol, parsed = future.result()
             if parsed:
                 all_analyses[symbol] = parsed
     
@@ -170,3 +190,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

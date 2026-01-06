@@ -5,6 +5,7 @@ import re
 from tqdm import tqdm
 import time
 import datetime
+import concurrent.futures
 from history_manager import HistoryManager
 
 # --- CONFIGURATION ---
@@ -21,6 +22,7 @@ API_URL = "https://api.xiaomimimo.com/v1/chat/completions"
 MODEL_NAME = "mimo-v2-flash"
 BATCH_SIZE = 10
 MAX_RETRIES = 3
+MAX_WORKERS = 20  # Parallel processing threads
 
 # Valid section codes
 VALID_SECTIONS = ['fooldal', 'tech', 'tudomany', 'belfold_kulfold', 'uzlet', 'szorakozas', 'eletmod', 'bulvar', 'sport']

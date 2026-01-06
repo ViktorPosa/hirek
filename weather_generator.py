@@ -3,6 +3,8 @@ import requests
 import datetime
 import json
 import re
+import concurrent.futures
+import threading
 
 # --- CONFIGURATION ---
 INPUT_DIR = 'Input'
@@ -16,6 +18,7 @@ OUTPUT_DIR = DAILY_OUTPUT_DIR
 
 API_URL = "https://api.xiaomimimo.com/v1/chat/completions"
 MODEL_NAME = "mimo-v2-flash"
+MAX_WORKERS = 20  # Parallel processing threads
 
 # Cities to generate weather for (updated list)
 CITIES = [
@@ -24,6 +27,14 @@ CITIES = [
     "Székesfehérvár",
     "Rijeka",
 ]
+
+# Thread-safe print lock
+print_lock = threading.Lock()
+
+def safe_print(msg):
+    """Thread-safe print function."""
+    with print_lock:
+        print(msg)
 
 def load_api_key():
     """Loads API Key from input.txt."""
@@ -76,7 +87,7 @@ FONTOS:
         content = content.strip().strip('"').strip("'")
         return content
     except Exception as e:
-        print(f"    ERROR: {e}")
+        safe_print(f"    ERROR ({city}): {e}")
         return None
 
 def validate_forecast(content, city):
@@ -96,6 +107,26 @@ def validate_forecast(content, city):
     
     return content, len(errors) == 0, errors
 
+def process_city(api_key, city):
+    """Process a single city with retries. Returns (city, forecast) or (city, None)."""
+    safe_print(f"  Generating for {city}...")
+    
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        content = generate_for_city(api_key, city)
+        fixed_content, is_valid, errors = validate_forecast(content, city)
+        
+        if is_valid:
+            safe_print(f"    [OK] {city}: Valid forecast")
+            return city, fixed_content
+        else:
+            safe_print(f"    [FAIL] {city}: Invalid format (attempt {attempt+1}/{max_attempts}). Errors: {errors}")
+            if attempt < max_attempts - 1:
+                safe_print(f"    {city}: Retrying...")
+    
+    safe_print(f"    [WARN] {city}: Failed after {max_attempts} attempts. Using partial content if available.")
+    return city, fixed_content if fixed_content else None
+
 def main():
     print(f"Weather Generator running for: {DAILY_OUTPUT_DIR}")
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -107,26 +138,14 @@ def main():
     
     all_forecasts = {}
     
-    for city in CITIES:
-        print(f"\n  Generating for {city}...")
+    # Process cities in parallel
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {executor.submit(process_city, api_key, city): city for city in CITIES}
         
-        max_attempts = 3
-        for attempt in range(max_attempts):
-            content = generate_for_city(api_key, city)
-            fixed_content, is_valid, errors = validate_forecast(content, city)
-            
-            if is_valid:
-                print(f"    [OK] Valid forecast")
-                all_forecasts[city] = fixed_content
-                break
-            else:
-                print(f"    [FAIL] Invalid format (attempt {attempt+1}/{max_attempts}). Errors: {errors}")
-                if attempt < max_attempts - 1:
-                    print(f"    Retrying...")
-        else:
-            print(f"    [WARN] Failed after {max_attempts} attempts. Using partial content if available.")
-            if fixed_content:
-                all_forecasts[city] = fixed_content
+        for future in concurrent.futures.as_completed(futures):
+            city, forecast = future.result()
+            if forecast:
+                all_forecasts[city] = forecast
     
     # Write all forecasts to JSON file
     output_path = os.path.join(OUTPUT_DIR, 'idojaras.json')
@@ -137,3 +156,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

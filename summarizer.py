@@ -24,7 +24,7 @@ OUTPUT_TARTALOM_DIR = os.path.join(OUTPUT_DIR, 'Tartalom')
 API_URL = "https://api.xiaomimimo.com/v1/chat/completions"
 MODEL_NAME = "mimo-v2-flash"
 BATCH_SIZE = 10
-MAX_WORKERS = 1  # Sequential processing to avoid rate limits
+MAX_WORKERS = 20  # Parallel processing with 20 threads
 
 def load_config():
     """Loads API Key and Prompt."""

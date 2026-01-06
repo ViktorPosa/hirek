@@ -212,7 +212,7 @@ def resolve_google_news_url(url: str, request_timeout: int = 10) -> str:
 
 def resolve_google_news_urls_batch(
     urls: list, 
-    max_workers: int = 5, 
+    max_workers: int = 20, 
     per_url_timeout: int = 15, 
     batch_timeout: int = 180,
     show_progress: bool = True

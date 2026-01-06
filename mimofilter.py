@@ -23,7 +23,7 @@ OUTPUT_FILE = os.path.join(DAILY_OUTPUT_DIR, 'output.txt')
 API_URL = "https://api.xiaomimimo.com/v1/chat/completions"
 MODEL_NAME = "mimo-v2-flash"
 MAX_ITEMS_PER_BATCH = 15
-MAX_WORKERS = 5 # Parallel feed fetching
+MAX_WORKERS = 20 # Parallel feed fetching
 
 # The specific categories requested
 ALLOWED_CATEGORIES = [
@@ -220,7 +220,7 @@ def main():
     raw_links = [item['link'] for item in all_rss_items]
     
     # Resolve efficiently in batch
-    resolved_links = resolve_google_news_urls_batch(raw_links, max_workers=10, show_progress=True)
+    resolved_links = resolve_google_news_urls_batch(raw_links, max_workers=20, show_progress=True)
     
     # Update items with real links
     for i, item in enumerate(all_rss_items):
