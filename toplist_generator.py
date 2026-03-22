@@ -307,12 +307,6 @@ def scrape_netflix(url, images_dir):
             "title": "Netflix: Coming Soon",
             "find_article": "article-list",
             "match_keywords": ["what's coming", "coming to netflix this week", "new on netflix"],
-        },
-        {
-            "list_url": "https://www.whats-on-netflix.com/leaving-soon/",
-            "title": "Netflix: Leaving Soon",
-            "find_article": "article-list",
-            "match_keywords": ["what's leaving", "leaving netflix"],
         }
     ]
     
