@@ -148,7 +148,8 @@ def download_image(img_url, output_dir, prefix="img", max_longest_side=200, toda
         # Construct raw URL
         # https://raw.githubusercontent.com/<User>/<Repo>/main/<date>/toplist/<filename>
         if not today_str:
-            today_str = datetime.datetime.now(timezone.utc).strftime('%Y-%m-%d')
+            # Safely extract date from output_dir (e.g. .../ImageRepo/2026-03-22/toplist)
+            today_str = os.path.basename(os.path.dirname(output_dir))
             
         raw_url = f"https://raw.githubusercontent.com/{IMAGE_GITHUB_USER}/{IMAGE_GITHUB_REPO}/main/{today_str}/toplist/{filename}"
         return raw_url
