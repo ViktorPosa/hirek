@@ -139,8 +139,8 @@ def main():
         schedule_wake(next_run)
     
     last_run_jobs = {
-        PIPELINE_SCRIPT: "",
-        TTS_SCRIPT: ""
+        PIPELINE_SCRIPT: ("", None),
+        TTS_SCRIPT: ("", None)
     }
     
     heartbeat_counter = 0
@@ -155,10 +155,11 @@ def main():
         
         for target, script, t_str in jobs_today:
             # Check for exact trigger match
-            if current_time_str == t_str and last_run_jobs[script] != t_str:
+            last_time, last_date = last_run_jobs.get(script, ("", None))
+            if current_time_str == t_str and (last_time != t_str or last_date != now.date()):
                 log(f"⏰ It is {current_time_str}. Triggering scheduled run for {script}.")
                 run_script_process(script)
-                last_run_jobs[script] = t_str
+                last_run_jobs[script] = (t_str, now.date())
         
         # 2. Catch-up for sleep (if we jumped more than 1 minute)
         if (now - last_check_time).total_seconds() > 65:
@@ -167,10 +168,11 @@ def main():
                  # if target is between last_check and now
                  if last_check_time < target <= now:
                      # Check if we already ran it (unlikely if we jumped)
-                     if last_run_jobs[script] != t_str:
+                     last_time, last_date = last_run_jobs.get(script, ("", None))
+                     if last_time != t_str or last_date != now.date():
                          log(f"⏰ Woke up from sleep/jump. Missed scheduled run at {t_str} for {script}. Triggering now.")
                          run_script_process(script)
-                         last_run_jobs[script] = t_str
+                         last_run_jobs[script] = (t_str, now.date())
                          
         last_check_time = now
         
