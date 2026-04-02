@@ -68,9 +68,7 @@ def run_script_process(script_name):
 
 def get_tts_target_for_date(date_obj):
     """Returns the exact TTS datetime target for a given date."""
-    is_weekend = date_obj.weekday() >= 5
-    h = 9 if is_weekend else 8
-    return date_obj.replace(hour=h, minute=0, second=0, microsecond=0)
+    return date_obj.replace(hour=9, minute=0, second=0, microsecond=0)
 
 def get_all_jobs_for_today(now):
     """Returns a list of tuples: (datetime_target, script_name, time_str) for today."""
@@ -129,7 +127,7 @@ def schedule_wake(target_dt):
 def main():
     log("=== News Pipeline & TTS Scheduler Started ===")
     log(f"Pipeline times: {', '.join(PIPELINE_RUN_TIMES)}")
-    log(f"TTS times: 08:00 (Weekdays), 09:00 (Weekends)")
+    log(f"TTS times: 09:00 (Daily)")
     
     # Initial Schedule
     next_run = get_next_run_time()
