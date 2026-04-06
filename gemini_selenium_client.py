@@ -12,6 +12,7 @@ import os
 import sys
 import time
 import subprocess
+from chromedriver_updater import get_chromedriver_path
 import pyperclip
 import threading
 import atexit
@@ -107,9 +108,9 @@ def create_driver(headless=False):
     options.add_argument('--window-size=1920,1080')
     options.add_argument('--lang=hu-HU')
     
-    # Always use ChromeDriverManager to auto-download matching chromedriver version
-    print("   ℹ️  Using ChromeDriverManager (auto-matching Chrome version)")
-    service = Service(ChromeDriverManager().install())
+    # Always use the custom auto-updater to strictly match installed Chrome version
+    print("   ℹ️  Using Chromedriver Auto-updater (exact match Chrome version)")
+    service = Service(get_chromedriver_path())
 
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)

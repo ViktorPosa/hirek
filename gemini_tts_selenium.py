@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-from webdriver_manager.chrome import ChromeDriverManager
+from chromedriver_updater import get_chromedriver_path
 
 import datetime
 
@@ -91,7 +91,7 @@ def setup_driver():
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option("detach", True)  # Keep Chrome open after script exits
 
-    service = Service(ChromeDriverManager().install())
+    service = Service(get_chromedriver_path())
     driver = webdriver.Chrome(service=service, options=chrome_options)
     return driver, profile_dir
 
