@@ -249,7 +249,12 @@ def main():
             time.sleep(2)
 
             # 2. Style instructions
-            wait_and_send_keys(driver, By.CSS_SELECTOR, 'textarea[aria-label="Style instructions"]', STYLE_INSTRUCTIONS, name="Style Instructions")
+            try:
+                # Making this optional because Google Cloud TTS UI updates frequently 
+                # and this field might disappear or be renamed.
+                wait_and_send_keys(driver, By.CSS_SELECTOR, 'textarea[aria-label="Style instructions"]', STYLE_INSTRUCTIONS, name="Style Instructions", timeout=5)
+            except Exception as e:
+                print(f"⚠️ Style instructions field not found or timed out, skipping. Error: {e}")
             
             # 3. Voice
             wait_and_click(driver, By.CSS_SELECTOR, 'mat-select[role="combobox"]', name="Voice Dropdown")
