@@ -125,6 +125,7 @@ def schedule_wake(target_dt):
         log(f"❌ Error scheduling wake: {e}")
 
 def main():
+    global current_process
     log("=== News Pipeline & TTS Scheduler Started ===")
     log(f"Pipeline times: {', '.join(PIPELINE_RUN_TIMES)}")
     log(f"TTS times: 09:00 (Daily)")
@@ -136,10 +137,39 @@ def main():
         log(f"📅 Next run scheduled for: {next_run.strftime('%Y-%m-%d %H:%M:%S')} (in {diff/3600:.1f} hours)")
         schedule_wake(next_run)
     
+    # Startup catch-up: check if we missed any jobs earlier today
+    now = datetime.datetime.now()
+    jobs_today = get_all_jobs_for_today(now)
+    latest_missed = {}  # script -> (target, t_str) - keep only the LATEST missed job per script
+    for target, script, t_str in jobs_today:
+        if target <= now:
+            latest_missed[script] = (target, t_str)
+    
     last_run_jobs = {
         PIPELINE_SCRIPT: ("", None),
         TTS_SCRIPT: ("", None)
     }
+    
+    for script, (target, t_str) in latest_missed.items():
+        # Check if the output for today already exists (don't re-run unnecessarily)
+        today_str = now.strftime('%Y-%m-%d')
+        data_json = os.path.join('Output', today_str, 'data.json')
+        
+        skip = False
+        if script == PIPELINE_SCRIPT and os.path.exists(data_json):
+            skip = True
+            log(f"  ⏩ Skipping catch-up for {script} (data.json already exists for {today_str})")
+        
+        if not skip:
+            log(f"⏰ Startup catch-up: missed {t_str} run for {script}. Triggering now.")
+            run_script_process(script)
+            last_run_jobs[script] = (t_str, now.date())
+            # Wait for this process to finish before starting the next catch-up
+            if current_process:
+                log(f"  ⏳ Waiting for {script} to complete before next catch-up...")
+                current_process.wait()
+                log(f"  ✅ {script} finished with code {current_process.returncode}")
+                current_process = None
     
     heartbeat_counter = 0
     last_check_time = datetime.datetime.now()
@@ -175,7 +205,6 @@ def main():
         last_check_time = now
         
         # Check if process finished
-        global current_process
         if current_process and current_process.poll() is not None:
              log(f"ℹ️ {current_process.args[1] if len(current_process.args) > 1 else 'Script process'} finished with code {current_process.returncode}.")
              current_process = None

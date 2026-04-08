@@ -213,8 +213,14 @@ def main():
         
         for idx, (part_name, filename, suffix) in enumerate(parts):
             input_file = os.path.join(OUTPUT_DIR, filename)
+            output_mp3 = os.path.join(OUTPUT_DIR, f"tts_{suffix}.mp3")
+            
             if not os.path.exists(input_file):
                 print(f"ℹ️ Skipping {part_name}, file not found: {input_file}")
+                continue
+                
+            if os.path.exists(output_mp3):
+                print(f"⏩ Skipping {part_name}, MP3 already exists: {output_mp3}")
                 continue
                 
             with open(input_file, 'r', encoding='utf-8') as f:

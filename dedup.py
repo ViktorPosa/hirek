@@ -32,7 +32,8 @@ THRESH_TITLE_MID = 0.40
 THRESH_CONTENT_MID = 0.50
 
 # Ha a cím nem hasonlít, akkor a tartalomnak erősen egyeznie kell
-THRESH_CONTENT_ONLY = 0.50
+# (0.40-ra csökkentve 0.50-ről, mert az AI-összefoglalók átfogalmazzák a szövegeket)
+THRESH_CONTENT_ONLY = 0.40
 
 def normalize_text(text):
     """Szöveg tisztítása a jobb összehasonlításhoz."""
@@ -88,7 +89,7 @@ def get_priority(filename):
 def run_deduplication():
     print(f"Fájlok feldolgozása prioritási sorrendben: {INPUT_FILES}")
     
-    # 0. Elmúlt 2 nap adatainak betöltése (cross-day dedup)
+    # 0. Elmúlt 5 nap adatainak betöltése (cross-day dedup)
     import datetime as dt
     
     # Derive "today" from DAILY_OUTPUT_DIR to handle midnight-crossing pipelines
@@ -102,7 +103,7 @@ def run_deduplication():
     past_origins = []
     PAST_MARKER = "__PAST_DAY__"
     
-    for delta in range(1, 3):  # 1 és 2 nappal ezelőtt
+    for delta in range(1, 6):  # 1-5 nappal ezelőtt
         past_date = today - dt.timedelta(days=delta)
         past_dir = os.path.join('Output', past_date.strftime('%Y-%m-%d'))
         
@@ -120,7 +121,7 @@ def run_deduplication():
                     pass
     
     if past_data:
-        print(f"  🕐 {len(past_data)} hír betöltve az elmúlt 2 napból (cross-day dedup)")
+        print(f"  🕐 {len(past_data)} hír betöltve az elmúlt 5 napból (cross-day dedup)")
     
     # 1. Adatok betöltése (mai nap)
     data, origins = load_all_files(INPUT_FILES)
