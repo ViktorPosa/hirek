@@ -10,6 +10,7 @@ PIPELINE_SCRIPT = "run_pipeline.py"
 TTS_SCRIPT = "run_tts_daily.py"
 PIPELINE_RUN_TIMES = ["00:00", "06:00", "12:00", "18:00"]
 CHECK_INTERVAL = 30  # seconds
+MAX_PIPELINE_RUNTIME = 90 * 60  # 90 minutes — hard limit for any pipeline run
 
 current_process = None
 
@@ -37,7 +38,7 @@ def stop_previous_process():
         current_process = None
 
 def run_script_process(script_name):
-    global current_process
+    global current_process, _process_start_time
     stop_previous_process()
     
     log(f"🚀 Starting script: {script_name}")
@@ -62,6 +63,7 @@ def run_script_process(script_name):
             stdout=sys.stdout,
             stderr=sys.stderr
         )
+        _process_start_time = time.time()
         log(f"✅ Script started with PID {current_process.pid}")
     except Exception as e:
         log(f"❌ Failed to start script: {e}")
@@ -171,6 +173,7 @@ def main():
                 log(f"  ✅ {script} finished with code {current_process.returncode}")
                 current_process = None
     
+    _process_start_time = None
     heartbeat_counter = 0
     last_check_time = datetime.datetime.now()
     
@@ -206,15 +209,36 @@ def main():
         
         # Check if process finished
         if current_process and current_process.poll() is not None:
-             log(f"ℹ️ {current_process.args[1] if len(current_process.args) > 1 else 'Script process'} finished with code {current_process.returncode}.")
-             current_process = None
-             
-             # Schedule next wake
-             next_run = get_next_run_time()
-             if next_run:
-                 diff = (next_run - datetime.datetime.now()).total_seconds()
-                 log(f"📅 Next run scheduled for: {next_run.strftime('%Y-%m-%d %H:%M:%S')} (in {diff/3600:.1f} hours)")
-                 schedule_wake(next_run)
+            log(f"ℹ️ {current_process.args[1] if len(current_process.args) > 1 else 'Script process'} finished with code {current_process.returncode}.")
+            current_process = None
+            _process_start_time = None
+
+            # Schedule next wake
+            next_run = get_next_run_time()
+            if next_run:
+                diff = (next_run - datetime.datetime.now()).total_seconds()
+                log(f"📅 Next run scheduled for: {next_run.strftime('%Y-%m-%d %H:%M:%S')} (in {diff/3600:.1f} hours)")
+                schedule_wake(next_run)
+        
+        # Watchdog: kill pipeline if it exceeds MAX_PIPELINE_RUNTIME
+        if current_process and _process_start_time:
+            elapsed = time.time() - _process_start_time
+            if elapsed > MAX_PIPELINE_RUNTIME:
+                script_name = current_process.args[1] if len(current_process.args) > 1 else 'Script process'
+                log(f"🚨 WATCHDOG: {script_name} exceeded {MAX_PIPELINE_RUNTIME//60} min runtime ({elapsed//60:.0f} min). Terminating...")
+                try:
+                    current_process.terminate()
+                    current_process.wait(timeout=15)
+                    log(f"✅ Process terminated by watchdog.")
+                except subprocess.TimeoutExpired:
+                    log(f"⚠️ Process did not terminate. Force killing...")
+                    current_process.kill()
+                    current_process.wait()
+                    log(f"✅ Process killed by watchdog.")
+                except Exception as e:
+                    log(f"❌ Watchdog error: {e}")
+                current_process = None
+                _process_start_time = None
 
         # Heartbeat every ~30 minutes (60 checks * 30s)
         heartbeat_counter += 1

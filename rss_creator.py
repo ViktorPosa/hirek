@@ -73,6 +73,42 @@ DEFAULT_WORKERS = 10
 # Sites known to require JS rendering
 JS_RENDER_SITES = {'bankless.com', 'milkroad.com', 'playboy.com', 'fhm.com', 'maxim.com', 'wallstreetzen.com'}
 
+# Default impersonation profile and fallback list for anti-bot bypass
+DEFAULT_IMPERSONATE = "chrome131"
+IMPERSONATE_FALLBACKS = ["chrome131", "safari180", "firefox133", "chrome124", "chrome136"]
+
+
+def _fetch_with_retries(url, timeout=None, max_retries=None):
+    """Fetch a URL using curl_cffi with impersonation rotation on failure.
+    
+    Tries multiple browser impersonation profiles to bypass anti-bot measures.
+    Returns (response, None) on success or (None, last_exception) on failure.
+    """
+    if timeout is None:
+        timeout = HTTP_TIMEOUT
+    if max_retries is None:
+        max_retries = len(IMPERSONATE_FALLBACKS)
+    
+    profiles = IMPERSONATE_FALLBACKS[:max_retries]
+    last_error = None
+    
+    for profile in profiles:
+        try:
+            response = requests.get(url, impersonate=profile, timeout=timeout)
+            # Treat 403/429 as "blocked" — try next profile
+            if response.status_code in (403, 429):
+                last_error = Exception(f"HTTP {response.status_code} with {profile}")
+                logging.debug(f"  🔄 {profile} got HTTP {response.status_code} for {url}, trying next profile...")
+                continue
+            response.raise_for_status()
+            return response, None
+        except Exception as e:
+            last_error = e
+            logging.debug(f"  🔄 {profile} failed for {url}: {e}")
+            continue
+    
+    return None, last_error
+
 # ---------------------------------------------------------------------------
 # Playwright — dedicated thread approach
 # ---------------------------------------------------------------------------
@@ -131,10 +167,17 @@ def _playwright_daemon():
                 page = browser.new_page(
                     user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
                                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                               'Chrome/120.0.0.0 Safari/537.36'
+                               'Chrome/131.0.0.0 Safari/537.36'
                 )
                 try:
-                    page.goto(url, wait_until='networkidle', timeout=timeout * 1000)
+                    # Use domcontentloaded instead of networkidle to avoid hangs
+                    # on sites with long-polling/WebSocket connections
+                    page.goto(url, wait_until='domcontentloaded', timeout=timeout * 1000)
+                    # Brief extra wait for JS rendering (2s max)
+                    try:
+                        page.wait_for_load_state('networkidle', timeout=5000)
+                    except Exception:
+                        pass  # Acceptable — DOM is already loaded
                     result = page.content()
                 finally:
                     page.close()
@@ -592,9 +635,12 @@ def discover_rss_feeds(homepage_url, html_content=None):
     feeds = []
     try:
         if html_content is None:
-            response = requests.get(homepage_url, impersonate="chrome110", timeout=HTTP_TIMEOUT)
-            response.raise_for_status()
-            html_content = response.text
+            resp, err = _fetch_with_retries(homepage_url, timeout=HTTP_TIMEOUT, max_retries=2)
+            if resp:
+                html_content = resp.text
+            else:
+                logging.debug(f"RSS discovery: could not fetch {homepage_url}: {err}")
+                return feeds
         
         soup = BeautifulSoup(html_content, 'html.parser')
         
@@ -620,7 +666,11 @@ def discover_rss_feeds(homepage_url, html_content=None):
             bases_to_try = [homepage_url.rstrip('/')]
             if parsed_hp.path.strip('/'):
                 bases_to_try.append(base_origin)
-            common_paths = ['/feed', '/rss', '/rss.xml', '/feed.xml', '/atom.xml', '/index.xml']
+            common_paths = [
+                '/feed', '/rss', '/rss.xml', '/feed.xml', '/atom.xml', '/index.xml',
+                '/rss/', '/blog/feed/', '/?feed=rss2', '/feed/rss2/',
+                '/blog/rss.xml', '/news/feed/', '/articles/feed/',
+            ]
             found_rss = False
             for base in bases_to_try:
                 if found_rss:
@@ -628,8 +678,8 @@ def discover_rss_feeds(homepage_url, html_content=None):
                 for rss_path in common_paths:
                     try:
                         test_url = base + rss_path
-                        resp = requests.get(test_url, impersonate="chrome110", timeout=8)
-                        if resp.status_code == 200:
+                        resp, _ = _fetch_with_retries(test_url, timeout=8, max_retries=2)
+                        if resp and resp.status_code == 200:
                             ct = resp.headers.get('content-type', '').lower()
                             text_start = resp.text[:500].lower()
                             if 'xml' in ct or '<rss' in text_start or '<feed' in text_start or '<channel' in text_start:
@@ -712,11 +762,16 @@ def parse_rss_feed(feed_url, max_items=20):
     """Parse a native RSS/Atom feed and return article data dicts."""
     articles = []
     try:
-        response = requests.get(feed_url, impersonate="chrome110", timeout=HTTP_TIMEOUT)
-        response.raise_for_status()
+        response, err = _fetch_with_retries(feed_url, timeout=HTTP_TIMEOUT, max_retries=3)
+        if not response:
+            logging.warning(f"All impersonation profiles failed for feed {feed_url}: {err}")
+            return articles
         
-        soup = BeautifulSoup(response.content, 'xml')
-        if not soup:
+        # Try XML parser first (requires lxml), fall back to html.parser
+        try:
+            soup = BeautifulSoup(response.content, 'xml')
+        except Exception:
+            logging.debug(f"XML parser unavailable/failed for {feed_url}, falling back to html.parser")
             soup = BeautifulSoup(response.content, 'html.parser')
         
         items = soup.find_all('item') or soup.find_all('entry')
@@ -803,11 +858,9 @@ def find_article_links(homepage_url, max_links=20, known_urls=None):
     logging.info(f"Fetching homepage: {homepage_url}")
     if known_urls is None:
         known_urls = set()
-    try:
-        response = requests.get(homepage_url, impersonate="chrome110", timeout=HTTP_TIMEOUT)
-        response.raise_for_status()
-    except Exception as e:
-        logging.error(f"Failed to fetch {homepage_url}: {e}")
+    response, err = _fetch_with_retries(homepage_url, timeout=HTTP_TIMEOUT)
+    if not response:
+        logging.error(f"Failed to fetch {homepage_url}: {err}")
         return [], None
 
     html_content = response.text
@@ -885,14 +938,21 @@ def extract_article_data(url, html_override=None):
         if html_override:
             html = html_override
         else:
-            response = requests.get(url, impersonate="chrome110", timeout=HTTP_TIMEOUT)
-            response.raise_for_status()
-            html = response.text
+            resp, err = _fetch_with_retries(url, timeout=HTTP_TIMEOUT, max_retries=3)
+            if resp:
+                html = resp.text
+            else:
+                # All curl_cffi profiles failed — try Playwright as last resort
+                logging.debug(f"All impersonation profiles failed for {url}: {err}, trying Playwright...")
+                html = fetch_with_playwright(url) or ''
             # Playwright fallback if response is too short on JS-heavy sites
             if len(html) < 1000 and _is_js_site(url):
                 pw_html = fetch_with_playwright(url)
                 if pw_html and len(pw_html) > len(html):
                     html = pw_html
+            if not html or len(html) < 100:
+                logging.warning(f"Could not fetch article HTML for {url}")
+                return None
 
         # Check time budget
         if time.monotonic() - _extract_start > ARTICLE_TIMEOUT:
@@ -1122,18 +1182,16 @@ def process_url(url, max_links, output_file, known_urls=None, failed_urls=None, 
         html_content = None
         native_articles = []
         
-        try:
-            response = requests.get(url, impersonate="chrome110", timeout=HTTP_TIMEOUT)
-            response.raise_for_status()
-            html_content = response.text
-        except Exception as e:
-            logging.warning(f"curl_cffi fetch failed for {url}: {e}")
-            # Playwright fallback for homepage fetch
-            if _is_js_site(url):
-                html_content = fetch_with_playwright(url)
+        resp, fetch_err = _fetch_with_retries(url, timeout=HTTP_TIMEOUT)
+        if resp:
+            html_content = resp.text
+        else:
+            logging.warning(f"All curl_cffi profiles failed for {url}: {fetch_err}")
+            # Playwright fallback for homepage fetch (always try, not just JS sites)
+            html_content = fetch_with_playwright(url)
             if not html_content:
-                logging.error(f"All fetch methods failed for {url}")
-                log_entry["error"] = f"Homepage fetch failed: {e}"
+                logging.error(f"All fetch methods (curl_cffi + Playwright) failed for {url}")
+                log_entry["error"] = f"Homepage fetch failed: {fetch_err}"
                 log_entry["duration_seconds"] = round(time.time() - start_time, 2)
                 log_entry["end_time"] = _dt.datetime.now(timezone.utc).isoformat()
                 return log_entry
@@ -1142,6 +1200,28 @@ def process_url(url, max_links, output_file, known_urls=None, failed_urls=None, 
         # Filter out irrelevant general feeds when processing a specific subpage
         if discovered_feeds:
             discovered_feeds = [(fu, ft) for fu, ft in discovered_feeds if _is_feed_relevant(fu, url)]
+        
+        # If <link> feeds were found but all filtered as irrelevant for this subpage,
+        # try constructing subpage-specific feed URLs (e.g. /category/tech/ → /category/tech/feed)
+        if not discovered_feeds:
+            target_path = urlparse(url).path.strip('/')
+            if target_path:  # only for subpages, not root
+                subpage_feed_paths = ['/feed', '/rss', '/feed/', '/rss/']
+                base_url = url.rstrip('/')
+                for sfp in subpage_feed_paths:
+                    try:
+                        test_url = base_url + sfp
+                        resp_sub, _ = _fetch_with_retries(test_url, timeout=8, max_retries=2)
+                        if resp_sub and resp_sub.status_code == 200:
+                            ct = resp_sub.headers.get('content-type', '').lower()
+                            text_start = resp_sub.text[:500].lower()
+                            if 'xml' in ct or '<rss' in text_start or '<feed' in text_start or '<channel' in text_start:
+                                discovered_feeds.append((test_url, 'Subpage-specific RSS'))
+                                logging.info(f"  📡 Found subpage-specific feed: {test_url}")
+                                break
+                    except Exception:
+                        continue
+        
         if discovered_feeds:
             logging.info(f"  📡 Found {len(discovered_feeds)} relevant RSS feed(s) for {url}")
             for feed_url, feed_title in discovered_feeds:
@@ -1376,8 +1456,28 @@ def main():
     try:
         if total_urls <= 1 or args.workers <= 1:
             # Sequential processing for single URL or --workers=1
+            # Use _run_with_timeout to prevent any single URL from hanging the pipeline
             for i, url in enumerate(urls_to_process, 1):
-                result = _process_one((i, url))
+                try:
+                    result = _run_with_timeout(
+                        _process_one, ((i, url),), PER_URL_TIMEOUT,
+                        label=f"process_url({url})"
+                    )
+                    if result is None:
+                        # Timeout — _run_with_timeout returned None
+                        result = {
+                            "url": url,
+                            "success": False,
+                            "error": f"Per-URL timeout ({PER_URL_TIMEOUT}s) exceeded (sequential)",
+                            "duration_seconds": PER_URL_TIMEOUT
+                        }
+                except Exception as e:
+                    result = {
+                        "url": url,
+                        "success": False,
+                        "error": f"Unexpected: {e}",
+                        "duration_seconds": 0
+                    }
                 logs.append(result)
                 if result.get("success"):
                     success_count += 1

@@ -39,7 +39,8 @@ BASE_DIR = Path(__file__).parent
 GEMINI_PROFILE_DIR = BASE_DIR / "gemini_profile"
 
 PAGE_LOAD_TIMEOUT = 30
-RESPONSE_WAIT_TIMEOUT = 600
+RESPONSE_WAIT_TIMEOUT = 480  # 8 minutes — must be LESS than external call_with_timeout wrapper (540s)
+NO_CONTENT_ABORT_TIMEOUT = 120  # 2 minutes — abort early if Gemini generates zero content
 
 GEMINI_URL = "https://gemini.google.com/"
 
@@ -404,7 +405,9 @@ def wait_for_response(driver, timeout=RESPONSE_WAIT_TIMEOUT):
     start_time = time.time()
     last_content_length = 0
     stable_count = 0
+    current_length = 0
     
+    no_content_deadline = start_time + NO_CONTENT_ABORT_TIMEOUT
     while time.time() - start_time < timeout:
         elapsed = int(time.time() - start_time)
         
@@ -441,6 +444,10 @@ def wait_for_response(driver, timeout=RESPONSE_WAIT_TIMEOUT):
         except Exception as e:
             pass
         
+        # Early abort: if no content at all after NO_CONTENT_ABORT_TIMEOUT, Gemini is stuck
+        if current_length == 0 and time.time() > no_content_deadline:
+            print(f"   ❌ No content generated after {NO_CONTENT_ABORT_TIMEOUT}s — aborting early")
+            return False
         time.sleep(check_interval)
     
     if last_content_length > 0:
