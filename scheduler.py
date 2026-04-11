@@ -162,6 +162,13 @@ def main():
             skip = True
             log(f"  ⏩ Skipping catch-up for {script} (data.json already exists for {today_str})")
         
+        if script == TTS_SCRIPT:
+            tts_weather = os.path.join('Output', today_str, 'tts_weather_market.txt')
+            tts_headlines = os.path.join('Output', today_str, 'tts_headlines.txt')
+            if os.path.exists(tts_weather) or os.path.exists(tts_headlines):
+                skip = True
+                log(f"  ⏩ Skipping catch-up for {script} (TTS output files already exist for {today_str})")
+        
         if not skip:
             log(f"⏰ Startup catch-up: missed {t_str} run for {script}. Triggering now.")
             run_script_process(script)

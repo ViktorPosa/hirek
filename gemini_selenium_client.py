@@ -423,7 +423,7 @@ def wait_for_response(driver, timeout=RESPONSE_WAIT_TIMEOUT):
             
             # Check response length stability
             response_elements = driver.find_elements(By.CSS_SELECTOR, 
-                "message-content, .response-container, .model-response-text")
+                "message-content, .response-container, .model-response-text, [data-message-content], .markdown-content")
             
             if response_elements:
                 current_content = response_elements[-1].text
