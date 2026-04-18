@@ -25,7 +25,7 @@ current_date = datetime.date.today().strftime("%Y-%m-%d")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "Output", current_date)
 
-TARGET_URL = "https://aistudio.google.com/generate-speech?model=gemini-2.5-pro-preview-tts"
+TARGET_URL = "https://aistudio.google.com/generate-speech?model=gemini-3.1-flash-tts-preview"
 
 # Settings
 STYLE_INSTRUCTIONS = "Kedves, meleg, baráti stílusban olvasd fel tökéletes magyarsággal, ügyelve, hogy ne angolosan legyenek kiejtve a betűk, főleg a magyar betűk"
@@ -440,24 +440,27 @@ def main():
                     text_area.send_keys(Keys.DELETE)
                     time.sleep(0.5)
                     
-                    # For long texts, use JS clipboard to avoid slow typing
-                    if len(tts_text) > 500:
-                        driver.execute_script("""
-                            var el = arguments[0];
-                            var text = arguments[1];
-                            if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
-                                el.value = text;
+                    # For long texts, use JS clipboard/execCommand to ensure Angular/framework registers it
+                    if len(tts_text) > 0:
+                        try:
+                            # Use execCommand 'insertText' which natively triggers framework events
+                            driver.execute_script("""
+                                var el = arguments[0];
+                                var text = arguments[1];
+                                el.focus();
+                                if (typeof el.select === 'function') {
+                                    el.select();
+                                }
+                                document.execCommand('insertText', false, text);
                                 el.dispatchEvent(new Event('input', { bubbles: true }));
-                                el.dispatchEvent(new Event('change', { bubbles: true }));
-                            } else {
-                                el.innerText = text;
-                                el.dispatchEvent(new Event('input', { bubbles: true }));
-                            }
-                        """, text_area, tts_text)
-                        print("✅ Text inserted via JS (fast mode for long text).")
+                            """, text_area, tts_text)
+                            print("✅ Text inserted via JS execCommand.")
+                        except Exception as js_err:
+                            print(f"⚠️ Text input via JS failed: {js_err}, falling back to send_keys.")
+                            text_area.send_keys(tts_text)
+                            print("✅ Text inserted via send_keys.")
                     else:
-                        text_area.send_keys(tts_text)
-                        print("✅ Text inserted.")
+                        print("⚠️ No text to insert!")
                 except Exception as e:
                     print(f"⚠️ Text input keystroke failed, trying JS: {e}")
                     try:
@@ -475,7 +478,7 @@ def main():
                 for audio_sel in ["audio", "div.speech-prompt-footer-actions-player audio", "ms-speech-prompt audio"]:
                     audios = driver.find_elements(By.CSS_SELECTOR, audio_sel)
                     if audios:
-                        old_audio_src = audios[0].get_attribute("src")
+                        old_audio_src = audios[-1].get_attribute("src")
                         break
             except:
                 pass
@@ -567,8 +570,10 @@ def main():
                     
                     try:
                         print(f"🔄 Converting to MP3 using ffmpeg...")
+                        # Determine ffmpeg path, default to absolute path
+                        ffmpeg_path = "/opt/homebrew/bin/ffmpeg" if os.path.exists("/opt/homebrew/bin/ffmpeg") else "ffmpeg"
                         subprocess.run(
-                            ["ffmpeg", "-i", temp_wav, "-codec:a", "libmp3lame", "-qscale:a", "2", mp3_filepath, "-y"],
+                            [ffmpeg_path, "-i", temp_wav, "-codec:a", "libmp3lame", "-qscale:a", "2", mp3_filepath, "-y"],
                             check=True,
                             stdout=subprocess.DEVNULL,
                             stderr=subprocess.DEVNULL

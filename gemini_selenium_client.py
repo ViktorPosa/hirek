@@ -426,18 +426,21 @@ def wait_for_response(driver, timeout=RESPONSE_WAIT_TIMEOUT):
                 "message-content, .response-container, .model-response-text, [data-message-content], .markdown-content")
             
             if response_elements:
-                current_content = response_elements[-1].text
+                current_content = ""
+                for el in reversed(response_elements):
+                    try:
+                        txt = el.text.strip()
+                        if txt:
+                            current_content = txt
+                            break
+                    except:
+                        pass
                 current_length = len(current_content)
                 
-                if current_length > 0 and current_length == last_content_length:
-                    stable_count += 1
-                    if stable_count >= 4:  # 20s stable
-                        print(f"   ✅ Response stable ({current_length} chars, {elapsed}s)")
-                        return True
-                else:
-                    stable_count = 0
-                    last_content_length = current_length
-                    
+                # We DO NOT exit on stable_count anymore because the "Thinking" phase 
+                # can remain completely static for 60+ seconds before actual text streams.
+                # We rely entirely on the Copy button to appear.
+                if current_length > 0:
                     if elapsed % 30 == 0:
                         print(f"   ⏳ Generating... ({current_length} chars, {elapsed}s)")
                         
@@ -461,28 +464,9 @@ def wait_for_response(driver, timeout=RESPONSE_WAIT_TIMEOUT):
 def copy_response(driver):
     """Copies the last response using DOM extraction (works in headless)."""
     try:
-        # Method 1: Direct DOM extraction (preferred, works in headless)
-        response_selectors = [
-            "message-content",
-            ".response-container", 
-            ".model-response-text",
-            "[data-message-content]",
-            ".markdown-content"
-        ]
-        
-        for selector in response_selectors:
-            elements = driver.find_elements(By.CSS_SELECTOR, selector)
-            if elements:
-                # Get the last response element
-                last_elem = elements[-1]
-                # Use JavaScript to get full text content including nested elements
-                response = driver.execute_script("return arguments[0].innerText;", last_elem)
-                if response and len(response.strip()) > 50:
-                    print(f"   ✅ Response extracted via DOM ({len(response)} chars)")
-                    return response.strip()
-        
-        # Method 2: Try copy button + clipboard (fallback for non-headless)
+        # Method 1: Try copy button + clipboard (preferred, gets pure text without UI headers)
         try:
+            import pyperclip
             pyperclip.copy("")
             time.sleep(0.3)
             
@@ -493,6 +477,7 @@ def copy_response(driver):
                 driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn)
                 time.sleep(0.5)
                 
+                from selenium.webdriver.common.action_chains import ActionChains
                 actions = ActionChains(driver)
                 actions.move_to_element(btn).pause(0.2).click().perform()
                 time.sleep(1.5)
@@ -503,6 +488,28 @@ def copy_response(driver):
                     return response
         except Exception as clipboard_err:
             print(f"   ⚠️ Clipboard method failed: {clipboard_err}")
+
+        # Method 2: Direct DOM extraction (fallback for headless where clipboard might fail)
+        response_selectors = [
+            "div.markdown",
+            ".markdown-content",
+            "[data-message-content]",
+            "message-content"
+        ]
+        
+        for selector in response_selectors:
+            elements = driver.find_elements(By.CSS_SELECTOR, selector)
+            if elements:
+                # Find the last element containing actual text
+                for last_elem in reversed(elements):
+                    try:
+                        # Use JavaScript to get full text content including nested elements
+                        response = driver.execute_script("return arguments[0].innerText;", last_elem)
+                        if response and len(response.strip()) > 50 and "Gondolatmenet" not in response[:50]:
+                            print(f"   ✅ Response extracted via DOM ({len(response)} chars)")
+                            return response.strip()
+                    except:
+                        continue
              
     except Exception as e:
         print(f"   ❌ Copy failed: {e}")
