@@ -239,68 +239,265 @@ def main():
             driver.get(TARGET_URL)
             print("🌍 Navigation started, page reloading for fresh generation...")
             
-            # 1. Mode: Single-speaker audio
+            # 1. Dismiss ALL overlays and popups (CDK overlays block clicks!)
+            time.sleep(5)  # Let page fully settle including overlays
             try:
-                mode_btn = WebDriverWait(driver, 15).until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Single-speaker audio')]"))
+                # First: dismiss the CDK overlay that blocks everything
+                driver.execute_script("""
+                    // Remove all CDK overlays that block clicks
+                    document.querySelectorAll('.cdk-overlay-pane, .cdk-overlay-container').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    // Also try clicking Dismiss buttons
+                    document.querySelectorAll('button').forEach(btn => {
+                        if (btn.textContent.includes('Dismiss') && btn.offsetParent !== null) {
+                            btn.click();
+                        }
+                    });
+                """)
+                print("✅ Cleared overlay popups via JS")
+                time.sleep(1)
+            except Exception as e:
+                print(f"⚠️ Overlay cleanup: {e}")
+
+            # 1b. Check for login wall
+            if "accounts.google.com" in driver.current_url:
+                print("🛑 Hit Login Wall! Waiting 60s for manual login...")
+                time.sleep(60)
+
+            # 2. Click the main prompt area to enter editing mode (via JS to bypass overlays)
+            # The page loads in a "landing" state with template cards.
+            # The actual editing fields only appear after clicking the prompt area.
+            try:
+                prompt_btn = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "button.text-input-container"))
                 )
-                mode_btn.click()
-                print("✅ Mode set to: Single-speaker audio")
+                # Use JS click to bypass any remaining overlay interceptions
+                driver.execute_script("arguments[0].click();", prompt_btn)
+                print("✅ Clicked main prompt area to enter editing mode (JS click)")
+                time.sleep(4)  # Wait for editing UI to fully load
             except:
-                 print("⚠️ Could not find/click Single-speaker audio button.")
-                 if "accounts.google.com" in driver.current_url:
-                     print("🛑 Hit Login Wall!")
-                     time.sleep(60)
+                # Fallback: try XPATH
+                try:
+                    prompt_btns = driver.find_elements(By.XPATH, "//button[contains(., 'Turn text into natural-sounding speech')]")
+                    if prompt_btns:
+                        driver.execute_script("arguments[0].click();", prompt_btns[0])
+                        print("✅ Clicked main prompt area (fallback XPATH)")
+                        time.sleep(4)
+                    else:
+                        print("⚠️ Main prompt button not found, may already be in editing mode")
+                except:
+                    print("⚠️ Could not click main prompt area")
+            
+            # 2b. Mode: Click "Text" tab if visible (new UI uses Text/Composer tabs)
+            try:
+                text_tabs = driver.find_elements(By.XPATH, "//button[normalize-space(.)='Text']")
+                if not text_tabs:
+                    text_tabs = driver.find_elements(By.XPATH, "//button[contains(@class, 'tab') and contains(., 'Text')]")
+                if text_tabs:
+                    for tab in text_tabs:
+                        if tab.is_displayed():
+                            driver.execute_script("arguments[0].click();", tab)
+                            print("✅ Mode set to: Text (single-speaker)")
+                            break
+                else:
+                    print("ℹ️ Text tab not visible, may already be in Text mode")
+            except:
+                print("⚠️ Could not find/click Text tab, may already be selected.")
             
             time.sleep(2)
-
-            # 2. Style instructions
-            try:
-                # Making this optional because Google Cloud TTS UI updates frequently 
-                # and this field might disappear or be renamed.
-                wait_and_send_keys(driver, By.CSS_SELECTOR, 'textarea[aria-label="Style instructions"]', STYLE_INSTRUCTIONS, name="Style Instructions", timeout=5)
-            except Exception as e:
-                print(f"⚠️ Style instructions field not found or timed out, skipping. Error: {e}")
             
-            # 3. Voice
-            wait_and_click(driver, By.CSS_SELECTOR, 'mat-select[role="combobox"]', name="Voice Dropdown")
-            time.sleep(1)
-            wait_and_click(driver, By.XPATH, f"//mat-option[contains(., '{VOICE_NAME}')]", name=f"Voice Option: {VOICE_NAME}")
-            
-            # 4. Temperature
-            set_slider(driver, TEMPERATURE)
-            
-            # 5. Text Input
-            text_area = WebDriverWait(driver, 10).until(
-                 EC.presence_of_element_located((By.XPATH, "//textarea[contains(@placeholder, 'Start writing')]"))
-            )
+            # 2c. Debug: dump what's available now
             try:
-                text_area.send_keys(Keys.COMMAND + "a")
-                text_area.send_keys(Keys.DELETE)
-                time.sleep(0.5)
-                text_area.send_keys(tts_text)
-                print("✅ Text inserted.")
-            except Exception as e:
-                driver.execute_script("arguments[0].value = arguments[1];", text_area, tts_text)
-                driver.execute_script("arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", text_area) 
-                print("✅ Text inserted via JS fallback.")
-
-            old_audio_src = None
-            try:
-                audios = driver.find_elements(By.CSS_SELECTOR, "div.speech-prompt-footer-actions-player audio")
-                if audios:
-                    old_audio_src = audios[0].get_attribute("src")
+                ta_count = len(driver.find_elements(By.TAG_NAME, "textarea"))
+                ce_count = len(driver.find_elements(By.CSS_SELECTOR, "[contenteditable='true']"))
+                btn_count = len([b for b in driver.find_elements(By.TAG_NAME, "button") if b.is_displayed()])
+                print(f"   📊 Debug: {ta_count} textareas, {ce_count} contenteditables, {btn_count} visible buttons")
             except:
                 pass
 
-            # 6. Run
-            run_btn = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Run') or contains(., 'Generate')]"))
-            )
-            run_btn.click()
-            print("▶️ Generation started (Run clicked)...")
+            # 3. Style instructions → "Scene" field (new UI)
+            try:
+                scene_fields = driver.find_elements(By.XPATH, "//textarea[contains(@placeholder, 'bustling') or contains(@aria-label, 'Scene')]")
+                if not scene_fields:
+                    # Try generic approach - look for first textarea visible
+                    scene_fields = driver.find_elements(By.CSS_SELECTOR, "ms-speech-prompt textarea")
+                if scene_fields:
+                    scene = scene_fields[0]
+                    scene.click()
+                    time.sleep(0.3)
+                    scene.send_keys(Keys.COMMAND + "a")
+                    scene.send_keys(Keys.DELETE)
+                    scene.send_keys(STYLE_INSTRUCTIONS)
+                    print("✅ Style instructions entered in Scene field")
+                else:
+                    print("⚠️ Scene field not found, skipping style instructions")
+            except Exception as e:
+                print(f"⚠️ Style instructions field not found, skipping: {e}")
             
-            # 7. Wait and extract
+            time.sleep(1)
+
+            # 4. Voice: Click the Speaker chip to open Speaker settings panel
+            try:
+                # The new UI shows voice as a chip like "Speaker 1 - Zephyr" inside the speech block
+                speaker_chip = driver.find_elements(By.XPATH, f"//button[contains(., 'Speaker')]")
+                if speaker_chip:
+                    # Check if already set to desired voice
+                    chip_text = speaker_chip[0].text
+                    if VOICE_NAME in chip_text:
+                        print(f"✅ Voice already set to {VOICE_NAME}")
+                    else:
+                        speaker_chip[0].click()
+                        print("✅ Clicked Speaker chip to open voice selection")
+                        time.sleep(1)
+                        
+                        # Look for voice option in the Speaker settings sliding panel
+                        try:
+                            voice_option = WebDriverWait(driver, 5).until(
+                                EC.element_to_be_clickable((By.XPATH, f"//*[contains(@class, 'voice') or contains(@class, 'speaker')]//*[contains(text(), '{VOICE_NAME}')]"))
+                            )
+                            voice_option.click()
+                            print(f"✅ Voice set to {VOICE_NAME}")
+                        except:
+                            # Try clicking in the right panel Speaker settings
+                            try:
+                                voice_cards = driver.find_elements(By.XPATH, f"//*[contains(text(), '{VOICE_NAME}')]")
+                                for vc in voice_cards:
+                                    if vc.is_displayed():
+                                        vc.click()
+                                        print(f"✅ Voice set to {VOICE_NAME} via text match")
+                                        break
+                            except:
+                                print(f"⚠️ Could not select voice {VOICE_NAME}")
+                        time.sleep(1)
+                else:
+                    print("⚠️ No Speaker chip found, voice selection skipped")
+            except Exception as e:
+                print(f"⚠️ Voice selection failed: {e}")
+
+            # 5. Temperature
+            set_slider(driver, TEMPERATURE)
+            
+            # 6. Text Input - the new UI has the text area inside a speech block
+            text_area = None
+            try:
+                # Try multiple selectors for the text input
+                selectors_to_try = [
+                    # New UI: contenteditable or textarea in speech block
+                    (By.CSS_SELECTOR, "ms-speech-prompt textarea"),
+                    (By.CSS_SELECTOR, "div.speech-input-wrapper textarea"),
+                    (By.XPATH, "//textarea[contains(@placeholder, 'Turn text') or contains(@placeholder, 'natural-sounding')]"),
+                    (By.XPATH, "//textarea[contains(@placeholder, 'Enter') or contains(@placeholder, 'Type')]"),
+                    # Fallback: any textarea that's not Scene/Sample Context
+                    (By.XPATH, "(//ms-speech-prompt//textarea)[last()]"),
+                    # Generic: the main large text area
+                    (By.CSS_SELECTOR, "textarea.speech-text-input"),
+                ]
+                
+                for by, selector in selectors_to_try:
+                    try:
+                        elements = driver.find_elements(by, selector)
+                        for el in elements:
+                            if el.is_displayed() and el.get_attribute("aria-label") not in ("Scene", "Sample Context"):
+                                text_area = el
+                                print(f"✅ Found text input via: {selector}")
+                                break
+                        if text_area:
+                            break
+                    except:
+                        continue
+                
+                # Last resort: find all visible textareas and pick the biggest/last one
+                if not text_area:
+                    all_textareas = driver.find_elements(By.TAG_NAME, "textarea")
+                    visible = [t for t in all_textareas if t.is_displayed()]
+                    if visible:
+                        # Skip Scene and Sample Context fields (first two)
+                        candidates = [t for t in visible if t.get_attribute("placeholder") and "bustling" not in t.get_attribute("placeholder") and "Previous speaker" not in t.get_attribute("placeholder")]
+                        if candidates:
+                            text_area = candidates[-1]
+                            print(f"✅ Found text input via last-resort textarea scan")
+                        elif len(visible) > 2:
+                            text_area = visible[-1]
+                            print(f"✅ Found text input as last visible textarea")
+                
+                # Maybe it's a contenteditable div instead
+                if not text_area:
+                    editables = driver.find_elements(By.CSS_SELECTOR, "[contenteditable='true']")
+                    visible_editables = [e for e in editables if e.is_displayed()]
+                    if visible_editables:
+                        text_area = visible_editables[-1]
+                        print(f"✅ Found text input as contenteditable div")
+                        
+            except Exception as e:
+                print(f"❌ Failed to find text input area: {e}")
+            
+            if text_area:
+                try:
+                    text_area.click()
+                    time.sleep(0.3)
+                    text_area.send_keys(Keys.COMMAND + "a")
+                    text_area.send_keys(Keys.DELETE)
+                    time.sleep(0.5)
+                    
+                    # For long texts, use JS clipboard to avoid slow typing
+                    if len(tts_text) > 500:
+                        driver.execute_script("""
+                            var el = arguments[0];
+                            var text = arguments[1];
+                            if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+                                el.value = text;
+                                el.dispatchEvent(new Event('input', { bubbles: true }));
+                                el.dispatchEvent(new Event('change', { bubbles: true }));
+                            } else {
+                                el.innerText = text;
+                                el.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        """, text_area, tts_text)
+                        print("✅ Text inserted via JS (fast mode for long text).")
+                    else:
+                        text_area.send_keys(tts_text)
+                        print("✅ Text inserted.")
+                except Exception as e:
+                    print(f"⚠️ Text input keystroke failed, trying JS: {e}")
+                    try:
+                        driver.execute_script("arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", text_area, tts_text)
+                        print("✅ Text inserted via JS fallback.")
+                    except Exception as e2:
+                        print(f"❌ JS fallback also failed: {e2}")
+            else:
+                print("❌ Could not find any text input area!")
+
+            # Remember old audio state to detect new generation
+            old_audio_src = None
+            try:
+                # New UI: audio element may be inside different containers
+                for audio_sel in ["audio", "div.speech-prompt-footer-actions-player audio", "ms-speech-prompt audio"]:
+                    audios = driver.find_elements(By.CSS_SELECTOR, audio_sel)
+                    if audios:
+                        old_audio_src = audios[0].get_attribute("src")
+                        break
+            except:
+                pass
+
+            # 7. Run
+            try:
+                # New UI: Run button at bottom right
+                run_btn = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Run')]"))
+                )
+                run_btn.click()
+                print("▶️ Generation started (Run clicked)...")
+            except:
+                # Fallback: try Cmd+Enter
+                try:
+                    from selenium.webdriver.common.action_chains import ActionChains
+                    ActionChains(driver).key_down(Keys.COMMAND).send_keys(Keys.ENTER).key_up(Keys.COMMAND).perform()
+                    print("▶️ Generation started (Cmd+Enter)...")
+                except Exception as e:
+                    print(f"❌ Could not trigger Run: {e}")
+            
+            # 8. Wait and extract audio
             print(f"⏳ Waiting for {part_name} audio generation (up to 30 mins)...")
             
             try:
@@ -310,20 +507,45 @@ def main():
                 
                 while time.time() - start_wait < max_wait_time:
                     try:
-                        audio_elements = driver.find_elements(By.CSS_SELECTOR, "div.speech-prompt-footer-actions-player audio")
-                        if audio_elements:
-                            src = audio_elements[0].get_attribute("src")
-                            if src and len(src) > 15 and src != old_audio_src:
-                                audio_src = src
-                                break
+                        # Search for audio elements in multiple possible locations
+                        for audio_sel in ["audio", "div.speech-prompt-footer-actions-player audio", "ms-speech-prompt audio"]:
+                            audio_elements = driver.find_elements(By.CSS_SELECTOR, audio_sel)
+                            if audio_elements:
+                                src = audio_elements[0].get_attribute("src")
+                                if src and len(src) > 15 and src != old_audio_src:
+                                    audio_src = src
+                                    break
+                        if audio_src:
+                            break
                     except Exception:
                         pass
                     
+                    # Also check for download button as indicator that audio is ready
                     try:
-                        errors = driver.find_elements(By.XPATH, "//*[contains(text(), 'Error') or contains(text(), 'quota')]")
+                        dl_btns = driver.find_elements(By.XPATH, "//button[@aria-label='Download']")
+                        if dl_btns and dl_btns[0].is_displayed() and dl_btns[0].is_enabled():
+                            # Audio might be ready even if we can't get src
+                            if not audio_src:
+                                # Try to get src again
+                                for audio_sel in ["audio"]:
+                                    audio_elements = driver.find_elements(By.CSS_SELECTOR, audio_sel)
+                                    for ae in audio_elements:
+                                        src = ae.get_attribute("src")
+                                        if src and len(src) > 15:
+                                            audio_src = src
+                                            break
+                                if audio_src:
+                                    break
+                    except:
+                        pass
+                    
+                    try:
+                        errors = driver.find_elements(By.XPATH, "//*[contains(text(), 'Error') or contains(text(), 'quota') or contains(text(), 'failed')]")
                         for err in errors:
                             if err.is_displayed():
-                                print(f"⚠️ Possible UI Error detected in {part_name}: {err.text}")
+                                err_text = err.text.strip()
+                                if err_text and len(err_text) > 3:
+                                    print(f"⚠️ Possible UI Error detected in {part_name}: {err_text}")
                     except:
                         pass
                         
