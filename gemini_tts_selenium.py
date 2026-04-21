@@ -25,10 +25,10 @@ current_date = datetime.date.today().strftime("%Y-%m-%d")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "Output", current_date)
 
-TARGET_URL = "https://aistudio.google.com/generate-speech?model=gemini-3.1-flash-tts-preview"
+TARGET_URL = "https://aistudio.google.com/generate-speech?model=gemini-2.5-pro-preview-tts"
 
 # Settings
-STYLE_INSTRUCTIONS = "Kedves, meleg, baráti stílusban olvasd fel tökéletes magyarsággal, ügyelve, hogy ne angolosan legyenek kiejtve a betűk, főleg a magyar betűk"
+STYLE_INSTRUCTIONS = "Magyar nyelvű rádiós hírfelolvasás. A magyar szavakat tökéletes magyar kiejtéssel olvasd, az angol szavakat (pl. márkaneveket, tech kifejezéseket) természetes angol kiejtéssel, de a kettő ne keveredjen. A tempó legyen nyugodt, jól artikulált, magabiztos. A hangsúlyozás természetes, nem monoton és nem túl lelkes."
 VOICE_NAME = "Zephyr"
 TEMPERATURE = "0.8"
 
@@ -207,9 +207,10 @@ def main():
     
     try:
         parts = [
-            ("Part 1: Időjárás és Piac", "tts_weather_market.txt", "idojaras"),
-            ("Part 2: Hírcímek", "tts_headlines.txt", "hirek"),
-            ("Part 3: Hírcsárda", "tts_hircsarda.txt", "hircsarda"),
+            ("Part 1: Időjárás", "tts_idojaras.txt", "idojaras"),
+            ("Part 2: Piacok és üzlet", "tts_piacok.txt", "piacok"),
+            ("Part 3: Hírcímek", "tts_headlines.txt", "hirek"),
+            ("Part 4: Hírcsárda", "tts_hircsarda.txt", "hircsarda"),
         ]
         
         for idx, (part_name, filename, suffix) in enumerate(parts):
@@ -501,62 +502,73 @@ def main():
                 except Exception as e:
                     print(f"❌ Could not trigger Run: {e}")
             
-            # 8. Wait and extract audio
+            # 8. Wait for generation to complete — Run button reappears when done
             print(f"⏳ Waiting for {part_name} audio generation (up to 30 mins)...")
-            
+
             try:
                 audio_src = None
                 max_wait_time = 1800
                 start_wait = time.time()
-                
+
+                # Phase 1: Wait for the Run button to reappear (Stop→Run transition)
+                # This means generation is truly complete, not just partially buffered
+                generation_complete = False
                 while time.time() - start_wait < max_wait_time:
                     try:
-                        # Search for audio elements in multiple possible locations
-                        for audio_sel in ["audio", "div.speech-prompt-footer-actions-player audio", "ms-speech-prompt audio"]:
-                            audio_elements = driver.find_elements(By.CSS_SELECTOR, audio_sel)
-                            if audio_elements:
-                                src = audio_elements[0].get_attribute("src")
-                                if src and len(src) > 15 and src != old_audio_src:
-                                    audio_src = src
-                                    break
-                        if audio_src:
+                        # Check if Stop button is still visible (generation in progress)
+                        stop_btns = driver.find_elements(By.XPATH, "//button[contains(., 'Stop')]")
+                        stop_visible = any(b.is_displayed() for b in stop_btns) if stop_btns else False
+
+                        # Check if Run button is back (generation finished)
+                        run_btns = driver.find_elements(By.XPATH, "//button[contains(., 'Run')]")
+                        run_visible = any(b.is_displayed() for b in run_btns) if run_btns else False
+
+                        if run_visible and not stop_visible:
+                            elapsed = int(time.time() - start_wait)
+                            print(f"✅ Generation complete! Run button reappeared ({elapsed}s)")
+                            generation_complete = True
                             break
+
+                        # Progress indicator
+                        elapsed = int(time.time() - start_wait)
+                        if elapsed > 0 and elapsed % 30 == 0:
+                            status = "generating (Stop visible)" if stop_visible else "waiting..."
+                            print(f"   ⏳ {elapsed}s elapsed, {status}")
                     except Exception:
                         pass
-                    
-                    # Also check for download button as indicator that audio is ready
-                    try:
-                        dl_btns = driver.find_elements(By.XPATH, "//button[@aria-label='Download']")
-                        if dl_btns and dl_btns[0].is_displayed() and dl_btns[0].is_enabled():
-                            # Audio might be ready even if we can't get src
-                            if not audio_src:
-                                # Try to get src again
-                                for audio_sel in ["audio"]:
-                                    audio_elements = driver.find_elements(By.CSS_SELECTOR, audio_sel)
-                                    for ae in audio_elements:
-                                        src = ae.get_attribute("src")
-                                        if src and len(src) > 15:
-                                            audio_src = src
-                                            break
-                                if audio_src:
-                                    break
-                    except:
-                        pass
-                    
+
+                    # Check for errors
                     try:
                         errors = driver.find_elements(By.XPATH, "//*[contains(text(), 'Error') or contains(text(), 'quota') or contains(text(), 'failed')]")
                         for err in errors:
                             if err.is_displayed():
                                 err_text = err.text.strip()
                                 if err_text and len(err_text) > 3:
-                                    print(f"⚠️ Possible UI Error detected in {part_name}: {err_text}")
+                                    print(f"⚠️ Possible UI Error detected: {err_text}")
                     except:
                         pass
-                        
-                    time.sleep(1.0)
-                    
+
+                    time.sleep(2.0)
+
+                if not generation_complete:
+                    print(f"⚠️ Timed out waiting for generation to complete, attempting extraction anyway...")
+
+                # Phase 2: Small delay to let audio element finalize
+                time.sleep(3)
+
+                # Phase 3: Extract audio src
+                for audio_sel in ["audio", "div.speech-prompt-footer-actions-player audio", "ms-speech-prompt audio"]:
+                    audio_elements = driver.find_elements(By.CSS_SELECTOR, audio_sel)
+                    for ae in audio_elements:
+                        src = ae.get_attribute("src")
+                        if src and len(src) > 15 and src != old_audio_src:
+                            audio_src = src
+                            break
+                    if audio_src:
+                        break
+
                 if not audio_src:
-                    raise Exception(f"Timed out waiting for new audio element src to populate in {part_name}.")
+                    raise Exception(f"No audio element src found after generation completed for {part_name}.")
 
                 print("✅ Audio generated! Extracting...")
                 
