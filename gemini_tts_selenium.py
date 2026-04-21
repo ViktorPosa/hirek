@@ -208,7 +208,8 @@ def main():
     try:
         parts = [
             ("Part 1: Időjárás és Piac", "tts_weather_market.txt", "idojaras"),
-            ("Part 2: Hírcímek", "tts_headlines.txt", "hirek")
+            ("Part 2: Hírcímek", "tts_headlines.txt", "hirek"),
+            ("Part 3: Hírcsárda", "tts_hircsarda.txt", "hircsarda"),
         ]
         
         for idx, (part_name, filename, suffix) in enumerate(parts):

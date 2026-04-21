@@ -94,7 +94,7 @@ def _fetch_with_retries(url, timeout=None, max_retries=None):
     
     for profile in profiles:
         try:
-            response = requests.get(url, impersonate=profile, timeout=timeout)
+            response = requests.get(url, impersonate=profile, timeout=(10, timeout))
             # Treat 403/429 as "blocked" — try next profile
             if response.status_code in (403, 429):
                 last_error = Exception(f"HTTP {response.status_code} with {profile}")
@@ -1519,6 +1519,46 @@ def main():
                             "duration_seconds": 0
                         })
                         fail_count += 1
+
+        # --- Process failed RSS feeds passed by news_filter (before playwright cleanup) ---
+        fallback_path = os.path.join(DAILY_OUTPUT_DIR, 'failed_feeds_for_rss_creator.txt')
+        # news_filter may still be writing the fallback file — wait up to 90s
+        if not os.path.exists(fallback_path):
+            logging.info("Waiting up to 90s for failed RSS feed fallback file from news_filter...")
+            for _ in range(18):
+                time.sleep(5)
+                if os.path.exists(fallback_path):
+                    break
+        if os.path.exists(fallback_path):
+            try:
+                with open(fallback_path, 'r', encoding='utf-8') as f:
+                    fallback_urls = [line.strip() for line in f if line.strip()]
+                already_done = set(u.rstrip('/') for u in urls_to_process)
+                fallback_urls = [u for u in fallback_urls if u.rstrip('/') not in already_done]
+                if fallback_urls:
+                    logging.info(f"♻️ Processing {len(fallback_urls)} homepage(s) from failed RSS feeds...")
+                    for i, url in enumerate(fallback_urls, 1):
+                        try:
+                            result = _run_with_timeout(
+                                _process_one, ((f"F{i}", url),), PER_URL_TIMEOUT,
+                                label=f"fallback({url})"
+                            )
+                            if result is None:
+                                result = {"url": url, "success": False,
+                                          "error": f"Fallback timeout ({PER_URL_TIMEOUT}s)", "duration_seconds": PER_URL_TIMEOUT}
+                            logs.append(result)
+                            if result.get("success"):
+                                success_count += 1
+                                logging.info(f"  ✅ Fallback success: {url}")
+                            else:
+                                fail_count += 1
+                        except Exception as e:
+                            logging.error(f"  Fallback error for {url}: {e}")
+                            fail_count += 1
+                os.remove(fallback_path)
+            except Exception as e:
+                logging.error(f"Failed to process fallback file: {e}")
+
     finally:
         cleanup_playwright()
         save_failed_urls(failed_urls)
