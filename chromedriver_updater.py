@@ -156,6 +156,13 @@ def _download_driver(url: str, dest: Path):
         # Make executable
         dest.chmod(dest.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
 
+        # Clear macOS Gatekeeper attributes that block execution (exit code -9)
+        if sys.platform == "darwin":
+            try:
+                subprocess.run(["xattr", "-c", str(dest)], capture_output=True, timeout=5)
+            except Exception:
+                pass
+
     print(f"   ✅ ChromeDriver installed at {dest}")
 
 
