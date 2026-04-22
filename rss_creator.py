@@ -50,7 +50,7 @@ FAILED_URLS_FILE = os.path.join(os.getcwd(), 'Input', 'rss_failed_urls.txt')
 MIN_ITEMS_TO_SKIP = 3
 
 # Maximum age of a cached feed before it is considered stale (hours)
-FEED_MAX_AGE_HOURS = 20
+FEED_MAX_AGE_HOURS = 8
 
 # Per-article extraction timeout (seconds)
 ARTICLE_TIMEOUT = 20
