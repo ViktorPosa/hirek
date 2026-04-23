@@ -39,7 +39,7 @@ BASE_DIR = Path(__file__).parent
 GEMINI_PROFILE_DIR = BASE_DIR / "gemini_profile"
 
 PAGE_LOAD_TIMEOUT = 30
-RESPONSE_WAIT_TIMEOUT = 480  # 8 minutes — must be LESS than external call_with_timeout wrapper (540s)
+RESPONSE_WAIT_TIMEOUT = 480  # 8 minutes — must be LESS than external call_with_timeout wrapper
 NO_CONTENT_ABORT_TIMEOUT = 120  # 2 minutes — abort early if Gemini generates zero content
 
 GEMINI_URL = "https://gemini.google.com/"
@@ -596,19 +596,22 @@ def call_with_fallback(prompt, use_pro=False, timeout=None):
                     
                 click_new_chat(driver)
                 
-                if submit_prompt(driver, prompt, use_pro=use_pro):
-                     if wait_for_response(driver, timeout=response_timeout):
-                         content = copy_response(driver)
-                         if content:
-                              # specialized cleaning for JSON
-                              if "```json" in content:
-                                  content = content.split("```json")[1].split("```")[0].strip()
-                              elif "```" in content:
-                                  content = content.replace("```", "").strip()
-                              return content, "gemini-selenium-pro" if use_pro else "gemini-selenium"
-                
-                # If submit or wait failed but didn't throw an outright exception, just return None
-                return None, None
+                if not submit_prompt(driver, prompt, use_pro=use_pro):
+                     raise Exception("Failed to submit prompt. Forcing driver recreation.")
+                     
+                if not wait_for_response(driver, timeout=response_timeout):
+                     raise Exception("Timeout waiting for response. Forcing driver recreation.")
+                     
+                content = copy_response(driver)
+                if not content:
+                     raise Exception("Response ready but content is empty. Forcing driver recreation.")
+                     
+                # specialized cleaning for JSON
+                if "```json" in content:
+                    content = content.split("```json")[1].split("```")[0].strip()
+                elif "```" in content:
+                    content = content.replace("```", "").strip()
+                return content, "gemini-selenium-pro" if use_pro else "gemini-selenium"
                 
             except Exception as e:
                 print(f"Gemini Selenium Error (Attempt {attempt + 1}/{max_attempts}): {e}")

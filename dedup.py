@@ -162,7 +162,7 @@ def run_deduplication():
         for j in range(i + 1, len(combined_data)):
             # Gyorsítás: Ha a tartalom nagyon nem hasonlít, ne is nézzük a címet
             c_score = cosine_sim[i, j]
-            if c_score < 0.1: 
+            if c_score < 0.05: 
                 continue
 
             t_score = SequenceMatcher(None, norm_titles[i], norm_titles[j]).ratio()
@@ -175,6 +175,9 @@ def run_deduplication():
             elif t_score > THRESH_TITLE_HIGH and c_score > THRESH_CONTENT_LOW:
                 is_dupe = True
             elif t_score > THRESH_TITLE_MID and c_score > THRESH_CONTENT_MID:
+                is_dupe = True
+            elif t_score > 0.65:
+                # Ha a cím nagyon erősen hasonlít, akkor tematikus duplikátum (még ha az AI át is fogalmazta a szöveget)
                 is_dupe = True
             elif shared_kw_count >= 15:
                 # Extrém egyezés (15+ azonos 4 betűs szó/szám), esélytelen hogy ne ugyanaz a sztori legyen
