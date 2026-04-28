@@ -15,6 +15,7 @@ from datetime import timezone
 import json
 import time
 import os
+import subprocess
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -71,11 +72,49 @@ PER_URL_TIMEOUT = 120
 DEFAULT_WORKERS = 10
 
 # Sites known to require JS rendering
-JS_RENDER_SITES = {'bankless.com', 'milkroad.com', 'playboy.com', 'fhm.com', 'maxim.com', 'wallstreetzen.com'}
+JS_RENDER_SITES = {'playboy.com', 'fhm.com', 'maxim.com', 'thestreet.com', 'bayareatimes.com', 'faroutmagazine.co.uk'}
 
 # Default impersonation profile and fallback list for anti-bot bypass
 DEFAULT_IMPERSONATE = "chrome131"
 IMPERSONATE_FALLBACKS = ["chrome131", "safari180", "firefox133", "chrome124", "chrome136"]
+
+# Path to LightPanda binary (lightweight headless browser for JS rendering)
+LIGHTPANDA_BIN = os.path.expanduser('~/bin/lightpanda')
+
+# Hardcoded RSS feed URLs for sites where auto-discovery often fails
+# These are verified-working RSS endpoints as of 2026-04-28
+KNOWN_RSS_FEEDS = {
+    'hu.ign.com': ['https://hu.ign.com/feed.xml'],
+    'www.economx.hu': ['https://www.economx.hu/feed'],
+    'economx.hu': ['https://www.economx.hu/feed'],
+    'sg.hu': ['https://sg.hu/rss'],
+    'totalcar.hu': ['https://totalcar.hu/feed'],
+    'nlc.hu': ['https://nlc.hu/feed'],
+    'sorozatjunkie.hu': ['https://sorozatjunkie.hu/feed'],
+    'marieclaire.hu': ['https://marieclaire.hu/feed'],
+    'ng.24.hu': ['https://ng.24.hu/feed'],
+    'player.hu': ['https://player.hu/feed'],
+    'firstclass.hu': ['https://firstclass.hu/feed'],
+    'offmedia.hu': ['https://offmedia.hu/feed'],
+    'funzine.hu': ['https://funzine.hu/feed'],
+    'cliffhanger.hu': ['https://cliffhanger.hu/feed'],
+    'raketa.hu': ['https://raketa.hu/feed'],
+    'roadster.hu': ['https://roadster.hu/feed'],
+    'azutazo.hu': ['https://azutazo.hu/feed'],
+    'aihirfolyam.hu': ['https://aihirfolyam.hu/feed'],
+    'the-zone.hu': ['https://the-zone.hu/feed'],
+    'travelmagazin.hu': ['https://travelmagazin.hu/feed'],
+    'telex.hu': ['https://telex.hu/rss'],
+    'fhm.com': ['https://fhm.com/feed'],
+    'www.maxim.com': ['https://www.maxim.com/feed'],
+    'maxim.com': ['https://www.maxim.com/feed'],
+    'caravantimes.co.uk': ['https://caravantimes.co.uk/feed'],
+    'instylemen.hu': ['https://instylemen.hu/feed'],
+    'velvet.hu': ['https://velvet.hu/feed'],
+    'hwsw.hu': ['https://hwsw.hu/hirek/rss'],
+    'prog.hu': ['https://prog.hu/hirek/rss'],
+    'femina.hu': ['https://femina.hu/feed'],
+}
 
 
 def _fetch_with_retries(url, timeout=None, max_retries=None):
@@ -212,6 +251,41 @@ def _ensure_playwright_daemon():
         _pw_thread_started = True
 
 
+def fetch_with_lightpanda(url, timeout=15):
+    """Fetch a page using LightPanda headless browser. Returns HTML string or None.
+
+    LightPanda is a lightweight headless browser written in Zig that supports
+    JavaScript execution but is 11x faster and 16x more memory-efficient
+    than headless Chrome. Falls back to Playwright if LightPanda is not installed.
+    """
+    if not os.path.exists(LIGHTPANDA_BIN):
+        logging.debug("LightPanda not found, falling back to Playwright")
+        return fetch_with_playwright(url, timeout=timeout)
+
+    try:
+        result = subprocess.run(
+            [LIGHTPANDA_BIN, 'fetch', '--dump', 'html',
+             '--wait-until', 'domcontentloaded',
+             '--wait-ms', str(min(timeout * 1000, 10000)),
+             url],
+            capture_output=True,
+            text=True,
+            timeout=timeout + 5,
+        )
+        if result.returncode == 0 and len(result.stdout) > 200:
+            logging.info(f"  🐼 LightPanda fetched {url} ({len(result.stdout)} bytes)")
+            return result.stdout
+        else:
+            logging.debug(f"LightPanda returned {result.returncode} for {url}, stderr: {result.stderr[:200] if result.stderr else ''}")
+            return None
+    except subprocess.TimeoutExpired:
+        logging.warning(f"LightPanda timeout ({timeout}s) for {url}")
+        return None
+    except Exception as e:
+        logging.warning(f"LightPanda error for {url}: {e}")
+        return None
+
+
 def fetch_with_playwright(url, timeout=30):
     """Fetch a page using headless Chromium. Returns HTML string or None.
 
@@ -226,6 +300,15 @@ def fetch_with_playwright(url, timeout=30):
     except _queue.Empty:
         logging.warning(f"Playwright timeout (queue) for {url}")
         return None
+
+
+def fetch_js_rendered(url, timeout=20):
+    """Fetch a JS-rendered page. Tries LightPanda first, then Playwright."""
+    html = fetch_with_lightpanda(url, timeout=timeout)
+    if html and len(html) > 500:
+        return html
+    # Fallback to Playwright
+    return fetch_with_playwright(url, timeout=timeout)
 
 
 def cleanup_playwright():
@@ -630,9 +713,23 @@ def _is_likely_article_url(parsed, base_domain, dom_bonus=0):
 def discover_rss_feeds(homepage_url, html_content=None):
     """Try to discover native RSS/Atom feeds from a page's HTML.
     
+    Checks KNOWN_RSS_FEEDS first, then HTML <link> tags, then common paths,
+    then trafilatura as a last resort.
+    
     Returns a list of (feed_url, feed_title) tuples.
     """
     feeds = []
+    
+    # --- Priority 0: Check hardcoded KNOWN_RSS_FEEDS map ---
+    domain = get_base_domain(homepage_url).lower().removeprefix('www.')
+    domain_with_www = 'www.' + domain
+    for lookup in [domain, domain_with_www, get_base_domain(homepage_url)]:
+        if lookup in KNOWN_RSS_FEEDS:
+            for feed_url in KNOWN_RSS_FEEDS[lookup]:
+                feeds.append((feed_url, 'Known RSS'))
+            logging.info(f"  📡 Using known RSS feed(s) for {domain}: {[f[0] for f in feeds]}")
+            return feeds
+    
     try:
         if html_content is None:
             resp, err = _fetch_with_retries(homepage_url, timeout=HTTP_TIMEOUT, max_retries=2)
@@ -670,6 +767,7 @@ def discover_rss_feeds(homepage_url, html_content=None):
                 '/feed', '/rss', '/rss.xml', '/feed.xml', '/atom.xml', '/index.xml',
                 '/rss/', '/blog/feed/', '/?feed=rss2', '/feed/rss2/',
                 '/blog/rss.xml', '/news/feed/', '/articles/feed/',
+                '/hirek/rss',  # Hungarian sites
             ]
             found_rss = False
             for base in bases_to_try:
@@ -942,14 +1040,14 @@ def extract_article_data(url, html_override=None):
             if resp:
                 html = resp.text
             else:
-                # All curl_cffi profiles failed — try Playwright as last resort
-                logging.debug(f"All impersonation profiles failed for {url}: {err}, trying Playwright...")
-                html = fetch_with_playwright(url) or ''
-            # Playwright fallback if response is too short on JS-heavy sites
+                # All curl_cffi profiles failed — try LightPanda/Playwright as last resort
+                logging.debug(f"All impersonation profiles failed for {url}: {err}, trying JS renderer...")
+                html = fetch_js_rendered(url) or ''
+            # JS renderer fallback if response is too short on JS-heavy sites
             if len(html) < 1000 and _is_js_site(url):
-                pw_html = fetch_with_playwright(url)
-                if pw_html and len(pw_html) > len(html):
-                    html = pw_html
+                js_html = fetch_js_rendered(url)
+                if js_html and len(js_html) > len(html):
+                    html = js_html
             if not html or len(html) < 100:
                 logging.warning(f"Could not fetch article HTML for {url}")
                 return None
@@ -1187,10 +1285,10 @@ def process_url(url, max_links, output_file, known_urls=None, failed_urls=None, 
             html_content = resp.text
         else:
             logging.warning(f"All curl_cffi profiles failed for {url}: {fetch_err}")
-            # Playwright fallback for homepage fetch (always try, not just JS sites)
-            html_content = fetch_with_playwright(url)
+            # LightPanda/Playwright fallback for homepage fetch
+            html_content = fetch_js_rendered(url)
             if not html_content:
-                logging.error(f"All fetch methods (curl_cffi + Playwright) failed for {url}")
+                logging.error(f"All fetch methods (curl_cffi + LightPanda + Playwright) failed for {url}")
                 log_entry["error"] = f"Homepage fetch failed: {fetch_err}"
                 log_entry["duration_seconds"] = round(time.time() - start_time, 2)
                 log_entry["end_time"] = _dt.datetime.now(timezone.utc).isoformat()
@@ -1299,16 +1397,16 @@ def process_url(url, max_links, output_file, known_urls=None, failed_urls=None, 
                 if blacklisted:
                     logging.info(f"  🚫 Blacklisted (2+ failures): {a_url}")
         
-        # --- STEP 4: Playwright JS fallback ---
+        # --- STEP 4: JS rendering fallback (LightPanda → Playwright) ---
         all_articles = native_articles + scraped_articles
         if len(all_articles) < 3 and (_is_js_site(url) or len(all_articles) == 0):
-            pw_html = fetch_with_playwright(url)
-            if pw_html and len(pw_html) > 500:
-                logging.info(f"  🎭 Re-processing {url} with Playwright-rendered HTML")
-                pw_soup = BeautifulSoup(pw_html, 'html.parser')
-                pw_links = set()
-                pw_existing = combined_known | {a.get('url', '').rstrip('/') for a in all_articles}
-                for a_tag in pw_soup.find_all('a', href=True):
+            js_html = fetch_js_rendered(url)
+            if js_html and len(js_html) > 500:
+                logging.info(f"  🐼 Re-processing {url} with JS-rendered HTML")
+                js_soup = BeautifulSoup(js_html, 'html.parser')
+                js_links = set()
+                js_existing = combined_known | {a.get('url', '').rstrip('/') for a in all_articles}
+                for a_tag in js_soup.find_all('a', href=True):
                     href = a_tag['href']
                     full_url = urljoin(url, href)
                     parsed = urlparse(full_url)
@@ -1316,19 +1414,19 @@ def process_url(url, max_links, output_file, known_urls=None, failed_urls=None, 
                     dom_bonus = _score_link_dom_context(a_tag)
                     if _is_likely_article_url(parsed, base_domain, dom_bonus=dom_bonus):
                         normalized = clean_url.rstrip('/')
-                        if normalized not in pw_existing:
-                            pw_links.add(clean_url)
-                if pw_links:
-                    logging.info(f"  🎭 Found {len(pw_links)} new links from Playwright render")
-                    pw_remaining = max_links - len(all_articles)
-                    for pw_url in list(pw_links)[:max(pw_remaining, 0)]:
-                        if failed_urls.get(pw_url, 0) >= 2:
+                        if normalized not in js_existing:
+                            js_links.add(clean_url)
+                if js_links:
+                    logging.info(f"  🐼 Found {len(js_links)} new links from JS render")
+                    js_remaining = max_links - len(all_articles)
+                    for js_url in list(js_links)[:max(js_remaining, 0)]:
+                        if failed_urls.get(js_url, 0) >= 2:
                             continue
-                        data = extract_article_data(pw_url)
+                        data = extract_article_data(js_url)
                         if data:
                             all_articles.append(data)
                         else:
-                            record_failed_url(pw_url, failed_urls)
+                            record_failed_url(js_url, failed_urls)
 
         # --- STEP 5: Combine and generate RSS ---
         log_entry["articles_processed"] = len(all_articles)
