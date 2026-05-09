@@ -89,7 +89,6 @@ def setup_driver():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    chrome_options.add_experimental_option("detach", True)  # Keep Chrome open after script exits
 
     service = Service(get_chromedriver_path())
     driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -203,42 +202,37 @@ def main():
         print(f"⚠️ Could not start caffeinate, system might go to sleep: {e}")
     # ------------------------------------------------------------------------
 
-    driver, temp_profile_path = setup_driver()
-    
+    parts = [
+        ("Part 1: Időjárás", "tts_idojaras.txt", "idojaras"),
+        ("Part 2: Piacok és üzlet", "tts_piacok.txt", "piacok"),
+        ("Part 3: Hírcímek", "tts_headlines.txt", "hirek"),
+        ("Part 4: Hírcsárda", "tts_hircsarda.txt", "hircsarda"),
+    ]
+
     try:
-        parts = [
-            ("Part 1: Időjárás", "tts_idojaras.txt", "idojaras"),
-            ("Part 2: Piacok és üzlet", "tts_piacok.txt", "piacok"),
-            ("Part 3: Hírcímek", "tts_headlines.txt", "hirek"),
-            ("Part 4: Hírcsárda", "tts_hircsarda.txt", "hircsarda"),
-        ]
-        
         for idx, (part_name, filename, suffix) in enumerate(parts):
             input_file = os.path.join(OUTPUT_DIR, filename)
             output_mp3 = os.path.join(OUTPUT_DIR, f"tts_{suffix}.mp3")
-            
+
             if not os.path.exists(input_file):
                 print(f"ℹ️ Skipping {part_name}, file not found: {input_file}")
                 continue
-                
+
             if os.path.exists(output_mp3):
                 print(f"⏩ Skipping {part_name}, MP3 already exists: {output_mp3}")
                 continue
-                
+
             with open(input_file, 'r', encoding='utf-8') as f:
                 tts_text = f.read()
-                
+
             print(f"\n{'='*50}")
             print(f"--- Processing {part_name} ---")
             print(f"{'='*50}")
             print(f"📖 Read {len(tts_text)} chars.")
-            
-            try:  # BULLETPROOF: isolate each part so failures don't kill the pipeline
-                if idx > 0:
-                    print(f"🆕 Opening a new tab for {part_name} so the previous audio can keep playing in the background...")
-                    driver.execute_script("window.open('');")
-                    driver.switch_to.window(driver.window_handles[-1])
-            
+
+            try:  # BULLETPROOF: fresh driver per part so session errors don't cascade
+                driver, temp_profile_path = setup_driver()
+
                 driver.get(TARGET_URL)
                 print("🌍 Navigation started, page reloading for fresh generation...")
             
@@ -643,14 +637,17 @@ def main():
             except Exception as part_err:
                 print(f"\n❌ PART FAILED: {part_name} — {part_err}")
                 print(f"⏭️ Skipping to next part...")
-                continue
+            finally:
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
     except Exception as e:
         print(f"❌ Error during execution: {e}")
         import traceback
         traceback.print_exc()
-        
-    finally:
-        print("✅ Done! Chrome marad nyitva.")
+
+    print("✅ Done!")
 
     # --- BULLETPROOF CLEANUP ---
     _rescue_and_push()
