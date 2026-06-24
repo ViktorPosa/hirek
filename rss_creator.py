@@ -114,6 +114,8 @@ KNOWN_RSS_FEEDS = {
     'hwsw.hu': ['https://hwsw.hu/hirek/rss'],
     'prog.hu': ['https://prog.hu/hirek/rss'],
     'femina.hu': ['https://femina.hu/feed'],
+    'www.penzcentrum.hu': ['https://www.penzcentrum.hu/rss/all.xml'],
+    'penzcentrum.hu': ['https://www.penzcentrum.hu/rss/all.xml'],
 }
 
 
@@ -339,14 +341,18 @@ def _is_js_site(url):
 
 def _register_feed(filepath):
     """Append feed path to generated_feeds.txt, avoiding duplicates. Thread-safe."""
-    abspath = os.path.abspath(filepath)
+    if filepath.startswith('http://') or filepath.startswith('https://'):
+        target_path = filepath
+    else:
+        target_path = os.path.abspath(filepath)
+        
     with _registered_feeds_lock:
-        if abspath in _registered_feeds:
+        if target_path in _registered_feeds:
             return
-        _registered_feeds.add(abspath)
+        _registered_feeds.add(target_path)
         try:
             with open(GENERATED_FEEDS_FILE, 'a', encoding='utf-8') as f:
-                f.write(abspath + '\n')
+                f.write(target_path + '\n')
         except Exception as e:
             logging.error(f"Failed to append to {GENERATED_FEEDS_FILE}: {e}")
 
@@ -1235,9 +1241,30 @@ def process_url(url, max_links, output_file, known_urls=None, failed_urls=None, 
         
     try:
         logging.info(f"--- Processing URL: {url} ---")
+
+        parsed_site = urlparse(url)
+        site_domain = get_base_domain(url)
+        domain_clean = site_domain.lower().removeprefix('www.')
+        domain_with_www = 'www.' + domain_clean
+
+        # Check if this site has a known native RSS feed first
+        known_feeds = []
+        for lookup in [domain_clean, domain_with_www, site_domain]:
+            if lookup in KNOWN_RSS_FEEDS:
+                known_feeds = KNOWN_RSS_FEEDS[lookup]
+                break
+
+        if known_feeds:
+            logging.info(f"  📡 Using known native RSS feed(s) directly for {site_domain}: {known_feeds}")
+            for feed_url in known_feeds:
+                _register_feed(feed_url)
+            log_entry["success"] = True
+            log_entry["rss_source"] = "native_rss_known"
+            log_entry["duration_seconds"] = round(time.time() - start_time, 2)
+            log_entry["end_time"] = _dt.datetime.now(timezone.utc).isoformat()
+            return log_entry
         
         # --- Skip if RSS feed already generated for this URL today (with sufficient items) ---
-        parsed_site = urlparse(url)
         site_domain = get_base_domain(url)
         slug = site_domain.replace('.', '_')
         path_part = parsed_site.path.strip('/').replace('/', '_')
@@ -1321,17 +1348,15 @@ def process_url(url, max_links, output_file, known_urls=None, failed_urls=None, 
                         continue
         
         if discovered_feeds:
-            logging.info(f"  📡 Found {len(discovered_feeds)} relevant RSS feed(s) for {url}")
+            logging.info(f"  📡 Discovered native RSS feed(s) dynamically. Registering directly:")
             for feed_url, feed_title in discovered_feeds:
                 logging.info(f"    Feed: {feed_title} -> {feed_url}")
-                feed_articles = parse_rss_feed(feed_url, max_items=max_links)
-                if known_urls:
-                    feed_articles = [a for a in feed_articles if a.get('url', '').rstrip('/') not in known_urls]
-                native_articles.extend(feed_articles)
-                if len(native_articles) >= max_links:
-                    break
-            
-            native_articles = native_articles[:max_links]
+                _register_feed(feed_url)
+            log_entry["success"] = True
+            log_entry["rss_source"] = "native_rss_discovered"
+            log_entry["duration_seconds"] = round(time.time() - start_time, 2)
+            log_entry["end_time"] = _dt.datetime.now(timezone.utc).isoformat()
+            return log_entry
         
         # --- STEP 2: Also scrape the homepage for links (supplement native RSS) ---
         soup = BeautifulSoup(html_content, 'html.parser')
