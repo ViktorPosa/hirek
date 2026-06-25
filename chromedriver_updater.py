@@ -278,6 +278,64 @@ def get_chromedriver_path() -> str:
 
 
 # ---------------------------------------------------------------------------
+# Chrome profile cache cleanup
+# ---------------------------------------------------------------------------
+
+# Transient cache directories that Chrome rebuilds on demand.
+# Removing these before launch prevents "Chrome instance exited" / "tab crashed"
+# failures caused by corrupted caches or runaway disk usage. Login data,
+# cookies, preferences, and bookmarks are NOT in this list and are preserved.
+_TRANSIENT_CACHE_DIRS = (
+    "Cache",
+    "Code Cache",
+    "GPUCache",
+    "DawnGraphiteCache",
+    "DawnWebGPUCache",
+    "Service Worker",
+    "AutofillAiModelCache",
+    "optimization_guide_hint_cache_store",
+    "optimization_guide_model_store",
+    "component_crx_cache",
+    "extensions_crx_cache",
+    "ShaderCache",
+    "GrShaderCache",
+    "Crashpad",
+)
+
+
+def clear_chrome_caches(profile_dir):
+    """Delete transient Chrome cache directories to keep the profile lean and stable.
+
+    Safe to call before every driver launch — only cache/crash artifacts are removed.
+    Login state (Cookies, Login Data, Local Storage) is preserved.
+    """
+    profile_path = Path(profile_dir)
+    if not profile_path.exists():
+        return
+
+    removed = []
+    # Caches can live either at profile root (e.g. Crashpad, component_crx_cache)
+    # or inside the Default profile subdir (most user caches).
+    candidates = [profile_path]
+    default_dir = profile_path / "Default"
+    if default_dir.exists():
+        candidates.append(default_dir)
+
+    for base in candidates:
+        for name in _TRANSIENT_CACHE_DIRS:
+            target = base / name
+            if target.exists():
+                try:
+                    shutil.rmtree(target, ignore_errors=True)
+                    removed.append(target.name)
+                except Exception:
+                    pass
+
+    if removed:
+        print(f"   🧹 Cleared Chrome caches: {', '.join(sorted(set(removed)))}")
+
+
+# ---------------------------------------------------------------------------
 # CLI: run directly to test/update
 # ---------------------------------------------------------------------------
 

@@ -13,7 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-from chromedriver_updater import get_chromedriver_path
+from chromedriver_updater import get_chromedriver_path, clear_chrome_caches
 
 import datetime
 
@@ -59,7 +59,7 @@ def setup_driver():
             print(f"⚠️ Warning: Could not clone profile perfectly: {e}")
     else:
         print(f"📂 Using existing persistent profile at '{profile_dir}' (Login should be remembered)")
-        
+
         # Remove lock files and potentially corrupted Local State to prevent "session not created" errors
         lock_files = ['SingletonLock', 'SingletonSocket', 'SingletonCookie', 'Local State']
         for lock_file in lock_files:
@@ -70,6 +70,11 @@ def setup_driver():
                     print(f"  🔓 Removed lock file: {lock_file}")
                 except Exception as e:
                     print(f"  ⚠️ Could not remove {lock_file}: {e}")
+
+    # Clear transient caches every launch. Prevents Chrome crashes from
+    # corrupted GPU/Code/Service Worker caches and keeps the profile lean
+    # (this profile had ballooned to 5GB+). Login state is preserved.
+    clear_chrome_caches(profile_dir)
         
     chrome_options = Options()
     chrome_options.add_argument(f"--user-data-dir={profile_dir}")

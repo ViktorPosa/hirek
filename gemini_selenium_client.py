@@ -12,7 +12,7 @@ import os
 import sys
 import time
 import subprocess
-from chromedriver_updater import get_chromedriver_path
+from chromedriver_updater import get_chromedriver_path, clear_chrome_caches
 import pyperclip
 import threading
 import atexit
@@ -80,7 +80,12 @@ def cleanup_zombie_chrome_processes():
 def create_driver(headless=False):
     """Creates a Chrome WebDriver for Gemini using dedicated profile."""
     cleanup_zombie_chrome_processes()
-    
+
+    # Clear transient caches BEFORE launch. Prevents recurring "Chrome instance
+    # exited" / "tab crashed" errors caused by corrupted GPU/Code/Service Worker
+    # caches and bloated Crashpad dumps. Login state is preserved.
+    clear_chrome_caches(GEMINI_PROFILE_DIR)
+
     # FIX: Prevent 'cannot parse internal JSON template' by removing transient Local State
     try:
         local_state_path = GEMINI_PROFILE_DIR / "Local State"
