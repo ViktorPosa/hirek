@@ -523,15 +523,9 @@ def main():
 
                 # 7. Run
                 try:
-                    from selenium.webdriver.common.action_chains import ActionChains
-                    ActionChains(driver).key_down(Keys.COMMAND).send_keys(Keys.ENTER).key_up(Keys.COMMAND).perform()
-                except Exception as e:
-                    print(f"⚠️ Cmd+Enter trigger failed: {e}")
-                
-                try:
-                    # JS fallback for clicking exact Run or Generate button
+                    # Use only JS exact match to avoid double triggering (Cmd+Enter + click cancels the generation)
                     driver.execute_script("""
-                        var btns = Array.from(document.querySelectorAll('button, div, span, a, mat-icon, class'));
+                        var btns = Array.from(document.querySelectorAll('button, div, span, a, mat-icon'));
                         var runBtn = btns.find(b => {
                             var t = b.textContent.trim().toLowerCase();
                             var label = (b.getAttribute('aria-label') || '').toLowerCase();
@@ -542,9 +536,15 @@ def main():
                             if(runBtn.parentElement) runBtn.parentElement.click();
                         }
                     """)
-                    print("▶️ Generation started (Cmd+Enter / Run clicked)...")
+                    print("▶️ Generation started (Run clicked via JS)...")
                 except Exception as e:
-                    print(f"❌ Could not trigger Run via JS: {e}")
+                    print(f"⚠️ Run via JS failed, trying Cmd+Enter: {e}")
+                    try:
+                        from selenium.webdriver.common.action_chains import ActionChains
+                        ActionChains(driver).key_down(Keys.COMMAND).send_keys(Keys.ENTER).key_up(Keys.COMMAND).perform()
+                        print("▶️ Generation started (Cmd+Enter)...")
+                    except Exception as e2:
+                        print(f"❌ Could not trigger Run at all: {e2}")
             
                 # 8. Wait for generation to complete — Run button reappears when done
                 print(f"⏳ Waiting for {part_name} audio generation (up to 10 mins)...")
