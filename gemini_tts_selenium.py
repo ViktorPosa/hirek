@@ -244,23 +244,26 @@ def main():
                 # 1. Dismiss ALL overlays and popups (CDK overlays block clicks!)
                 time.sleep(5)  # Let page fully settle including overlays
                 try:
-                    # First: dismiss the CDK overlay that blocks everything
+                    # First: dismiss the CDK overlay that blocks everything, and accept Terms of Service
                     driver.execute_script("""
-                        // Remove all CDK overlays that block clicks
-                        document.querySelectorAll('.cdk-overlay-pane, .cdk-overlay-container').forEach(el => {
-                            el.style.display = 'none';
-                        });
-                        // Also try clicking Dismiss buttons
-                        document.querySelectorAll('button').forEach(btn => {
-                            if (btn.textContent.includes('Dismiss') && btn.offsetParent !== null) {
+                        // Click any Dismiss, Continue, Got it, I agree buttons in modals
+                        document.querySelectorAll('button, a, [role="button"], span').forEach(btn => {
+                            var text = btn.textContent.toLowerCase().trim();
+                            if ((text === 'dismiss' || text === 'continue' || text === 'got it' || text === 'i agree' || text === 'accept') && btn.offsetParent !== null) {
                                 btn.click();
+                                if(btn.parentElement) btn.parentElement.click();
                             }
+                        });
+                        // Fallback: hide all blocking containers just in case
+                        document.querySelectorAll('.cdk-overlay-pane, .cdk-overlay-container, .mat-mdc-dialog-container').forEach(el => {
+                            el.style.display = 'none';
                         });
                     """)
                     print("✅ Cleared overlay popups via JS")
-                    time.sleep(1)
+                    time.sleep(2)
                 except Exception as e:
                     print(f"⚠️ Overlay cleanup: {e}")
+
 
                 # 1b. Check for login wall
                 if "accounts.google.com" in driver.current_url:
@@ -485,22 +488,63 @@ def main():
                 except:
                     pass
 
+                # 6.5 Select API key if missing (new AI Studio requirement causes 403)
+                try:
+                    time.sleep(2)
+                    key_btns = driver.find_elements(By.XPATH, "//button[@aria-label='No API key selected']")
+                    if key_btns:
+                        print("⚠️ 'No API key selected' detected. Attempting to select one...")
+                        driver.execute_script("arguments[0].click();", key_btns[0])
+                        time.sleep(3)
+                        keys = driver.find_elements(By.XPATH, "//*[contains(text(), 'nemrosszhirek') or contains(text(), 'gen-lang-client')]")
+                        if keys:
+                            driver.execute_script("arguments[0].click();", keys[0])
+                            print("✅ API key selected successfully.")
+                            time.sleep(3)
+                            driver.execute_script("""
+                                document.querySelectorAll('button, a, [role="button"], span').forEach(btn => {
+                                    var text = btn.textContent.toLowerCase().trim();
+                                    if((text === 'close' || text === 'dismiss' || text === 'continue') && btn.offsetParent !== null) {
+                                        btn.click();
+                                        if(btn.parentElement) btn.parentElement.click();
+                                    }
+                                });
+                                document.querySelectorAll('.cdk-overlay-pane, .cdk-overlay-container, .mat-mdc-dialog-container').forEach(el => {
+                                    el.style.display = 'none';
+                                });
+                            """)
+                            time.sleep(2)
+                        else:
+                            print("⚠️ Opened API key menu but could not find a valid key. Trying to dismiss it.")
+                            driver.execute_script("document.body.click();")
+                            time.sleep(1)
+                except Exception as e:
+                    print(f"⚠️ API key selection failed: {e}")
+
                 # 7. Run
                 try:
-                    # New UI: Run button at bottom right
-                    run_btn = WebDriverWait(driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Run')]"))
-                    )
-                    run_btn.click()
-                    print("▶️ Generation started (Run clicked)...")
-                except:
-                    # Fallback: try Cmd+Enter
-                    try:
-                        from selenium.webdriver.common.action_chains import ActionChains
-                        ActionChains(driver).key_down(Keys.COMMAND).send_keys(Keys.ENTER).key_up(Keys.COMMAND).perform()
-                        print("▶️ Generation started (Cmd+Enter)...")
-                    except Exception as e:
-                        print(f"❌ Could not trigger Run: {e}")
+                    from selenium.webdriver.common.action_chains import ActionChains
+                    ActionChains(driver).key_down(Keys.COMMAND).send_keys(Keys.ENTER).key_up(Keys.COMMAND).perform()
+                except Exception as e:
+                    print(f"⚠️ Cmd+Enter trigger failed: {e}")
+                
+                try:
+                    # JS fallback for clicking exact Run or Generate button
+                    driver.execute_script("""
+                        var btns = Array.from(document.querySelectorAll('button, div, span, a, mat-icon, class'));
+                        var runBtn = btns.find(b => {
+                            var t = b.textContent.trim().toLowerCase();
+                            var label = (b.getAttribute('aria-label') || '').toLowerCase();
+                            return t === 'run' || t === 'generate' || label === 'run' || label === 'generate';
+                        });
+                        if(runBtn) {
+                            runBtn.click();
+                            if(runBtn.parentElement) runBtn.parentElement.click();
+                        }
+                    """)
+                    print("▶️ Generation started (Cmd+Enter / Run clicked)...")
+                except Exception as e:
+                    print(f"❌ Could not trigger Run via JS: {e}")
             
                 # 8. Wait for generation to complete — Run button reappears when done
                 print(f"⏳ Waiting for {part_name} audio generation (up to 10 mins)...")
@@ -510,30 +554,33 @@ def main():
                     max_wait_time = 600  # 10 minutes
                     start_wait = time.time()
 
-                    # Phase 1: Wait for the Run button to reappear (Stop→Run transition)
-                    # This means generation is truly complete, not just partially buffered
+                    # Wait for generation to complete by checking audio element
                     generation_complete = False
                     while time.time() - start_wait < max_wait_time:
                         try:
-                            # Check if Stop button is still visible (generation in progress)
-                            stop_btns = driver.find_elements(By.XPATH, "//button[contains(., 'Stop')]")
-                            stop_visible = any(b.is_displayed() for b in stop_btns) if stop_btns else False
-
-                            # Check if Run button is back (generation finished)
-                            run_btns = driver.find_elements(By.XPATH, "//button[contains(., 'Run')]")
-                            run_visible = any(b.is_displayed() for b in run_btns) if run_btns else False
-
-                            if run_visible and not stop_visible:
+                            current_audio_src = None
+                            for audio_sel in ["audio", "div.speech-prompt-footer-actions-player audio", "ms-speech-prompt audio"]:
+                                audio_elements = driver.find_elements(By.CSS_SELECTOR, audio_sel)
+                                for ae in audio_elements:
+                                    src = ae.get_attribute("src")
+                                    # If there's a new src that isn't the old one, and it's valid data/blob
+                                    if src and len(src) > 15 and src != old_audio_src:
+                                        current_audio_src = src
+                                        break
+                                if current_audio_src:
+                                    break
+                                    
+                            if current_audio_src:
                                 elapsed = int(time.time() - start_wait)
-                                print(f"✅ Generation complete! Run button reappeared ({elapsed}s)")
+                                print(f"✅ Generation complete! New audio src detected ({elapsed}s)")
                                 generation_complete = True
+                                audio_src = current_audio_src
                                 break
 
                             # Progress indicator
                             elapsed = int(time.time() - start_wait)
-                            if elapsed > 0 and elapsed % 30 == 0:
-                                status = "generating (Stop visible)" if stop_visible else "waiting..."
-                                print(f"   ⏳ {elapsed}s elapsed, {status}")
+                            if elapsed > 0 and elapsed % 15 == 0:
+                                print(f"   ⏳ {elapsed}s elapsed, generating...")
                         except Exception:
                             pass
 
