@@ -445,21 +445,72 @@ def main():
                         text_area.send_keys(Keys.DELETE)
                         time.sleep(0.5)
                     
-                        # For long texts, use JS clipboard/execCommand to ensure Angular/framework registers it
+                        # Insert text and trigger Angular change detection properly
                         if len(tts_text) > 0:
                             try:
-                                # Use execCommand 'insertText' which natively triggers framework events
+                                # Method: Use native setter + Angular-aware event dispatching
+                                # Angular uses a patched addEventListener via Zone.js, so we need to
+                                # set the value via the native input setter and dispatch proper events
                                 driver.execute_script("""
                                     var el = arguments[0];
                                     var text = arguments[1];
                                     el.focus();
-                                    if (typeof el.select === 'function') {
+                                    
+                                    // Use the native HTMLTextAreaElement setter to bypass Angular's getter
+                                    var nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+                                        window.HTMLTextAreaElement.prototype, 'value'
+                                    ).set;
+                                    nativeInputValueSetter.call(el, text);
+                                    
+                                    // Dispatch events that Angular/Zone.js actually listens to
+                                    el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+                                    el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+                                    el.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: ' ' }));
+                                    el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: ' ' }));
+                                    
+                                    // Also try execCommand as secondary trigger
+                                    try {
                                         el.select();
-                                    }
-                                    document.execCommand('insertText', false, text);
-                                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                                        document.execCommand('insertText', false, text);
+                                    } catch(e) {}
                                 """, text_area, tts_text)
-                                print("✅ Text inserted via JS execCommand.")
+                                print("✅ Text inserted via native setter + Angular events.")
+                                time.sleep(1)
+                                
+                                # Verify the button became enabled
+                                btn_state = driver.execute_script("""
+                                    var btn = document.querySelector('button.ctrl-enter-submits');
+                                    return btn ? btn.getAttribute('aria-disabled') : 'not-found';
+                                """)
+                                print(f"   🔍 Run button aria-disabled = {btn_state}")
+                                
+                                if btn_state == 'true':
+                                    # Angular still didn't detect it - try send_keys with a small chunk
+                                    print("   ⚠️ Button still disabled, trying send_keys to trigger Angular...")
+                                    text_area.click()
+                                    time.sleep(0.3)
+                                    # Clear and re-type via send_keys (slower but Angular-safe)
+                                    text_area.send_keys(Keys.COMMAND + "a")
+                                    text_area.send_keys(Keys.DELETE)
+                                    time.sleep(0.3)
+                                    # Type first 20 chars via keys to wake up Angular, then paste the rest
+                                    text_area.send_keys(tts_text[:20])
+                                    time.sleep(0.5)
+                                    text_area.send_keys(Keys.COMMAND + "a")
+                                    time.sleep(0.2)
+                                    # Now use execCommand for the full text
+                                    driver.execute_script("""
+                                        arguments[0].focus();
+                                        arguments[0].select();
+                                        document.execCommand('insertText', false, arguments[1]);
+                                    """, text_area, tts_text)
+                                    time.sleep(1)
+                                    btn_state2 = driver.execute_script("""
+                                        var btn = document.querySelector('button.ctrl-enter-submits');
+                                        return btn ? btn.getAttribute('aria-disabled') : 'not-found';
+                                    """)
+                                    print(f"   🔍 Run button aria-disabled after send_keys = {btn_state2}")
+                                    
                             except Exception as js_err:
                                 print(f"⚠️ Text input via JS failed: {js_err}, falling back to send_keys.")
                                 text_area.send_keys(tts_text)
@@ -467,7 +518,7 @@ def main():
                         else:
                             print("⚠️ No text to insert!")
                     except Exception as e:
-                        print(f"⚠️ Text input keystroke failed, trying JS: {e}")
+                        print(f"⚠️ Text input failed: {e}")
                         try:
                             driver.execute_script("arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", text_area, tts_text)
                             print("✅ Text inserted via JS fallback.")
@@ -479,7 +530,6 @@ def main():
                 # Remember old audio state to detect new generation
                 old_audio_src = None
                 try:
-                    # New UI: audio element may be inside different containers
                     for audio_sel in ["audio", "div.speech-prompt-footer-actions-player audio", "ms-speech-prompt audio"]:
                         audios = driver.find_elements(By.CSS_SELECTOR, audio_sel)
                         if audios:
@@ -521,30 +571,98 @@ def main():
                 except Exception as e:
                     print(f"⚠️ API key selection failed: {e}")
 
-                # 7. Run
+                # 7. Run - Use Selenium native click (Angular ignores synthetic JS clicks)
                 try:
-                    # Use only JS exact match to avoid double triggering (Cmd+Enter + click cancels the generation)
-                    driver.execute_script("""
-                        var btns = Array.from(document.querySelectorAll('button, div, span, a, mat-icon'));
-                        var runBtn = btns.find(b => {
-                            var t = b.textContent.trim().toLowerCase();
-                            var label = (b.getAttribute('aria-label') || '').toLowerCase();
-                            return t === 'run' || t === 'generate' || label === 'run' || label === 'generate';
-                        });
-                        if(runBtn) {
-                            runBtn.click();
-                            if(runBtn.parentElement) runBtn.parentElement.click();
-                        }
-                    """)
-                    print("▶️ Generation started (Run clicked via JS)...")
+                    from selenium.webdriver.common.action_chains import ActionChains
+                    
+                    # Wait a moment for any overlays to clear
+                    time.sleep(1)
+                    
+                    # Find the Run button - try multiple strategies
+                    run_btn = None
+                    
+                    # Strategy 1: Find by the unique class
+                    run_btns = driver.find_elements(By.CSS_SELECTOR, "button.ctrl-enter-submits")
+                    if run_btns:
+                        run_btn = run_btns[0]
+                        print("🎯 Found Run button via .ctrl-enter-submits class")
+                    
+                    # Strategy 2: Find by run-button-label span, then get parent button
+                    if not run_btn:
+                        labels = driver.find_elements(By.CSS_SELECTOR, "span.run-button-label")
+                        if labels:
+                            run_btn = driver.execute_script("return arguments[0].closest('button');", labels[0])
+                            print("🎯 Found Run button via span.run-button-label parent")
+                    
+                    # Strategy 3: Find by type=submit
+                    if not run_btn:
+                        submits = driver.find_elements(By.CSS_SELECTOR, "button[type='submit']")
+                        if submits:
+                            run_btn = submits[0]
+                            print("🎯 Found Run button via type=submit")
+                    
+                    if run_btn:
+                        # Scroll into view
+                        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", run_btn)
+                        time.sleep(0.3)
+                        
+                        # Force enable if disabled
+                        driver.execute_script("""
+                            arguments[0].removeAttribute('aria-disabled');
+                            arguments[0].removeAttribute('disabled');
+                            arguments[0].disabled = false;
+                        """, run_btn)
+                        time.sleep(0.2)
+                        
+                        # Try clicking and verify it switched to "Stop" (= generation started)
+                        generation_started = False
+                        for attempt in range(4):
+                            if attempt == 0:
+                                # Attempt 1: Selenium ActionChains native click
+                                ActionChains(driver).move_to_element(run_btn).pause(0.3).click().perform()
+                                print(f"   🖱️ Attempt {attempt+1}: Selenium ActionChains click")
+                            elif attempt == 1:
+                                # Attempt 2: Direct Selenium .click()
+                                run_btn.click()
+                                print(f"   🖱️ Attempt {attempt+1}: Direct Selenium .click()")
+                            elif attempt == 2:
+                                # Attempt 3: JS click + MouseEvent dispatch
+                                driver.execute_script("""
+                                    arguments[0].click();
+                                    arguments[0].dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true, view:window}));
+                                """, run_btn)
+                                print(f"   🖱️ Attempt {attempt+1}: JS click + MouseEvent")
+                            else:
+                                # Attempt 4: Keyboard shortcut Cmd+Enter
+                                text_area.click()
+                                time.sleep(0.2)
+                                ActionChains(driver).key_down(Keys.COMMAND).send_keys(Keys.ENTER).key_up(Keys.COMMAND).perform()
+                                print(f"   🖱️ Attempt {attempt+1}: Cmd+Enter keyboard shortcut")
+                            
+                            # Wait and check if the button text changed to "Stop"
+                            time.sleep(2)
+                            btn_text = driver.execute_script("""
+                                var btn = document.querySelector('button.ctrl-enter-submits');
+                                if (!btn) return 'not-found';
+                                return btn.textContent.trim().toLowerCase();
+                            """)
+                            print(f"   🔍 Button text after click: '{btn_text}'")
+                            
+                            if btn_text and 'stop' in btn_text:
+                                generation_started = True
+                                print("▶️ ✅ Generation confirmed started! (button shows 'Stop')")
+                                break
+                            else:
+                                print(f"   ⚠️ Button still shows '{btn_text}', retrying...")
+                                time.sleep(1)
+                        
+                        if not generation_started:
+                            print("❌ Generation did NOT start after 4 attempts! Button never changed to Stop.")
+                    else:
+                        print("❌ Could not find Run button at all!")
+                        
                 except Exception as e:
-                    print(f"⚠️ Run via JS failed, trying Cmd+Enter: {e}")
-                    try:
-                        from selenium.webdriver.common.action_chains import ActionChains
-                        ActionChains(driver).key_down(Keys.COMMAND).send_keys(Keys.ENTER).key_up(Keys.COMMAND).perform()
-                        print("▶️ Generation started (Cmd+Enter)...")
-                    except Exception as e2:
-                        print(f"❌ Could not trigger Run at all: {e2}")
+                    print(f"❌ Could not trigger Run: {e}")
             
                 # 8. Wait for generation to complete — Run button reappears when done
                 print(f"⏳ Waiting for {part_name} audio generation (up to 10 mins)...")
