@@ -559,7 +559,7 @@ def main():
                                         if(btn.parentElement) btn.parentElement.click();
                                     }
                                 });
-                                document.querySelectorAll('.cdk-overlay-pane, .cdk-overlay-container, .mat-mdc-dialog-container').forEach(el => {
+                                document.querySelectorAll('.cdk-overlay-pane, .cdk-overlay-container, .mat-mdc-dialog-container, .cdk-overlay-backdrop, .cdk-overlay-backdrop-showing').forEach(el => {
                                     el.style.display = 'none';
                                 });
                             """)
