@@ -8,7 +8,7 @@ import signal
 # Configuration
 PIPELINE_SCRIPT = "run_pipeline.py"
 TTS_SCRIPT = "run_tts_daily.py"
-PIPELINE_RUN_TIMES = ["00:00", "06:00", "12:00", "18:00"]
+PIPELINE_RUN_TIMES = ["06:00", "18:00"]
 CHECK_INTERVAL = 30  # seconds
 MAX_PIPELINE_RUNTIME = 90 * 60  # 90 minutes — hard limit for any pipeline run
 
@@ -80,8 +80,8 @@ def get_all_jobs_for_today(now):
         target = now.replace(hour=h, minute=m, second=0, microsecond=0)
         jobs.append((target, PIPELINE_SCRIPT, t_str))
         
-    tts_target = get_tts_target_for_date(now)
-    jobs.append((tts_target, TTS_SCRIPT, tts_target.strftime("%H:%M")))
+    # tts_target = get_tts_target_for_date(now)
+    # jobs.append((tts_target, TTS_SCRIPT, tts_target.strftime("%H:%M")))
     
     return jobs
 
@@ -226,6 +226,8 @@ def main():
                 diff = (next_run - datetime.datetime.now()).total_seconds()
                 log(f"📅 Next run scheduled for: {next_run.strftime('%Y-%m-%d %H:%M:%S')} (in {diff/3600:.1f} hours)")
                 schedule_wake(next_run)
+                log(f"💤 Művelet befejezve, a gép most alvó módba vált...")
+                subprocess.run(["pmset", "sleepnow"])
         
         # Watchdog: kill pipeline if it exceeds MAX_PIPELINE_RUNTIME
         if current_process and _process_start_time:
