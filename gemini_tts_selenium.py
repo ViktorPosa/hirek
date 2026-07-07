@@ -190,11 +190,13 @@ def main():
     caffeinate_proc = None
     try:
         # -u: wake display, -d: prevent display sleep, -i: prevent idle sleep
-        caffeinate_proc = subprocess.Popen(["caffeinate", "-u", "-d", "-i"])
-        print("☕ Caffeinate activated: system will not sleep until the script finishes.")
+        # -w PID: automatically exit caffeinate when this script exits
+        current_pid = str(os.getpid())
+        caffeinate_proc = subprocess.Popen(["caffeinate", "-u", "-d", "-i", "-w", current_pid])
+        print(f"☕ Caffeinate activated (watching PID {current_pid}): system will not sleep until the script finishes.")
         
         def stop_caffeinate():
-            if caffeinate_proc:
+            if caffeinate_proc and caffeinate_proc.poll() is None:
                 caffeinate_proc.terminate()
                 try:
                     caffeinate_proc.wait(timeout=2)
