@@ -212,7 +212,6 @@ def main():
     parts = [
         ("Part 1: Időjárás", "tts_idojaras.txt", "idojaras"),
         ("Part 2: Piacok és üzlet", "tts_piacok.txt", "piacok"),
-        ("Part 3: Hírcímek", "tts_headlines.txt", "hirek"),
         ("Part 4: Hírcsárda", "tts_hircsarda.txt", "hircsarda"),
     ]
 
