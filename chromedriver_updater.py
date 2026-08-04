@@ -220,9 +220,46 @@ def _find_closest_version_url(chrome_version: str, platform_key: str) -> tuple[s
         return None, None
 
 
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
+def _validate_binary(driver_path: Path) -> bool:
+    """Futtatja a chromedriver --version-t. False ha -9 (SIGKILL) vagy más hiba."""
+    try:
+        result = subprocess.run(
+            [str(driver_path), "--version"],
+            capture_output=True, text=True, timeout=8,
+        )
+        if result.returncode == 0:
+            return True
+        print(f"   ⚠️ ChromeDriver validation failed (exit {result.returncode}): {result.stderr.strip()}")
+        return False
+    except subprocess.TimeoutExpired:
+        return True  # Timeout = elindult, az jó
+    except Exception as e:
+        print(f"   ⚠️ ChromeDriver validation error: {e}")
+        return False
+
+
+def _force_redownload(chrome_version: str) -> str:
+    """Törli a cache-t és újratölti a chromedriver-t."""
+    driver_path = _cached_driver_path()
+    driver_path.unlink(missing_ok=True)
+    VERSION_FILE.unlink(missing_ok=True)
+    print("   🗑️  Corrupted binary removed, re-downloading...")
+
+    platform_key = _get_platform_key()
+    url = _find_exact_version_url(chrome_version, platform_key)
+    if url:
+        _download_driver(url, driver_path)
+        _save_cached_version(chrome_version)
+        return str(driver_path)
+
+    url, _ = _find_closest_version_url(chrome_version, platform_key)
+    if url:
+        _download_driver(url, driver_path)
+        _save_cached_version(chrome_version)
+        return str(driver_path)
+
+    raise RuntimeError(f"Re-download failed for Chrome {chrome_version}")
+
 
 
 def get_chromedriver_path() -> str:
@@ -241,6 +278,9 @@ def get_chromedriver_path() -> str:
     # Check if cached driver matches
     if cached_version == chrome_version and driver_path.exists():
         print(f"   ✅ Cached ChromeDriver matches ({cached_version})")
+        if not _validate_binary(driver_path):
+            print("   ❌ Cached binary is broken (SIGKILL), re-downloading...")
+            return _force_redownload(chrome_version)
         return str(driver_path)
 
     if cached_version:
@@ -254,6 +294,8 @@ def get_chromedriver_path() -> str:
     url = _find_exact_version_url(chrome_version, platform_key)
     if url:
         _download_driver(url, driver_path)
+        if not _validate_binary(driver_path):
+            raise RuntimeError(f"Downloaded ChromeDriver binary failed validation (Chrome {chrome_version})")
         _save_cached_version(chrome_version)
         return str(driver_path)
 
@@ -261,6 +303,8 @@ def get_chromedriver_path() -> str:
     url, fallback_version = _find_closest_version_url(chrome_version, platform_key)
     if url:
         _download_driver(url, driver_path)
+        if not _validate_binary(driver_path):
+            raise RuntimeError(f"Downloaded ChromeDriver binary failed validation (Chrome {chrome_version})")
         # Store the actual Chrome version so next time it re-checks if Chrome updates
         _save_cached_version(chrome_version)
         return str(driver_path)
