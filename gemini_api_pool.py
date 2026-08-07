@@ -245,7 +245,15 @@ def generate_with_free_api(prompt, system_prompt=None):
             error_msg = str(e)
             
             # Check if it's a rate limit or server overload
-            is_overload = "503" in error_msg or "429" in error_msg or "quota" in error_msg.lower() or "rate" in error_msg.lower()
+            err_lower = error_msg.lower()
+            is_overload = (
+                "503" in error_msg
+                or "429" in error_msg
+                or "quota" in err_lower
+                or "rate limit" in err_lower
+                or "resource_exhausted" in err_lower
+                or "too many requests" in err_lower
+            )
             
             if is_overload:
                 wait_time = 5 * (2 ** attempt)
