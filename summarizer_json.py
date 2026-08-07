@@ -2993,52 +2993,48 @@ class ResultManager:
     
     def save_item(self, item):
         """Saves a single complete item to data.json and checks push threshold.
-        
+
         Batches disk writes: flushes every 5 items instead of every single one.
         """
         with self.lock:
-            # 0. Title-based deduplication
             title = item.get('title', '')
-            if self._is_similar_title(title):
-                return False
-            
-            # 1. Update in-memory data
             source_link = item.get('sourceLink', '')
-            
+
             if source_link and source_link in self._source_links_index:
-                # Update existing
+                # Update existing entry (e.g. image added later)
                 idx = self._source_links_index[source_link]
                 self._data[idx] = item
             else:
-                # Append new
+                # New item: title-dedup check before appending
+                if self._is_similar_title(title):
+                    return False
+
                 self._data.append(item)
                 if source_link:
                     self._source_links_index[source_link] = len(self._data) - 1
-            # Track title in both index and inverted word index
+
                 normalized_title = self._normalize_title(title)
                 if normalized_title:
                     self._titles_index.add(normalized_title)
                     if hasattr(self, '_word_to_titles'):
                         for word in normalized_title.split():
-                            if word not in self._word_to_titles:
-                                self._word_to_titles[word] = set()
-                            self._word_to_titles[word].add(normalized_title)
-            
+                            self._word_to_titles.setdefault(word, set()).add(normalized_title)
+
             self.total_saved = len(self._data)
             self.items_since_push += 1
-            
-            # 2. Batched disk write: flush every 5 items instead of every single one
+
             if not hasattr(self, '_dirty_count'):
                 self._dirty_count = 0
             self._dirty_count += 1
-            
+
             if self._dirty_count >= 5:
                 self._flush_to_disk()
-            
-            # 3. Check Push Threshold
+
             if self.items_since_push >= self.push_threshold:
-                self._flush_to_disk()  # Ensure data is on disk before push
+                self._flush_to_disk()
                 self.trigger_push()
+
+            return True
     
     def _flush_to_disk(self):
         """Write in-memory data to disk. Must be called with self.lock held."""
