@@ -308,6 +308,7 @@ def main():
     # Downloads also stop at the same deadline (see article_downloader.set_run_deadline).
     try:
         import article_downloader
+        article_downloader.reset_run_state()          # clear retry counters from previous run
         article_downloader.set_run_deadline(3 * 60 * 60)
     except Exception:
         pass

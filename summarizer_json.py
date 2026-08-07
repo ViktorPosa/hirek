@@ -583,6 +583,14 @@ class DownloadWorker(threading.Thread):
                         # URL is already in Playwright queue, don't count as failure
                         self.download_queue.task_done()
                         continue
+
+                    # Handle permanent 404 — mark in history so it's never retried
+                    if data == '404_PERMANENT':
+                        self.history.mark_processing_error(url, "404 Not Found — permanent skip")
+                        self.history.update(url, status='NEGATIVE')
+                        self.article_buffer.report_failure()
+                        self.download_queue.task_done()
+                        continue
                     
                     if data and data.get('text') and len(data['text'].strip()) > 50:
                         # Pre-check for duplicate titles
@@ -2203,9 +2211,9 @@ def reprocess_pairing_failures(output_dir, api_key, prompt_template):
         fallback_backends.append('g4f')
         
         fixed_count = 0
-        max_to_fix = min(len(failed_items), 15)  # Cap at 15 per file to avoid overloading
+        max_to_fix = min(len(failed_items), 5)   # Batch-level single-item retry already covers most; cap tightly
         reprocess_start = time.time()
-        MAX_REPROCESS_SECONDS = 180  # Never spend more than 3 minutes on this step
+        MAX_REPROCESS_SECONDS = 60  # Hard cap: 1 min max — don't hold up the pipeline
         
         for item_idx, (original_idx, item) in enumerate(failed_items[:max_to_fix]):
             # Global timeout guard: stop reprocessing if we've been at it too long
@@ -2880,15 +2888,26 @@ class ResultManager:
         self._source_links_index = {}  # Fast lookup by sourceLink
         self._titles_index = set()  # For title-based dedup (global across all days)
         
-        # Load GLOBAL title index AND source links from ALL historical data files
-        # Includes data.json, data_i4.json, data_i5.json (importance-split files)
-        # Loads both processed 'title' and 'originalTitle' for comparison
-        # Also builds _global_source_links for URL-based dedup across all days
+        # Load GLOBAL title index AND source links from historical data files
+        # Limit to last 7 days: older articles are very unlikely to reappear in RSS,
+        # and scanning 100+ files on every startup causes significant I/O delay.
+        # The full-history dedup is handled by history_manager for summarized URLs.
         self._global_source_links = set()
         import glob
-        all_data_files = sorted(glob.glob('Output/*/data.json'))
-        all_data_files += sorted(glob.glob('Output/*/data_i4.json'))
-        all_data_files += sorted(glob.glob('Output/*/data_i5.json'))
+        import datetime as _dt
+        cutoff = (_dt.date.today() - _dt.timedelta(days=7)).strftime('%Y-%m-%d')
+        all_data_files = sorted(
+            f for f in glob.glob('Output/*/data.json')
+            if os.path.basename(os.path.dirname(f)) >= cutoff
+        )
+        all_data_files += sorted(
+            f for f in glob.glob('Output/*/data_i4.json')
+            if os.path.basename(os.path.dirname(f)) >= cutoff
+        )
+        all_data_files += sorted(
+            f for f in glob.glob('Output/*/data_i5.json')
+            if os.path.basename(os.path.dirname(f)) >= cutoff
+        )
         for data_file in all_data_files:
             try:
                 with open(data_file, 'r', encoding='utf-8') as f:
@@ -3495,8 +3514,7 @@ def main():
         return
 
     history = HistoryManager()
-
-    # Load links from multiple sources (Root AND Daily)
+    history.cleanup_old_entries(days=60)  # prune stale non-summarized entries on every run
     links_file_root = 'links.txt'
     links_file_out = os.path.join(OUTPUT_DIR, 'links.txt')
     
