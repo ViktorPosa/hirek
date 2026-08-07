@@ -590,9 +590,8 @@ def _process_data_file(data_path, images_dir, folder_path, date_folder, skip_upl
 
         # Retry failed items after a short delay
         if failed_indices:
-            print(f"  [{filename}] ♻️ Retrying {len(failed_indices)} failed image downloads in 30s...")
-            import time as _time
-            _time.sleep(30)
+            print(f"  [{filename}] ♻️ Retrying {len(failed_indices)} failed image downloads in 5s...")
+            time.sleep(5)
 
             retry_tasks = [(i, news_items[i], total, images_dir, folder_path, date_folder) for i in failed_indices]
             retry_results = []

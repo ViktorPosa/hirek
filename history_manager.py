@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+import threading
 
 """
 LEÍRÁS:
@@ -23,6 +24,7 @@ HISTORY_FILE = os.path.join(os.path.dirname(__file__), 'history.json')
 class HistoryManager:
     def __init__(self, filename=HISTORY_FILE):
         self.filename = filename
+        self._lock = threading.Lock()
         self.history = self.load()
 
     def load(self):
@@ -84,105 +86,113 @@ class HistoryManager:
 
     def get_status(self, url):
         """Returns the status dict for a URL or None if not found."""
-        return self.history.get(url)
+        with self._lock:
+            return self.history.get(url)
 
     def is_known(self, url):
         """Checks if a URL is already in history (either positive or negative)."""
-        return self.normalize_url(url) in self.history
+        with self._lock:
+            return self.normalize_url(url) in self.history
 
     def is_negative(self, url):
         """Checks if a URL was previously marked as negative."""
-        record = self.get_status(self.normalize_url(url))
-        return record and record.get('status') == 'NEGATIVE'
+        with self._lock:
+            record = self.history.get(self.normalize_url(url))
+            return record and record.get('status') == 'NEGATIVE'
 
     def is_positive(self, url):
         """Checks if a URL was previously marked as positive/neutral."""
-        record = self.get_status(self.normalize_url(url))
-        return record and record.get('status') in ['POSITIVE', 'NEUTRAL']
+        with self._lock:
+            record = self.history.get(self.normalize_url(url))
+            return record and record.get('status') in ['POSITIVE', 'NEUTRAL']
 
     def is_summarized(self, url):
         """Checks if a URL has been marked as summarized."""
-        record = self.get_status(self.normalize_url(url))
-        return record and record.get('summarized', False)
+        with self._lock:
+            record = self.history.get(self.normalize_url(url))
+            return record and record.get('summarized', False)
 
     def is_filtered(self, url):
         """Checks if a URL was previously filtered out."""
-        record = self.get_status(self.normalize_url(url))
-        return record and record.get('status') == 'FILTERED'
+        with self._lock:
+            record = self.history.get(self.normalize_url(url))
+            return record and record.get('status') == 'FILTERED'
 
     def update(self, url, status=None, summarized=None):
         """Updates the record for a URL."""
         url = self.normalize_url(url)
-        if url not in self.history:
-            self.history[url] = {
-                'first_seen': datetime.datetime.now().isoformat(),
-                'status': 'UNKNOWN',
-                'summarized': False
-            }
-        
-        record = self.history[url]
-        record['last_updated'] = datetime.datetime.now().isoformat()
-        
-        if status:
-            record['status'] = status
-        
-        if summarized is not None:
-            record['summarized'] = summarized
-            
-        self.save()
+        with self._lock:
+            if url not in self.history:
+                self.history[url] = {
+                    'first_seen': datetime.datetime.now().isoformat(),
+                    'status': 'UNKNOWN',
+                    'summarized': False
+                }
+
+            record = self.history[url]
+            record['last_updated'] = datetime.datetime.now().isoformat()
+
+            if status:
+                record['status'] = status
+
+            if summarized is not None:
+                record['summarized'] = summarized
+
+            self.save()
 
     def mark_filtered(self, url, filter_source, reason):
         """Marks a URL as filtered out with the reason."""
         url = self.normalize_url(url)
-        if url not in self.history:
-            self.history[url] = {
-                'first_seen': datetime.datetime.now().isoformat(),
-                'status': 'FILTERED',
-                'summarized': False
-            }
-        
-        record = self.history[url]
-        record['last_updated'] = datetime.datetime.now().isoformat()
-        record['status'] = 'FILTERED'
-        record['filtered_by'] = filter_source
-        record['filter_reason'] = reason
-            
-        self.save()
+        with self._lock:
+            if url not in self.history:
+                self.history[url] = {
+                    'first_seen': datetime.datetime.now().isoformat(),
+                    'status': 'FILTERED',
+                    'summarized': False
+                }
+
+            record = self.history[url]
+            record['last_updated'] = datetime.datetime.now().isoformat()
+            record['status'] = 'FILTERED'
+            record['filtered_by'] = filter_source
+            record['filter_reason'] = reason
+
+            self.save()
 
     def mark_processing_error(self, url, reason):
         """Marks a URL as having a processing error after max retries."""
         url = self.normalize_url(url)
-        if url not in self.history:
-            self.history[url] = {
-                'first_seen': datetime.datetime.now().isoformat(),
-                'status': 'PROCESSING_ERROR',
-                'summarized': False,
-                'failure_count': 0
-            }
-        
-        record = self.history[url]
-        record['last_updated'] = datetime.datetime.now().isoformat()
-        record['status'] = 'PROCESSING_ERROR'
-        record['error_reason'] = reason
-        # Increment failure count
-        record['failure_count'] = record.get('failure_count', 0) + 1
-        
-        # Explicitly set summarized to False to allow retries in future runs
-        record['summarized'] = False
-            
-        self.save()
+        with self._lock:
+            if url not in self.history:
+                self.history[url] = {
+                    'first_seen': datetime.datetime.now().isoformat(),
+                    'status': 'PROCESSING_ERROR',
+                    'summarized': False,
+                    'failure_count': 0
+                }
+
+            record = self.history[url]
+            record['last_updated'] = datetime.datetime.now().isoformat()
+            record['status'] = 'PROCESSING_ERROR'
+            record['error_reason'] = reason
+            record['failure_count'] = record.get('failure_count', 0) + 1
+            record['summarized'] = False
+
+            self.save()
 
     def get_failure_count(self, url):
         """Returns the number of times a URL has failed processing."""
-        record = self.get_status(self.normalize_url(url))
-        return record.get('failure_count', 0) if record else 0
+        with self._lock:
+            record = self.history.get(self.normalize_url(url))
+            return record.get('failure_count', 0) if record else 0
 
     def get_stats(self):
-        total = len(self.history)
-        positive = len([r for r in self.history.values() if r.get('status') in ['POSITIVE', 'NEUTRAL']])
-        negative = len([r for r in self.history.values() if r.get('status') == 'NEGATIVE'])
-        filtered = len([r for r in self.history.values() if r.get('status') == 'FILTERED'])
-        summarized = len([r for r in self.history.values() if r.get('summarized')])
+        with self._lock:
+            total = len(self.history)
+            positive = len([r for r in self.history.values() if r.get('status') in ['POSITIVE', 'NEUTRAL']])
+            negative = len([r for r in self.history.values() if r.get('status') == 'NEGATIVE'])
+            filtered = len([r for r in self.history.values() if r.get('status') == 'FILTERED'])
+            summarized = len([r for r in self.history.values() if r.get('summarized')])
         return {
             "total_links": total,
             "positive_neutral": positive,
@@ -200,19 +210,19 @@ class HistoryManager:
         cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
         cutoff_iso = cutoff.isoformat()
         to_remove = []
-        for url, record in self.history.items():
-            status = record.get('status', 'UNKNOWN')
-            summarized = record.get('summarized', False)
-            # Never remove successfully summarized positives — they prevent re-processing
-            if summarized or status in ('POSITIVE', 'NEUTRAL'):
-                continue
-            last_updated = record.get('last_updated') or record.get('first_seen', '')
-            if last_updated < cutoff_iso:
-                to_remove.append(url)
-        for url in to_remove:
-            del self.history[url]
-        if to_remove:
-            self.save()
-            print(f"  [HistoryManager] Cleaned up {len(to_remove)} stale entries older than {days} days.")
+        with self._lock:
+            for url, record in self.history.items():
+                status = record.get('status', 'UNKNOWN')
+                summarized = record.get('summarized', False)
+                if summarized or status in ('POSITIVE', 'NEUTRAL'):
+                    continue
+                last_updated = record.get('last_updated') or record.get('first_seen', '')
+                if last_updated < cutoff_iso:
+                    to_remove.append(url)
+            for url in to_remove:
+                del self.history[url]
+            if to_remove:
+                self.save()
+                print(f"  [HistoryManager] Cleaned up {len(to_remove)} stale entries older than {days} days.")
         return len(to_remove)
 

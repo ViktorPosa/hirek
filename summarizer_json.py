@@ -1576,7 +1576,7 @@ def process_batch(api_key, prompt_template, items, category_file, use_gemini=Fal
                     content, model_used = None, None
                 else:
                     content = result
-                    model_used = "gemini-3.1-flash-lite"
+                    model_used = gemini_api_pool.MODEL_NAME
             elif use_lmstudio_local:
                 import lmstudio_client
                 def _call_lm_local():
@@ -2882,7 +2882,8 @@ class ResultManager:
         self.items_since_push = 0
         self.push_threshold = 50
         self.total_saved = 0
-        
+        self._dirty_count = 0
+
         # Keep data in memory to avoid read races
         self._data = []
         self._source_links_index = {}  # Fast lookup by sourceLink
@@ -2896,17 +2897,24 @@ class ResultManager:
         import glob
         import datetime as _dt
         cutoff = (_dt.date.today() - _dt.timedelta(days=7)).strftime('%Y-%m-%d')
+        def _valid_date_folder(path):
+            folder = os.path.basename(os.path.dirname(path))
+            try:
+                _dt.datetime.strptime(folder, '%Y-%m-%d')
+                return folder >= cutoff
+            except ValueError:
+                return False
         all_data_files = sorted(
             f for f in glob.glob('Output/*/data.json')
-            if os.path.basename(os.path.dirname(f)) >= cutoff
+            if _valid_date_folder(f)
         )
         all_data_files += sorted(
             f for f in glob.glob('Output/*/data_i4.json')
-            if os.path.basename(os.path.dirname(f)) >= cutoff
+            if _valid_date_folder(f)
         )
         all_data_files += sorted(
             f for f in glob.glob('Output/*/data_i5.json')
-            if os.path.basename(os.path.dirname(f)) >= cutoff
+            if _valid_date_folder(f)
         )
         for data_file in all_data_files:
             try:
@@ -3042,8 +3050,6 @@ class ResultManager:
             self.total_saved = len(self._data)
             self.items_since_push += 1
 
-            if not hasattr(self, '_dirty_count'):
-                self._dirty_count = 0
             self._dirty_count += 1
 
             if self._dirty_count >= 5:
@@ -4094,6 +4100,11 @@ def main():
                 image_queue.join()
             
             print("\n✅ All Retry Rounds Complete.")
+
+            # Flush any remaining dirty items that didn't hit the threshold
+            with result_manager.lock:
+                if result_manager._dirty_count > 0:
+                    result_manager._flush_to_disk()
 
             # Final Retry for uploads
             if upload_manager:

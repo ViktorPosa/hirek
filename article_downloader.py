@@ -54,18 +54,18 @@ def reset_run_state():
         _NEXT_DOMAIN_TIME.clear()
     _RUN_DEADLINE = None
 
-# Global lock for curl_cffi to prevent macOS SIGSEGV/SIGABRT malloc errors
-# curl_cffi uses libcurl-impersonate with BoringSSL, which is notoriously unstable 
-# when initialized/used concurrently across threads on macOS.
-_CURL_CFFI_LOCK = threading.Lock()
+# Lock only for session initialization (lazy singleton); NOT held during HTTP requests
+# so all 10 workers can make network calls in parallel.
+_SESSION_INIT_LOCK = threading.Lock()
 _GLOBAL_SESSION = None
 
 def get_cffi_session():
     global _GLOBAL_SESSION
-    with _CURL_CFFI_LOCK:
+    if _GLOBAL_SESSION is not None:
+        return _GLOBAL_SESSION
+    with _SESSION_INIT_LOCK:
         if _GLOBAL_SESSION is None:
             from curl_cffi import requests as cffi_requests
-            # Create a single persistent session
             _GLOBAL_SESSION = cffi_requests.Session(impersonate="chrome")
     return _GLOBAL_SESSION
 
@@ -295,17 +295,15 @@ def download_article(url, timeout=30, rss_fallback=""):
         time.sleep(random.uniform(0.3, 1.5))
         
         # 1. Manually fetch the HTML with TLS impersonation (bypassing Newspaper3k's internal blocked requests)
-        # CRITICAL: wrap in a global lock to strictly serialize libcurl C-extension calls and avoid SIGSEGV
-        with _CURL_CFFI_LOCK:
-            response = session.get(
-                url, 
-                timeout=timeout,
-                headers={
-                    'Referer': 'https://www.google.com/search?q=' + domain,
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.9,hu;q=0.8',
-                }
-            )
+        response = session.get(
+            url,
+            timeout=timeout,
+            headers={
+                'Referer': 'https://www.google.com/search?q=' + domain,
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9,hu;q=0.8',
+            }
+        )
         response.raise_for_status()
         html_content = response.text
         
