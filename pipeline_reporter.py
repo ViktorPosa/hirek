@@ -64,16 +64,21 @@ EXPECTED_STEPS = [
 # macOS notifications
 # ---------------------------------------------------------------------------
 
-def notify_mac(title, message, level):
+def notify_mac(title, short_message, detail_message, level):
+    """Send macOS notification (short) + modal dialog for CRITICAL/WARNING (detailed)."""
     emoji = {"CRITICAL": "🔴", "WARNING": "🟡", "OK": "🟢"}.get(level, "🔵")
     full_title = f"{emoji} {title}"
-    notif = f'display notification "{message}" with title "{full_title}" subtitle "Derűshírek Pipeline"'
+    # Escape quotes for AppleScript
+    safe_short = short_message.replace('"', "'")
+    safe_detail = detail_message.replace('"', "'").replace("\\", "\\\\")
+    notif = f'display notification "{safe_short}" with title "{full_title}" subtitle "Derűshírek Pipeline"'
     try:
         subprocess.run(["osascript", "-e", notif], timeout=5, capture_output=True)
     except Exception:
         pass
-    if level == "CRITICAL":
-        dlg = f'display dialog "{message}" with title "{full_title}" buttons {{"OK"}} default button "OK" with icon stop'
+    if level in ("CRITICAL", "WARNING"):
+        icon = "stop" if level == "CRITICAL" else "caution"
+        dlg = f'display dialog "{safe_detail}" with title "{full_title}" buttons {{"OK"}} default button "OK" with icon {icon}'
         try:
             subprocess.run(["osascript", "-e", dlg], timeout=120, capture_output=True)
         except Exception:
@@ -1191,9 +1196,56 @@ def main():
     # Notification
     crit = report["criticality"]
     article_count = report["articles"]["total"]
-    reasons_text = "; ".join(report["criticality_reasons"][:3]) if report["criticality_reasons"] else "Minden rendben."
-    msg = f"{target_date} | {article_count} cikk | {reasons_text}"
-    notify_mac("Pipeline Report", msg, crit)
+    pipe = report["pipeline"]
+
+    # Build detailed popup message
+    lines = []
+
+    # 1. What happened (human reasons)
+    if report["criticality_reasons"]:
+        for reason in report["criticality_reasons"][:3]:
+            lines.append(_reason_to_human(reason))
+    else:
+        lines.append("Minden rendben.")
+
+    # 2. Exit code + process killed / watchdog info from the most recent run
+    if pipe["runs"]:
+        last_run = pipe["runs"][-1]
+        exit_code = last_run.get("exit_code")
+        duration = last_run.get("duration_seconds", 0)
+        mins = duration // 60
+        secs = duration % 60
+        run_info = f"Futás: {mins}p {secs}s"
+        if exit_code is not None:
+            run_info += f", exit code {exit_code}"
+        if last_run.get("process_killed"):
+            run_info += ", SIGTERM (megölve)"
+        if last_run.get("watchdog_triggered"):
+            run_info += ", watchdog leállította"
+        lines.append(run_info)
+
+    # 3. Missing steps (where it stopped)
+    if pipe["missing_steps"]:
+        lines.append("Hiányzó lépések: " + ", ".join(pipe["missing_steps"]))
+
+    # 4. Completed steps summary
+    done = pipe["completed_steps"]
+    if done:
+        lines.append("Kész: " + ", ".join(done))
+
+    # 5. Article count
+    lines.append(f"Cikkek: {article_count} | {target_date}")
+
+    # Short notification message (first reason + article count)
+    short_msg = f"{article_count} cikk | " + (_reason_to_human(report["criticality_reasons"][0]) if report["criticality_reasons"] else "OK")
+    short_msg = short_msg[:200]  # notification subtitle limit
+
+    # Full dialog message (multi-line, capped at ~500 chars for osascript)
+    full_msg = "\n".join(lines)
+    if len(full_msg) > 480:
+        full_msg = full_msg[:477] + "..."
+
+    notify_mac("Pipeline Report", short_msg, full_msg, crit)
 
     print(f"[pipeline_reporter] Status: {crit} | Articles: {article_count}")
 
