@@ -192,8 +192,13 @@ def generate_with_free_api(prompt, system_prompt=None):
             return None, False
         
         try:
-            # Create client with the available key
-            client = genai.Client(api_key=key)
+            # Create client with the available key; set API-level timeout to prevent
+            # workers from hanging indefinitely on slow responses.
+            from google.genai import types as _genai_types
+            client = genai.Client(
+                api_key=key,
+                http_options=_genai_types.HttpOptions(timeout=90000),
+            )
             
             # Try models in order (primary + fallbacks)
             models_to_try = [MODEL_NAME] + [m for m in MODEL_FALLBACKS if m != MODEL_NAME]
@@ -208,7 +213,6 @@ def generate_with_free_api(prompt, system_prompt=None):
                             "temperature": 0.7,
                             "max_output_tokens": 8192,
                         },
-                        http_options={"timeout": 90},
                     )
                     
                     # Record usage on success
