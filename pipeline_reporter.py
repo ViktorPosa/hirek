@@ -513,11 +513,14 @@ def assess_criticality(files, articles, errors, runs, process_killed, watchdog_k
             level = "WARNING"
         reasons.append(f"rss_404_count:{errors['rss_404']}")
 
-    image_fail = errors["image_failures"]
-    if article_count > 0 and image_fail > article_count * 0.1:
+    # Image health is judged by how many articles actually ended up WITHOUT an
+    # image — not by the raw "Download failed" log count (retries/fallbacks make
+    # that number meaningless as a miss rate).
+    image_missing = articles["without_image"]
+    if article_count > 0 and image_missing > article_count * 0.1:
         if level not in ("CRITICAL",):
             level = "WARNING"
-        reasons.append(f"image_fail_rate:{round(image_fail/article_count*100,1)}%")
+        reasons.append(f"image_missing_rate:{round(image_missing/article_count*100,1)}%")
 
     if level == "WARNING":
         return level, reasons
@@ -531,9 +534,9 @@ def assess_criticality(files, articles, errors, runs, process_killed, watchdog_k
         level = "INFO"
         reasons.append(f"pairing_failures:{errors['pairing_failures']}")
 
-    if image_fail > 0:
+    if image_missing > 0:
         level = "INFO"
-        reasons.append(f"image_failures:{image_fail}")
+        reasons.append(f"images_missing:{image_missing}")
 
     if had_process_kill and not (i4_missing or i5_missing or toplist_missing):
         level = "INFO"
@@ -546,9 +549,57 @@ def assess_criticality(files, articles, errors, runs, process_killed, watchdog_k
 # Main report builder
 # ---------------------------------------------------------------------------
 
+def load_run_timing(target_date: str):
+    """Load Output/<date>/run_timing.json (written by run_pipeline.py) holding
+    the run's exact start/end and per-step durations. Returns dict or None."""
+    path = os.path.join(OUTPUT_DIR, target_date, "run_timing.json")
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
 def build_report(target_date: str):
     # Parse scheduler.log
     runs, process_killed, watchdog_kills, completed_steps = parse_scheduler_log(target_date)
+
+    # Merge in steps recorded by run_pipeline.py itself (run_timing.json). This is
+    # the authoritative source and covers manual runs too — scheduler.log only
+    # captures runs launched by the scheduler, so a manual run would otherwise
+    # show almost no completed steps.
+    run_timing = load_run_timing(target_date)
+    completed_steps = set(completed_steps)
+    if run_timing and run_timing.get("steps"):
+        for s in run_timing["steps"]:
+            if s.get("status") == "OK" and s.get("name"):
+                completed_steps.add(s["name"])
+
+    # Surface the actual pipeline run (manual OR scheduled) in the runs table if
+    # scheduler.log didn't already capture it. Dedup by start time (within 120s)
+    # so a scheduler-launched run isn't listed twice.
+    if run_timing and run_timing.get("started_at"):
+        rt_start = run_timing["started_at"]
+
+        def _near(a, b):
+            try:
+                return abs((datetime.fromisoformat(a) - datetime.fromisoformat(b)).total_seconds()) <= 120
+            except Exception:
+                return False
+
+        if not any(r.get("started_at") and _near(r["started_at"], rt_start) for r in runs):
+            had_err = any(s.get("status") in ("ERROR", "TIMEOUT") for s in run_timing.get("steps", []))
+            runs.append({
+                "scheduled_at": "közvetlen",
+                "started_at": rt_start,
+                "ended_at": run_timing.get("ended_at"),
+                "duration_seconds": int(round(run_timing.get("duration_seconds", 0) or 0)),
+                "exit_code": 1 if had_err else 0,
+                "status": "WARNING" if had_err else "OK",
+                "process_killed": False,
+                "watchdog_triggered": False,
+            })
+            runs.sort(key=lambda r: r.get("started_at") or "")
 
     # Parse pipeline_errors.log
     errors, failed_feeds = parse_pipeline_errors(target_date)
@@ -572,14 +623,21 @@ def build_report(target_date: str):
             deduped_feeds.append(f)
     rss_stats["failed_feed_list"] = deduped_feeds
 
-    # Image stats
+    # Image stats — based on ACTUAL article outcomes (how many articles ended up
+    # with an image), NOT the raw "Download failed" log-line count. That count
+    # tallies per-source retry failures that are recovered by fallbacks (and even
+    # accumulates across aborted runs the same day), so it wildly overstates the
+    # real miss rate (e.g. 303 logged failures while 308/316 articles have images).
     image_attempted = articles["total"]
-    image_failed = errors["image_failures"]
-    image_rate = round(image_failed / image_attempted * 100, 1) if image_attempted else 0.0
+    image_missing = articles["without_image"]
+    image_rate = round(image_missing / image_attempted * 100, 1) if image_attempted else 0.0
     images = {
         "attempted": image_attempted,
-        "failed": image_failed,
+        "with_image": articles["with_image"],
+        "without_image": image_missing,
+        "failed": image_missing,
         "failure_rate_pct": image_rate,
+        "download_errors_logged": errors["image_failures"],
     }
 
     # Overall exit code
@@ -621,6 +679,7 @@ def build_report(target_date: str):
         "errors": errors,
         "files": files,
         "history_7d": history_7d,
+        "run_timing": run_timing,
     }
     return report
 
@@ -810,6 +869,40 @@ def generate_html(report):
     if pipe["missing_steps"]:
         missing_steps_html = '<p style="color:#dc2626;margin-top:0.5rem;">Hiányzó lépések: ' + ", ".join(pipe["missing_steps"]) + "</p>"
 
+    # ----- Run timing: exact start/end + per-step durations -----
+    rt = r.get("run_timing")
+    timing_section_html = ""
+    if rt and rt.get("steps"):
+        step_rows = ""
+        for s in rt["steps"]:
+            stt = s.get("status", "OK")
+            sc = {"OK": "#22c55e", "TIMEOUT": "#ca8a04", "ERROR": "#dc2626"}.get(stt, "#6b7280")
+            dur = int(round(s.get("duration_seconds", 0) or 0))
+            step_rows += f"""<tr>
+              <td>{s.get('description','')} <span style="color:#6b7280;font-size:0.85em;">({s.get('name','')})</span></td>
+              <td>{_ts_display(s.get('started_at'))}</td>
+              <td>{_ts_display(s.get('ended_at'))}</td>
+              <td style="font-weight:700;">{_format_duration(dur)}</td>
+              <td><span class="badge" style="background:{sc};color:#fff;">{stt}</span></td>
+            </tr>"""
+        total_dur = int(round(rt.get("duration_seconds", 0) or 0))
+        timing_section_html = f"""
+  <div class="section-title">Futás időzítése</div>
+  <div class="card">
+    <div class="grid-4" style="margin-bottom:1rem;">
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Dátum</div><div style="font-size:1.15rem;font-weight:800;">{rt.get('date','–')}</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Indítás</div><div style="font-size:1.15rem;font-weight:800;">{_ts_display(rt.get('started_at'))}</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">{_ts_display(rt.get('ended_at'))}</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">{_format_duration(total_dur)}</div></div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Lépés</th><th>Indítás</th><th>Befejezés</th><th>Időtartam</th><th>Státusz</th></tr></thead>
+        <tbody>{step_rows}</tbody>
+      </table>
+    </div>
+  </div>"""
+
     # Key metrics
     overall_ec = pipe.get("overall_exit_code")
     pipeline_status_text = STATUS_HU.get(crit, crit)
@@ -929,6 +1022,7 @@ def generate_html(report):
       {missing_steps_html}
     </div>
   </div>
+  {timing_section_html}
 
   <!-- ARTICLE ANALYSIS -->
   <div class="section-title">Cikkelemzés</div>
@@ -1141,6 +1235,12 @@ def _reason_to_human(reason):
     if reason.startswith("image_fail_rate:"):
         pct = reason.split(":", 1)[1]
         return f"Magas képletöltési hibaarány: {pct}. {HUMAN_ERRORS['image_download']}"
+    if reason.startswith("image_missing_rate:"):
+        pct = reason.split(":", 1)[1]
+        return f"Sok cikk maradt kép nélkül: {pct} a cikkeknek."
+    if reason.startswith("images_missing:"):
+        n = reason.split(":", 1)[1]
+        return f"{n} cikk maradt kép nélkül (a többinél a képillesztés sikerült)."
     if reason.startswith("api_timeout:"):
         n = reason.split(":", 1)[1]
         return f"API timeout: {n} alkalommal. {HUMAN_ERRORS['api_timeout']}"

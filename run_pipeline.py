@@ -22,6 +22,88 @@ os.environ['GCM_INTERACTIVE'] = 'never'
 # Kept open for the whole run so the single-instance flock stays held (see main()).
 _PIPELINE_LOCK_FH = None
 
+# --- Run timing capture -----------------------------------------------------
+# Populated during the run so the reporter can show exact start/end + per-step
+# durations even for manual (non-scheduler) runs. Written to
+# Output/<date>/run_timing.json at the end (see write_run_timing()).
+_RUN_START_TS = None          # time.time() when the pipeline started
+STEP_TIMINGS = []             # list of {name, description, started_at, ended_at, duration_seconds, status}
+_CAFFEINATE_PROC = None       # `caffeinate` power-assertion child (keeps macOS awake mid-run)
+
+
+def _start_caffeinate():
+    """Hold a macOS power assertion so the machine can't idle/system-sleep while
+    the pipeline runs (a plain running process does NOT prevent sleep on its own;
+    an unattended 06:00 run got killed when macOS idle-slept). Tied to our PID via
+    `-w`, so it auto-exits when the pipeline exits — even if the pipeline is
+    killed. Non-fatal."""
+    global _CAFFEINATE_PROC
+    try:
+        _CAFFEINATE_PROC = subprocess.Popen(
+            ["caffeinate", "-i", "-m", "-s", "-w", str(os.getpid())],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        print("[caffeinate] Sleep prevented for the duration of the pipeline run.")
+    except Exception as e:
+        print(f"[caffeinate] WARNING: could not prevent sleep: {e}")
+        _CAFFEINATE_PROC = None
+
+
+def _stop_caffeinate():
+    """Release the power assertion. Non-fatal (caffeinate also self-exits via -w)."""
+    global _CAFFEINATE_PROC
+    if _CAFFEINATE_PROC is None:
+        return
+    try:
+        if _CAFFEINATE_PROC.poll() is None:
+            _CAFFEINATE_PROC.terminate()
+    except Exception:
+        pass
+    _CAFFEINATE_PROC = None
+
+
+def _record_step(name, description, start_ts, end_ts, status):
+    """Append one step's wall-clock timing to STEP_TIMINGS. Never raises."""
+    try:
+        STEP_TIMINGS.append({
+            "name": name,
+            "description": description,
+            "started_at": datetime.datetime.fromtimestamp(start_ts).isoformat(timespec="seconds"),
+            "ended_at": datetime.datetime.fromtimestamp(end_ts).isoformat(timespec="seconds"),
+            "duration_seconds": round(end_ts - start_ts, 1),
+            "status": status,
+        })
+    except Exception:
+        pass
+
+
+def write_run_timing(base_dir):
+    """Write Output/<today>/run_timing.json with the run's exact start/end and
+    per-step durations, so the reporter can show precise timing for any run
+    (manual or scheduled). Non-fatal. Returns the path or None."""
+    if _RUN_START_TS is None:
+        return None
+    try:
+        end_ts = time.time()
+        today = datetime.date.today().strftime('%Y-%m-%d')
+        out_dir = os.path.join(base_dir, 'Output', today)
+        os.makedirs(out_dir, exist_ok=True)
+        payload = {
+            "date": today,
+            "started_at": datetime.datetime.fromtimestamp(_RUN_START_TS).isoformat(timespec="seconds"),
+            "ended_at": datetime.datetime.fromtimestamp(end_ts).isoformat(timespec="seconds"),
+            "duration_seconds": round(end_ts - _RUN_START_TS, 1),
+            "steps": STEP_TIMINGS,
+        }
+        path = os.path.join(out_dir, 'run_timing.json')
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+        print(f"[timing] Wrote run timing to {path}")
+        return path
+    except Exception as e:
+        print(f"[timing] WARNING: could not write run_timing.json: {e}")
+        return None
+
 """
 LEÍRÁS:
 Ez a fő vezérlő szkript (pipeline orchestrator), amely egymás után futtatja a hírfeldolgozó folyamat lépéseit.
@@ -114,19 +196,23 @@ def run_script(script_name, description, extra_args=None, timeout=None):
             except subprocess.TimeoutExpired:
                 print(f"\n⏱️  {script_name} exceeded {timeout}s — terminating and continuing pipeline.")
                 _terminate_process_group(proc)
+                _record_step(script_name, description, start_time, time.time(), "TIMEOUT")
                 return False
             if returncode != 0:
                 raise subprocess.CalledProcessError(returncode, cmd)
 
         elapsed_time = time.time() - start_time
         print(f"\n>>> {script_name} completed successfully in {elapsed_time:.2f} seconds.")
+        _record_step(script_name, description, start_time, time.time(), "OK")
         return True
     except subprocess.CalledProcessError as e:
         print(f"\n!!! ERROR running {script_name}: {e}")
         print("Pipeline stopped due to error.")
+        _record_step(script_name, description, start_time, time.time(), "ERROR")
         return False
     except Exception as e:
         print(f"\n!!! UNEXPECTED ERROR: {e}")
+        _record_step(script_name, description, start_time, time.time(), "ERROR")
         return False
 
 def main():
@@ -326,6 +412,9 @@ def main():
     print("Starting News Processing Pipeline (JSON Version)")
     print("=" * 50)
     total_start = time.time()
+    global _RUN_START_TS
+    _RUN_START_TS = total_start
+    _start_caffeinate()
 
     # --- (A) Single-instance lock (advisory flock, non-blocking) ---
     # Prevents overlapping runs (launchd + scheduler triggering at the same time).
@@ -568,6 +657,8 @@ def main():
             print(f"\n>>> rss_creator.py completed successfully in {rss_elapsed:.2f} seconds.")
         else:
             print(f"\n!!! ERROR: rss_creator.py exited with code {rss_returncode}")
+        _record_step("rss_creator.py", "Generating Custom RSS Feeds", rss_start, time.time(),
+                     "OK" if rss_returncode == 0 else "ERROR")
         
         # Write the signal file so news_filter knows rss_creator is done
         try:
@@ -586,6 +677,8 @@ def main():
         else:
             print(f"\n!!! ERROR: news_filter.py exited with code {filter_returncode}")
             success = False
+        _record_step("news_filter.py", "Collecting RSS Links", filter_start, time.time(),
+                     "OK" if filter_returncode == 0 else "ERROR")
         
         # Clean up signal file
         try:
@@ -794,6 +887,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nPipeline interrupted by user.")
     finally:
+        _base_dir = os.path.dirname(os.path.abspath(__file__))
+
         # The pipeline disconnects NordVPN for the Gemini-dependent steps
         # (Phase 1 generators, summarizer_json.py, youtube_scraper.py's free
         # Gemini API). By here all of those have run (or the pipeline aborted),
@@ -803,3 +898,17 @@ if __name__ == "__main__":
             vpn_control.connect(wait=True, timeout=90)
         except Exception as e:
             print(f"[vpn] WARNING: reconnect after pipeline failed: {e}")
+
+        # Persist exact run timing (start/end + per-step durations), then
+        # regenerate the HTML report so it always reflects this run — whether
+        # started manually or by the scheduler. Both are non-fatal.
+        write_run_timing(_base_dir)
+        print("\n📊 Generating pipeline report (report_latest.html)...")
+        try:
+            subprocess.run([sys.executable, "pipeline_reporter.py"],
+                           cwd=_base_dir, check=False)
+        except Exception as e:
+            print(f"[report] WARNING: could not generate report: {e}")
+
+        # Release the anti-sleep power assertion now that the run is fully done.
+        _stop_caffeinate()
