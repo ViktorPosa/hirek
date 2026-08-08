@@ -712,6 +712,29 @@ def _format_duration(seconds):
     return f"{s}s"
 
 
+def _format_step_duration(seconds):
+    """Format a per-step duration. Unlike _format_duration, a real sub-second
+    measurement is shown as "<1s" (not "–"), so fast-but-successful steps aren't
+    mistaken for missing data. "–" is reserved for a genuinely unknown value."""
+    if seconds is None:
+        return "–"
+    try:
+        seconds = float(seconds)
+    except (TypeError, ValueError):
+        return "–"
+    if seconds < 1:
+        return "<1s"
+    total = int(round(seconds))
+    h = total // 3600
+    m = (total % 3600) // 60
+    s = total % 60
+    if h:
+        return f"{h}ó {m}p"
+    elif m:
+        return f"{m}p {s}s"
+    return f"{s}s"
+
+
 def _ts_display(iso_ts):
     if not iso_ts:
         return "–"
@@ -877,12 +900,11 @@ def generate_html(report):
         for s in rt["steps"]:
             stt = s.get("status", "OK")
             sc = {"OK": "#22c55e", "TIMEOUT": "#ca8a04", "ERROR": "#dc2626"}.get(stt, "#6b7280")
-            dur = int(round(s.get("duration_seconds", 0) or 0))
             step_rows += f"""<tr>
               <td>{s.get('description','')} <span style="color:#6b7280;font-size:0.85em;">({s.get('name','')})</span></td>
               <td>{_ts_display(s.get('started_at'))}</td>
               <td>{_ts_display(s.get('ended_at'))}</td>
-              <td style="font-weight:700;">{_format_duration(dur)}</td>
+              <td style="font-weight:700;">{_format_step_duration(s.get('duration_seconds'))}</td>
               <td><span class="badge" style="background:{sc};color:#fff;">{stt}</span></td>
             </tr>"""
         total_dur = int(round(rt.get("duration_seconds", 0) or 0))
