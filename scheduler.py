@@ -157,7 +157,7 @@ def schedule_wake(target_dt):
         log(f"❌ Error scheduling wake: {e}")
 
 def main():
-    global current_process
+    global current_process, current_report_process
     log("=== News Pipeline & TTS Scheduler Started ===")
     log(f"Pipeline times: {', '.join(PIPELINE_RUN_TIMES)}")
     log(f"TTS times: 09:00 (Daily)")

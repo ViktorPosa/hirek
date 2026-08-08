@@ -1166,7 +1166,7 @@ def main():
     args = parser.parse_args()
     if args.no_popup:
         global notify_mac
-        notify_mac = lambda title, msg, level: None
+        notify_mac = lambda title, short_message, detail_message, level: None
 
     if args.date:
         target_date = args.date

@@ -56,25 +56,68 @@ PIPELINE_STEPS = [
     ("ajanlott_generator.py", "Generating Recommendations", "ajanlott"),
     ("filter_importance.py", "Splitting Importance 4/5 into Separate Files", "importance"),
     ("randomize_sections.py", "Randomizing Sections", "randomize"),
+    ("image_tags_sidecar.py", "Writing per-image tag sidecars (local only)", "imagetags"),
 ]
 
 
 
 
-def run_script(script_name, description, extra_args=None):
+# Per-generator wall-clock cap for PHASE 1 (weather/market). A stuck Gemini
+# Selenium call must not hang the whole pipeline: if a generator exceeds this it
+# is killed and the run continues to the news steps.
+PHASE1_GENERATOR_TIMEOUT = 900  # seconds (15 min)
+
+
+def _terminate_process_group(proc):
+    """Kill a Popen and its whole process group (Chrome/chromedriver children)."""
+    try:
+        pgid = os.getpgid(proc.pid)
+    except Exception:
+        pgid = None
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        if proc.poll() is not None:
+            return
+        try:
+            if pgid is not None:
+                os.killpg(pgid, sig)
+            else:
+                proc.send_signal(sig)
+        except Exception:
+            pass
+        try:
+            proc.wait(timeout=10)
+            return
+        except Exception:
+            continue
+
+
+def run_script(script_name, description, extra_args=None, timeout=None):
     print(f"\n{'='*50}")
     print(f"STEP: {description} ({script_name})")
     print(f"{'='*50}\n")
-    
+
     start_time = time.time()
+    # Build command with extra arguments
+    cmd = [sys.executable, script_name]
+    if extra_args:
+        cmd.extend(extra_args)
+
     try:
-        # Build command with extra arguments
-        cmd = [sys.executable, script_name]
-        if extra_args:
-            cmd.extend(extra_args)
-        
-        result = subprocess.run(cmd, check=True)
-        
+        if timeout is None:
+            subprocess.run(cmd, check=True)
+        else:
+            # Own process group so a hang can be killed together with any
+            # Chrome/chromedriver children the step spawned.
+            proc = subprocess.Popen(cmd, start_new_session=True)
+            try:
+                returncode = proc.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                print(f"\n⏱️  {script_name} exceeded {timeout}s — terminating and continuing pipeline.")
+                _terminate_process_group(proc)
+                return False
+            if returncode != 0:
+                raise subprocess.CalledProcessError(returncode, cmd)
+
         elapsed_time = time.time() - start_time
         print(f"\n>>> {script_name} completed successfully in {elapsed_time:.2f} seconds.")
         return True
@@ -107,6 +150,7 @@ def main():
     parser.add_argument("--skip-validate", action="store_true", help="Skip section validation (section_validator.py)")
     parser.add_argument("--skip-importance", action="store_true", help="Skip importance splitting (filter_importance.py)")
     parser.add_argument("--skip-randomize", action="store_true", help="Skip section randomization (randomize_sections.py)")
+    parser.add_argument("--skip-imagetags", action="store_true", help="Skip per-image tag sidecars (image_tags_sidecar.py)")
     parser.add_argument("--skip-tts", action="store_true", help="Skip TTS script generation (tts_generator.py)")
     parser.add_argument("--skip-ttsaudio", action="store_true", help="Skip TTS audio generation (gemini_tts_selenium.py)")
     parser.add_argument("--gemini-link", action="store_true", help="Use Gemini (Cookie Fallback) for link filtering")
@@ -427,14 +471,23 @@ def main():
     if args.gemini_api_key:
          gen_extra_args.append(f"--gemini-api-key={args.gemini_api_key}")
 
+    # Gemini blocks VPN/datacenter IPs, and the PHASE 1 generators use
+    # gemini-selenium — so drop NordVPN BEFORE they run, not only before the
+    # later summarization step. Non-fatal: on failure we continue anyway.
+    print("\n🔌 VPN: disconnecting NordVPN before Gemini Selenium generators...")
+    try:
+        vpn_control.disconnect(wait=True, timeout=60)
+    except Exception as e:
+        print(f"[vpn] WARNING: disconnect before generators failed: {e}")
+
     phase1_success = True
     for script, desc, arg_name in phase1_steps:
         # Check skip
         if getattr(args, f"skip_{arg_name}", False):
             print(f"Skipping {desc}")
             continue
-            
-        if not run_script(script, desc, gen_extra_args):
+
+        if not run_script(script, desc, gen_extra_args, timeout=PHASE1_GENERATOR_TIMEOUT):
             phase1_success = False
             # Don't break — continue with remaining Phase 1 generators
             print(f"⚠️ {desc} failed, continuing with remaining generators...")
@@ -740,3 +793,13 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("\nPipeline interrupted by user.")
+    finally:
+        # The pipeline disconnects NordVPN for the Gemini-dependent steps
+        # (Phase 1 generators, summarizer_json.py, youtube_scraper.py's free
+        # Gemini API). By here all of those have run (or the pipeline aborted),
+        # so restore the tunnel. Non-fatal: never blocks shutdown.
+        print("\n🔌 VPN: reconnecting NordVPN (pipeline finished)...")
+        try:
+            vpn_control.connect(wait=True, timeout=90)
+        except Exception as e:
+            print(f"[vpn] WARNING: reconnect after pipeline failed: {e}")
