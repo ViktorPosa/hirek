@@ -620,13 +620,19 @@ def main():
         print("\n🔄 PARALLEL RSS MODE: Running RSS Creator and RSS Reader simultaneously...")
         
         signal_file = os.path.join(daily_output_dir, 'rss_creator_done.signal')
-        # Clean up any stale signal file
-        if os.path.exists(signal_file):
-            try:
-                os.remove(signal_file)
-            except Exception:
-                pass
-        
+        # Clean up any stale signal / handoff files from a previous run so the
+        # failed-feed → rss_creator handoff starts from a clean slate.
+        for _stale in (
+            signal_file,
+            os.path.join(daily_output_dir, 'failed_feeds_ready.signal'),
+            os.path.join(daily_output_dir, 'failed_feeds_for_rss_creator.txt'),
+        ):
+            if os.path.exists(_stale):
+                try:
+                    os.remove(_stale)
+                except Exception:
+                    pass
+
         # Start rss_creator as a subprocess
         rss_cmd = [sys.executable, "rss_creator.py"]
         print(f"\n{'='*50}")
