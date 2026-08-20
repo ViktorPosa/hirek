@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-08-20T14:52:06",
+  "generated_at": "2026-08-20T15:03:47",
   "date": "2026-08-20",
-  "criticality": "CRITICAL",
+  "criticality": "INFO",
   "criticality_reasons": [
-    "news_push_failed:push returncode 128: fatal: unable to access 'https://github.com/ViktorPosa/hirek.git/': Failed to connect to github.com port 443 after 20 ms: Couldn't connect to server\n"
+    "images_missing:13"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-08-19T18:21:02",
-        "ended_at": "2026-08-20T14:52:06",
-        "duration_seconds": 73864,
+        "ended_at": "2026-08-20T15:03:47",
+        "duration_seconds": 74565,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -41,35 +41,35 @@
     ]
   },
   "articles": {
-    "total": 450,
-    "with_image": 436,
-    "without_image": 14,
+    "total": 470,
+    "with_image": 457,
+    "without_image": 13,
     "by_importance": {
       "1": 9,
-      "2": 113,
-      "3": 228,
-      "4": 88,
+      "2": 118,
+      "3": 238,
+      "4": 93,
       "5": 12
     },
     "by_section": {
-      "tech": 91,
-      "eletmod": 89,
-      "belfold_kulfold": 57,
-      "szorakozas": 53,
-      "uzlet": 50,
+      "tech": 95,
+      "eletmod": 91,
+      "belfold_kulfold": 58,
+      "szorakozas": 57,
+      "uzlet": 56,
       "tudomany": 40,
-      "gamer": 32,
-      "sport": 17,
-      "bulvar": 13,
+      "gamer": 33,
+      "sport": 18,
+      "bulvar": 14,
       "kripto": 8
     }
   },
   "images": {
-    "attempted": 450,
-    "with_image": 436,
-    "without_image": 14,
-    "failed": 14,
-    "failure_rate_pct": 3.1,
+    "attempted": 470,
+    "with_image": 457,
+    "without_image": 13,
+    "failed": 13,
+    "failure_rate_pct": 2.8,
     "download_errors_logged": 0
   },
   "rss": {
@@ -79,17 +79,12 @@
     "success_rate_pct": 99.0,
     "failed_feed_list": [
       {
-        "url": "https://femina.hu/24ora/rss.xml",
+        "url": "https://sorozatjunkie.hu/feed",
         "error_type": "rss_timeout",
         "error_short": "Timeout"
       },
       {
-        "url": "https://wmn.hu/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://wallstreetzen.com/blog/feed/",
+        "url": "https://www.theguardian.com/europe/rss",
         "error_type": "rss_timeout",
         "error_short": "Timeout"
       }
@@ -100,7 +95,7 @@
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 3,
+    "rss_timeout": 2,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
@@ -115,11 +110,11 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 350
+      "item_count": 365
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 88
+      "item_count": 93
     },
     "data_i5_json": {
       "exists": true,
@@ -175,7 +170,7 @@
     },
     {
       "date": "2026-08-20",
-      "articles": 350,
+      "articles": 365,
       "status": "OK",
       "exit_code": 0
     }
@@ -183,8 +178,8 @@
   "run_timing": {
     "date": "2026-08-20",
     "started_at": "2026-08-19T18:21:02",
-    "ended_at": "2026-08-20T14:52:06",
-    "duration_seconds": 73863.8,
+    "ended_at": "2026-08-20T15:03:47",
+    "duration_seconds": 74564.9,
     "steps": [
       {
         "name": "link_dedup.py",
@@ -16593,6 +16588,150 @@
         "ended_at": "2026-08-20T14:52:06",
         "duration_seconds": 0.2,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-20T14:55:35",
+        "ended_at": "2026-08-20T14:57:03",
+        "duration_seconds": 88.2,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-20T14:55:35",
+        "ended_at": "2026-08-20T14:57:06",
+        "duration_seconds": 91.4,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-20T14:57:06",
+        "ended_at": "2026-08-20T14:57:07",
+        "duration_seconds": 0.8,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-20T14:57:22",
+        "ended_at": "2026-08-20T14:58:29",
+        "duration_seconds": 66.6,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-20T14:58:29",
+        "ended_at": "2026-08-20T14:58:33",
+        "duration_seconds": 4.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-20T14:58:33",
+        "ended_at": "2026-08-20T14:58:42",
+        "duration_seconds": 8.9,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-20T14:58:42",
+        "ended_at": "2026-08-20T14:58:42",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-20T14:58:42",
+        "ended_at": "2026-08-20T14:58:42",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-20T14:58:42",
+        "ended_at": "2026-08-20T14:58:42",
+        "duration_seconds": 0.2,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-20T15:00:36",
+        "ended_at": "2026-08-20T15:02:04",
+        "duration_seconds": 87.5,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-20T15:00:36",
+        "ended_at": "2026-08-20T15:02:07",
+        "duration_seconds": 90.5,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-20T15:02:07",
+        "ended_at": "2026-08-20T15:02:07",
+        "duration_seconds": 0.9,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-20T15:02:23",
+        "ended_at": "2026-08-20T15:03:34",
+        "duration_seconds": 70.8,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-20T15:03:34",
+        "ended_at": "2026-08-20T15:03:38",
+        "duration_seconds": 4.0,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-20T15:03:38",
+        "ended_at": "2026-08-20T15:03:47",
+        "duration_seconds": 9.2,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-20T15:03:47",
+        "ended_at": "2026-08-20T15:03:47",
+        "duration_seconds": 0.0,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-20T15:03:47",
+        "ended_at": "2026-08-20T15:03:47",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-20T15:03:47",
+        "ended_at": "2026-08-20T15:03:47",
+        "duration_seconds": 0.1,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -16600,8 +16739,7 @@
         "status": "disabled"
       },
       "news_push": {
-        "status": "failed",
-        "error": "push returncode 128: fatal: unable to access 'https://github.com/ViktorPosa/hirek.git/': Failed to connect to github.com port 443 after 20 ms: Couldn't connect to server\n"
+        "status": "ok"
       },
       "images_push": {
         "status": "ok"
@@ -16613,8 +16751,7 @@
       "status": "disabled"
     },
     "news_push": {
-      "status": "failed",
-      "error": "push returncode 128: fatal: unable to access 'https://github.com/ViktorPosa/hirek.git/': Failed to connect to github.com port 443 after 20 ms: Couldn't connect to server\n"
+      "status": "ok"
     },
     "images_push": {
       "status": "ok"
