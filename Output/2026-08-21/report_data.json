@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-08-21T12:56:29",
+  "generated_at": "2026-08-21T13:06:45",
   "date": "2026-08-21",
   "criticality": "INFO",
   "criticality_reasons": [
@@ -11,8 +11,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-08-21T12:51:53",
-        "ended_at": "2026-08-21T12:56:28",
-        "duration_seconds": 275,
+        "ended_at": "2026-08-21T13:06:45",
+        "duration_seconds": 892,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -41,61 +41,50 @@
     ]
   },
   "articles": {
-    "total": 331,
-    "with_image": 328,
+    "total": 358,
+    "with_image": 355,
     "without_image": 3,
     "by_importance": {
       "1": 21,
-      "2": 110,
-      "3": 133,
-      "4": 50,
-      "5": 17
+      "2": 122,
+      "3": 144,
+      "4": 52,
+      "5": 19
     },
     "by_section": {
-      "tech": 70,
-      "eletmod": 59,
-      "szorakozas": 46,
-      "belfold_kulfold": 38,
-      "gamer": 28,
-      "uzlet": 27,
-      "tudomany": 20,
-      "bulvar": 19,
-      "sport": 19,
-      "kripto": 5
+      "tech": 74,
+      "eletmod": 65,
+      "szorakozas": 47,
+      "belfold_kulfold": 41,
+      "uzlet": 31,
+      "gamer": 31,
+      "tudomany": 21,
+      "bulvar": 21,
+      "sport": 21,
+      "kripto": 6
     }
   },
   "images": {
-    "attempted": 331,
-    "with_image": 328,
+    "attempted": 358,
+    "with_image": 355,
     "without_image": 3,
     "failed": 3,
-    "failure_rate_pct": 0.9,
-    "download_errors_logged": 2
+    "failure_rate_pct": 0.8,
+    "download_errors_logged": 0
   },
   "rss": {
     "total_feeds": 102,
     "ok_feeds": 101,
     "failed_feeds": 1,
     "success_rate_pct": 99.0,
-    "failed_feed_list": [
-      {
-        "url": "https://caravantimes.co.uk/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.carava"
-      },
-      {
-        "url": "https://www.playboy.com/read/sex-relationships/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      }
-    ]
+    "failed_feed_list": []
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 2,
+    "rss_timeout": 0,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
@@ -103,22 +92,22 @@
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
-    "image_failures": 2,
+    "image_failures": 0,
     "process_killed": 0,
     "watchdog_kills": 0
   },
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 264
+      "item_count": 287
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 50
+      "item_count": 52
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 17
+      "item_count": 19
     },
     "data_toplist_json": {
       "exists": true,
@@ -170,7 +159,7 @@
     },
     {
       "date": "2026-08-21",
-      "articles": 264,
+      "articles": 287,
       "status": "OK",
       "exit_code": 0
     }
@@ -178,8 +167,8 @@
   "run_timing": {
     "date": "2026-08-21",
     "started_at": "2026-08-21T12:51:53",
-    "ended_at": "2026-08-21T12:56:28",
-    "duration_seconds": 275.4,
+    "ended_at": "2026-08-21T13:06:45",
+    "duration_seconds": 891.9,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -292,17 +281,173 @@
         "ended_at": "2026-08-21T12:56:28",
         "duration_seconds": 0.1,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-21T12:58:04",
+        "ended_at": "2026-08-21T12:59:37",
+        "duration_seconds": 93.1,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-21T12:58:04",
+        "ended_at": "2026-08-21T12:59:38",
+        "duration_seconds": 94.2,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-21T12:59:38",
+        "ended_at": "2026-08-21T12:59:39",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-21T12:59:39",
+        "ended_at": "2026-08-21T13:01:01",
+        "duration_seconds": 81.6,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-21T13:01:01",
+        "ended_at": "2026-08-21T13:01:05",
+        "duration_seconds": 4.2,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-21T13:01:05",
+        "ended_at": "2026-08-21T13:01:25",
+        "duration_seconds": 20.3,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-21T13:01:25",
+        "ended_at": "2026-08-21T13:01:25",
+        "duration_seconds": 0.0,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-21T13:01:25",
+        "ended_at": "2026-08-21T13:01:25",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-21T13:01:25",
+        "ended_at": "2026-08-21T13:01:26",
+        "duration_seconds": 0.2,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-21T13:03:04",
+        "ended_at": "2026-08-21T13:05:02",
+        "duration_seconds": 117.7,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-21T13:03:04",
+        "ended_at": "2026-08-21T13:05:04",
+        "duration_seconds": 119.8,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-21T13:05:04",
+        "ended_at": "2026-08-21T13:05:05",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-21T13:05:05",
+        "ended_at": "2026-08-21T13:06:32",
+        "duration_seconds": 86.2,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-21T13:06:32",
+        "ended_at": "2026-08-21T13:06:36",
+        "duration_seconds": 3.9,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-21T13:06:36",
+        "ended_at": "2026-08-21T13:06:45",
+        "duration_seconds": 9.1,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-21T13:06:45",
+        "ended_at": "2026-08-21T13:06:45",
+        "duration_seconds": 0.0,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-21T13:06:45",
+        "ended_at": "2026-08-21T13:06:45",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-21T13:06:45",
+        "ended_at": "2026-08-21T13:06:45",
+        "duration_seconds": 0.2,
+        "status": "OK"
       }
     ],
     "publish": {
       "weather_market_push": {
         "status": "disabled"
+      },
+      "news_push": {
+        "status": "ok"
+      },
+      "images_push": {
+        "status": "ok"
       }
     }
   },
   "publish": {
     "weather_market_push": {
       "status": "disabled"
+    },
+    "news_push": {
+      "status": "ok"
+    },
+    "images_push": {
+      "status": "ok"
     }
   }
 }
