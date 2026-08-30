@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-08-30T21:39:46",
+  "generated_at": "2026-08-30T21:50:24",
   "date": "2026-08-30",
-  "criticality": "CRITICAL",
+  "criticality": "INFO",
   "criticality_reasons": [
-    "news_push_failed:\nremote: error: GH013: Repository rule violations found for refs/heads/main.        \nremote: \nremote: - GITHUB PUSH PROTECTION        \nremote:   —————————————————————————————————————————        \nremot"
+    "images_missing:6"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-08-29T23:55:59",
-        "ended_at": "2026-08-30T21:39:46",
-        "duration_seconds": 78227,
+        "ended_at": "2026-08-30T21:50:24",
+        "duration_seconds": 78865,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -41,14 +41,14 @@
     ]
   },
   "articles": {
-    "total": 426,
-    "with_image": 420,
+    "total": 427,
+    "with_image": 421,
     "without_image": 6,
     "by_importance": {
       "1": 11,
       "2": 163,
       "3": 185,
-      "4": 59,
+      "4": 60,
       "5": 8
     },
     "by_section": {
@@ -58,15 +58,15 @@
       "belfold_kulfold": 54,
       "uzlet": 36,
       "tudomany": 33,
+      "sport": 33,
       "gamer": 32,
-      "sport": 32,
       "bulvar": 16,
       "kripto": 2
     }
   },
   "images": {
-    "attempted": 426,
-    "with_image": 420,
+    "attempted": 427,
+    "with_image": 421,
     "without_image": 6,
     "failed": 6,
     "failure_rate_pct": 1.4,
@@ -77,14 +77,20 @@
     "ok_feeds": 103,
     "failed_feeds": 0,
     "success_rate_pct": 100.0,
-    "failed_feed_list": []
+    "failed_feed_list": [
+      {
+        "url": "https://sokszinuvidek.24.hu/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
+    "rss_timeout": 1,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
@@ -103,7 +109,7 @@
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 59
+      "item_count": 60
     },
     "data_i5_json": {
       "exists": true,
@@ -167,8 +173,8 @@
   "run_timing": {
     "date": "2026-08-30",
     "started_at": "2026-08-29T23:55:59",
-    "ended_at": "2026-08-30T21:39:46",
-    "duration_seconds": 78227.1,
+    "ended_at": "2026-08-30T21:50:24",
+    "duration_seconds": 78864.6,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -18921,6 +18927,150 @@
         "ended_at": "2026-08-30T21:39:46",
         "duration_seconds": 1.3,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-30T21:42:34",
+        "ended_at": "2026-08-30T21:43:54",
+        "duration_seconds": 80.1,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-30T21:42:34",
+        "ended_at": "2026-08-30T21:44:22",
+        "duration_seconds": 108.0,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-30T21:44:22",
+        "ended_at": "2026-08-30T21:44:23",
+        "duration_seconds": 1.3,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-30T21:44:24",
+        "ended_at": "2026-08-30T21:45:32",
+        "duration_seconds": 67.7,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-30T21:45:32",
+        "ended_at": "2026-08-30T21:45:40",
+        "duration_seconds": 8.0,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-30T21:45:40",
+        "ended_at": "2026-08-30T21:45:47",
+        "duration_seconds": 7.4,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-30T21:45:47",
+        "ended_at": "2026-08-30T21:45:47",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-30T21:45:47",
+        "ended_at": "2026-08-30T21:45:47",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-30T21:45:47",
+        "ended_at": "2026-08-30T21:45:48",
+        "duration_seconds": 0.3,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-30T21:47:35",
+        "ended_at": "2026-08-30T21:48:37",
+        "duration_seconds": 61.9,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-30T21:47:35",
+        "ended_at": "2026-08-30T21:49:00",
+        "duration_seconds": 85.1,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-30T21:49:00",
+        "ended_at": "2026-08-30T21:49:01",
+        "duration_seconds": 1.1,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-30T21:49:02",
+        "ended_at": "2026-08-30T21:50:09",
+        "duration_seconds": 67.4,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-30T21:50:09",
+        "ended_at": "2026-08-30T21:50:16",
+        "duration_seconds": 6.9,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-30T21:50:16",
+        "ended_at": "2026-08-30T21:50:23",
+        "duration_seconds": 7.3,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-30T21:50:23",
+        "ended_at": "2026-08-30T21:50:23",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-30T21:50:23",
+        "ended_at": "2026-08-30T21:50:23",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-30T21:50:23",
+        "ended_at": "2026-08-30T21:50:24",
+        "duration_seconds": 0.1,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -18928,8 +19078,7 @@
         "status": "disabled"
       },
       "news_push": {
-        "status": "failed",
-        "error": "\nremote: error: GH013: Repository rule violations found for refs/heads/main.        \nremote: \nremote: - GITHUB PUSH PROTECTION        \nremote:   —————————————————————————————————————————        \nremot"
+        "status": "ok"
       },
       "images_push": {
         "status": "ok"
@@ -18941,8 +19090,7 @@
       "status": "disabled"
     },
     "news_push": {
-      "status": "failed",
-      "error": "\nremote: error: GH013: Repository rule violations found for refs/heads/main.        \nremote: \nremote: - GITHUB PUSH PROTECTION        \nremote:   —————————————————————————————————————————        \nremot"
+      "status": "ok"
     },
     "images_push": {
       "status": "ok"
