@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-08-31T20:49:36",
+  "generated_at": "2026-08-31T21:03:47",
   "date": "2026-08-31",
   "criticality": "INFO",
   "criticality_reasons": [
@@ -11,8 +11,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-08-29T23:55:59",
-        "ended_at": "2026-08-31T20:49:36",
-        "duration_seconds": 161617,
+        "ended_at": "2026-08-31T21:03:47",
+        "duration_seconds": 162468,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -41,32 +41,32 @@
     ]
   },
   "articles": {
-    "total": 674,
-    "with_image": 670,
+    "total": 688,
+    "with_image": 684,
     "without_image": 4,
     "by_importance": {
       "1": 29,
-      "2": 218,
-      "3": 288,
-      "4": 117,
-      "5": 22
+      "2": 225,
+      "3": 292,
+      "4": 119,
+      "5": 23
     },
     "by_section": {
-      "tech": 126,
-      "eletmod": 108,
-      "uzlet": 90,
-      "szorakozas": 85,
-      "belfold_kulfold": 67,
+      "tech": 128,
+      "eletmod": 109,
+      "uzlet": 93,
+      "szorakozas": 89,
+      "belfold_kulfold": 68,
       "tudomany": 65,
-      "gamer": 53,
-      "sport": 43,
+      "gamer": 55,
+      "sport": 44,
       "bulvar": 25,
       "kripto": 12
     }
   },
   "images": {
-    "attempted": 674,
-    "with_image": 670,
+    "attempted": 688,
+    "with_image": 684,
     "without_image": 4,
     "failed": 4,
     "failure_rate_pct": 0.6,
@@ -77,18 +77,29 @@
     "ok_feeds": 103,
     "failed_feeds": 0,
     "success_rate_pct": 100.0,
-    "failed_feed_list": []
+    "failed_feed_list": [
+      {
+        "url": "https://www.economx.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://femina.hu/24ora/rss.xml",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
+    "rss_timeout": 2,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 1,
+    "api_no_response": 0,
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
@@ -99,15 +110,15 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 535
+      "item_count": 546
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 117
+      "item_count": 119
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 22
+      "item_count": 23
     },
     "data_toplist_json": {
       "exists": true,
@@ -159,7 +170,7 @@
     },
     {
       "date": "2026-08-31",
-      "articles": 535,
+      "articles": 546,
       "status": "OK",
       "exit_code": 0
     }
@@ -167,8 +178,8 @@
   "run_timing": {
     "date": "2026-08-31",
     "started_at": "2026-08-29T23:55:59",
-    "ended_at": "2026-08-31T20:49:36",
-    "duration_seconds": 161617.0,
+    "ended_at": "2026-08-31T21:03:47",
+    "duration_seconds": 162467.7,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -39247,6 +39258,222 @@
         "description": "Writing per-image tag sidecars (local only)",
         "started_at": "2026-08-31T20:49:35",
         "ended_at": "2026-08-31T20:49:36",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-31T20:50:55",
+        "ended_at": "2026-08-31T20:52:06",
+        "duration_seconds": 71.0,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-31T20:50:55",
+        "ended_at": "2026-08-31T20:52:40",
+        "duration_seconds": 104.6,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-31T20:52:40",
+        "ended_at": "2026-08-31T20:52:42",
+        "duration_seconds": 2.5,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-31T20:52:43",
+        "ended_at": "2026-08-31T20:53:51",
+        "duration_seconds": 68.1,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-31T20:53:51",
+        "ended_at": "2026-08-31T20:54:00",
+        "duration_seconds": 9.3,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-31T20:54:00",
+        "ended_at": "2026-08-31T20:54:08",
+        "duration_seconds": 7.4,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-31T20:54:08",
+        "ended_at": "2026-08-31T20:54:08",
+        "duration_seconds": 0.0,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-31T20:54:08",
+        "ended_at": "2026-08-31T20:54:08",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-31T20:54:08",
+        "ended_at": "2026-08-31T20:54:08",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-31T20:55:57",
+        "ended_at": "2026-08-31T20:56:57",
+        "duration_seconds": 60.2,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-31T20:55:57",
+        "ended_at": "2026-08-31T20:57:12",
+        "duration_seconds": 75.3,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-31T20:57:12",
+        "ended_at": "2026-08-31T20:57:15",
+        "duration_seconds": 2.5,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-31T20:57:15",
+        "ended_at": "2026-08-31T20:58:23",
+        "duration_seconds": 68.1,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-31T20:58:23",
+        "ended_at": "2026-08-31T20:58:32",
+        "duration_seconds": 8.9,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-31T20:58:32",
+        "ended_at": "2026-08-31T20:58:41",
+        "duration_seconds": 9.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-31T20:58:41",
+        "ended_at": "2026-08-31T20:58:41",
+        "duration_seconds": 0.0,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-31T20:58:41",
+        "ended_at": "2026-08-31T20:58:41",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-31T20:58:41",
+        "ended_at": "2026-08-31T20:58:42",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-08-31T21:00:59",
+        "ended_at": "2026-08-31T21:01:56",
+        "duration_seconds": 57.6,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-08-31T21:00:59",
+        "ended_at": "2026-08-31T21:02:17",
+        "duration_seconds": 78.2,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-08-31T21:02:17",
+        "ended_at": "2026-08-31T21:02:19",
+        "duration_seconds": 2.1,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-08-31T21:02:20",
+        "ended_at": "2026-08-31T21:03:28",
+        "duration_seconds": 68.1,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-08-31T21:03:28",
+        "ended_at": "2026-08-31T21:03:37",
+        "duration_seconds": 9.3,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-08-31T21:03:37",
+        "ended_at": "2026-08-31T21:03:46",
+        "duration_seconds": 8.7,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-08-31T21:03:46",
+        "ended_at": "2026-08-31T21:03:46",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-08-31T21:03:46",
+        "ended_at": "2026-08-31T21:03:46",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-08-31T21:03:46",
+        "ended_at": "2026-08-31T21:03:47",
         "duration_seconds": 0.6,
         "status": "OK"
       }
