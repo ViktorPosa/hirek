@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-09-24T15:32:52",
+  "generated_at": "2026-09-24T15:38:56",
   "date": "2026-09-24",
   "criticality": "INFO",
   "criticality_reasons": [
-    "images_missing:40"
+    "images_missing:38"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
-        "started_at": "2026-09-24T15:32:14",
-        "ended_at": "2026-09-24T15:32:36",
-        "duration_seconds": 21,
+        "started_at": "2026-09-24T15:32:53",
+        "ended_at": "2026-09-24T15:38:56",
+        "duration_seconds": 364,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -20,38 +20,44 @@
       }
     ],
     "overall_exit_code": 0,
-    "completed_steps": [],
-    "missing_steps": [
-      "weather_generator.py",
-      "market_generator.py",
-      "rss_creator.py",
-      "news_filter.py",
-      "link_dedup.py",
-      "summarizer_json.py",
-      "image_downloader.py",
-      "section_validator.py",
+    "completed_steps": [
+      "dedup_fast.py",
       "filter_importance.py",
+      "image_downloader.py",
+      "image_tags_sidecar.py",
+      "justwatch_scraper.py",
+      "link_dedup.py",
+      "market_generator.py",
+      "news_filter.py",
+      "rss_creator.py",
+      "section_validator.py",
+      "summarizer_json.py",
+      "toplist_generator.py",
+      "weather_generator.py",
+      "youtube_scraper.py"
+    ],
+    "missing_steps": [
       "randomize_sections.py"
     ]
   },
   "articles": {
-    "total": 555,
-    "with_image": 515,
-    "without_image": 40,
+    "total": 557,
+    "with_image": 519,
+    "without_image": 38,
     "by_importance": {
-      "1": 14,
-      "2": 154,
+      "1": 15,
+      "2": 155,
       "3": 262,
       "4": 109,
       "5": 16
     },
     "by_section": {
-      "uzlet": 160,
-      "szorakozas": 82,
-      "tech": 79,
+      "uzlet": 159,
+      "szorakozas": 83,
+      "tech": 80,
       "eletmod": 63,
       "belfold_kulfold": 52,
-      "tudomany": 33,
+      "tudomany": 34,
       "gamer": 33,
       "bulvar": 26,
       "kripto": 17,
@@ -59,28 +65,48 @@
     }
   },
   "images": {
-    "attempted": 555,
-    "with_image": 515,
-    "without_image": 40,
-    "failed": 40,
-    "failure_rate_pct": 7.2,
+    "attempted": 557,
+    "with_image": 519,
+    "without_image": 38,
+    "failed": 38,
+    "failure_rate_pct": 6.8,
     "download_errors_logged": 0
   },
   "rss": {
-    "total_feeds": 110,
-    "ok_feeds": 109,
+    "total_feeds": 115,
+    "ok_feeds": 114,
     "failed_feeds": 1,
     "success_rate_pct": 99.1,
     "failed_feed_list": [
       {
-        "url": "https://techpowerup.com/rss/news",
-        "error_type": "rss_403",
-        "error_short": "HTTP 403"
+        "url": "https://vezess.hu/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to vezess.hu "
       },
       {
-        "url": "https://offmedia.hu/feed",
+        "url": "https://www.portfolio.hu/rss/all.xml",
         "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to offmedia.h"
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.portfo"
+      },
+      {
+        "url": "https://hold.hu/holdblog/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to hold.hu po"
+      },
+      {
+        "url": "https://electrek.co/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://drive.hu/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to drive.hu p"
+      },
+      {
+        "url": "https://insideevs.com/rss/articles/all",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to insideevs."
       },
       {
         "url": "https://firstclass.hu/feed",
@@ -88,62 +114,27 @@
         "error_short": "Failed to perform, curl: (7) Failed to connect to firstclass"
       },
       {
-        "url": "https://caravantimes.co.uk/feed",
+        "url": "https://www.portfolio.hu/rss/unios-forrasok.xml",
         "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to caravantim"
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.portfo"
       },
       {
-        "url": "https://9to5mac.com/feed/",
+        "url": "https://www.portfolio.hu/rss/ingatlan.xml",
         "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to 9to5mac.co"
-      },
-      {
-        "url": "https://travelmagazin.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to travelmaga"
-      },
-      {
-        "url": "https://hetediksor.hu/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to hetediksor"
-      },
-      {
-        "url": "https://androgeek.hu/rss/rss.php",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to androgeek."
-      },
-      {
-        "url": "https://allampapirkalkulator.hu/rss",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to allampapir"
-      },
-      {
-        "url": "https://www.makeuseof.com/rss",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.makeus"
-      },
-      {
-        "url": "https://fhm.com/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to fhm.com po"
-      },
-      {
-        "url": "https://www.koncert.hu/rss/hirek",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.koncer"
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.portfo"
       }
     ]
   },
   "errors": {
     "rss_404": 0,
-    "rss_403": 1,
+    "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 11,
+    "rss_timeout": 9,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 1,
+    "api_no_response": 0,
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
@@ -154,7 +145,7 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 430
+      "item_count": 432
     },
     "data_i4_json": {
       "exists": true,
@@ -214,17 +205,130 @@
     },
     {
       "date": "2026-09-24",
-      "articles": 430,
+      "articles": 432,
       "status": "OK",
       "exit_code": 0
     }
   ],
   "run_timing": {
     "date": "2026-09-24",
-    "started_at": "2026-09-24T15:32:14",
-    "ended_at": "2026-09-24T15:32:36",
-    "duration_seconds": 21.3,
-    "steps": [],
+    "started_at": "2026-09-24T15:32:53",
+    "ended_at": "2026-09-24T15:38:56",
+    "duration_seconds": 363.6,
+    "steps": [
+      {
+        "name": "weather_generator.py",
+        "description": "Generating Weather Forecast",
+        "started_at": "2026-09-24T15:33:02",
+        "ended_at": "2026-09-24T15:33:09",
+        "duration_seconds": 7.4,
+        "status": "OK"
+      },
+      {
+        "name": "market_generator.py",
+        "description": "Generating Market Analysis",
+        "started_at": "2026-09-24T15:33:09",
+        "ended_at": "2026-09-24T15:33:18",
+        "duration_seconds": 8.4,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-09-24T15:33:18",
+        "ended_at": "2026-09-24T15:37:07",
+        "duration_seconds": 229.2,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-09-24T15:33:18",
+        "ended_at": "2026-09-24T15:37:23",
+        "duration_seconds": 245.6,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-09-24T15:37:23",
+        "ended_at": "2026-09-24T15:37:26",
+        "duration_seconds": 2.4,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-09-24T15:37:26",
+        "ended_at": "2026-09-24T15:38:41",
+        "duration_seconds": 74.9,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-09-24T15:38:41",
+        "ended_at": "2026-09-24T15:38:49",
+        "duration_seconds": 7.7,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-09-24T15:38:49",
+        "ended_at": "2026-09-24T15:38:54",
+        "duration_seconds": 5.7,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-09-24T15:38:54",
+        "ended_at": "2026-09-24T15:38:54",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-09-24T15:38:54",
+        "ended_at": "2026-09-24T15:38:54",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-09-24T15:38:54",
+        "ended_at": "2026-09-24T15:38:55",
+        "duration_seconds": 0.2,
+        "status": "OK"
+      },
+      {
+        "name": "toplist_generator.py",
+        "description": "Generating Toplists from specific URLs",
+        "started_at": "2026-09-24T15:38:55",
+        "ended_at": "2026-09-24T15:38:56",
+        "duration_seconds": 1.4,
+        "status": "OK"
+      },
+      {
+        "name": "justwatch_scraper.py",
+        "description": "Scraping JustWatch SkyShowtime Trending",
+        "started_at": "2026-09-24T15:38:56",
+        "ended_at": "2026-09-24T15:38:56",
+        "duration_seconds": 0.2,
+        "status": "OK"
+      },
+      {
+        "name": "youtube_scraper.py",
+        "description": "Scraping YouTube Creators for New Videos",
+        "started_at": "2026-09-24T15:38:56",
+        "ended_at": "2026-09-24T15:38:56",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      }
+    ],
     "publish": {
       "weather_market_push": {
         "status": "disabled"
