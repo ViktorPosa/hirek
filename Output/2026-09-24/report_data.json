@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-09-24T14:10:20",
+  "generated_at": "2026-09-24T14:22:13",
   "date": "2026-09-24",
-  "criticality": "CRITICAL",
+  "criticality": "INFO",
   "criticality_reasons": [
-    "news_push_failed:\nfatal: unable to access 'https://github.com/ViktorPosa/hirek.git/': Failed to connect to github.com port 443 after 20 ms: Couldn't connect to server\n"
+    "images_missing:43"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-09-24T13:28:31",
-        "ended_at": "2026-09-24T14:10:20",
-        "duration_seconds": 2509,
+        "ended_at": "2026-09-24T14:22:13",
+        "duration_seconds": 3222,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -41,47 +41,52 @@
     ]
   },
   "articles": {
-    "total": 454,
-    "with_image": 418,
-    "without_image": 36,
+    "total": 485,
+    "with_image": 442,
+    "without_image": 43,
     "by_importance": {
-      "1": 11,
-      "2": 134,
-      "3": 214,
-      "4": 86,
-      "5": 9
+      "1": 12,
+      "2": 140,
+      "3": 228,
+      "4": 93,
+      "5": 12
     },
     "by_section": {
-      "uzlet": 139,
-      "szorakozas": 67,
-      "eletmod": 59,
-      "tech": 52,
-      "belfold_kulfold": 39,
-      "gamer": 30,
+      "uzlet": 150,
+      "szorakozas": 70,
+      "tech": 60,
+      "eletmod": 60,
+      "belfold_kulfold": 42,
+      "gamer": 32,
       "tudomany": 28,
       "bulvar": 20,
-      "kripto": 12,
-      "sport": 8
+      "kripto": 14,
+      "sport": 9
     }
   },
   "images": {
-    "attempted": 454,
-    "with_image": 418,
-    "without_image": 36,
-    "failed": 36,
-    "failure_rate_pct": 7.9,
-    "download_errors_logged": 1
+    "attempted": 485,
+    "with_image": 442,
+    "without_image": 43,
+    "failed": 43,
+    "failure_rate_pct": 8.9,
+    "download_errors_logged": 5
   },
   "rss": {
     "total_feeds": 109,
-    "ok_feeds": 108,
-    "failed_feeds": 1,
-    "success_rate_pct": 99.1,
+    "ok_feeds": 109,
+    "failed_feeds": 0,
+    "success_rate_pct": 100.0,
     "failed_feed_list": [
       {
-        "url": "https://totalcar.hu/24ora/rss/",
+        "url": "https://www.independent.co.uk/news/rss",
         "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to totalcar.h"
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://caravantimes.co.uk/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.carava"
       }
     ]
   },
@@ -90,30 +95,30 @@
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 1,
+    "rss_timeout": 2,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 3,
+    "api_no_response": 1,
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
-    "image_failures": 1,
+    "image_failures": 5,
     "process_killed": 0,
     "watchdog_kills": 0
   },
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 359
+      "item_count": 380
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 86
+      "item_count": 93
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 9
+      "item_count": 12
     },
     "data_toplist_json": {
       "exists": true,
@@ -165,7 +170,7 @@
     },
     {
       "date": "2026-09-24",
-      "articles": 359,
+      "articles": 380,
       "status": "OK",
       "exit_code": 0
     }
@@ -173,8 +178,8 @@
   "run_timing": {
     "date": "2026-09-24",
     "started_at": "2026-09-24T13:28:31",
-    "ended_at": "2026-09-24T14:10:20",
-    "duration_seconds": 2508.9,
+    "ended_at": "2026-09-24T14:22:13",
+    "duration_seconds": 3221.7,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -719,6 +724,150 @@
         "ended_at": "2026-09-24T14:10:20",
         "duration_seconds": 0.2,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-09-24T14:12:12",
+        "ended_at": "2026-09-24T14:14:50",
+        "duration_seconds": 158.0,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-09-24T14:12:12",
+        "ended_at": "2026-09-24T14:14:54",
+        "duration_seconds": 161.5,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-09-24T14:14:54",
+        "ended_at": "2026-09-24T14:14:55",
+        "duration_seconds": 2.0,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-09-24T14:14:56",
+        "ended_at": "2026-09-24T14:17:23",
+        "duration_seconds": 147.3,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-09-24T14:17:23",
+        "ended_at": "2026-09-24T14:17:29",
+        "duration_seconds": 5.3,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-09-24T14:17:29",
+        "ended_at": "2026-09-24T14:18:13",
+        "duration_seconds": 44.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-09-24T14:18:13",
+        "ended_at": "2026-09-24T14:18:13",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-09-24T14:18:13",
+        "ended_at": "2026-09-24T14:18:13",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-09-24T14:18:13",
+        "ended_at": "2026-09-24T14:18:13",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-09-24T14:18:13",
+        "ended_at": "2026-09-24T14:20:18",
+        "duration_seconds": 124.7,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-09-24T14:18:13",
+        "ended_at": "2026-09-24T14:20:29",
+        "duration_seconds": 136.1,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-09-24T14:20:29",
+        "ended_at": "2026-09-24T14:20:31",
+        "duration_seconds": 1.7,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-09-24T14:20:31",
+        "ended_at": "2026-09-24T14:21:43",
+        "duration_seconds": 71.6,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-09-24T14:21:43",
+        "ended_at": "2026-09-24T14:21:48",
+        "duration_seconds": 5.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-09-24T14:21:48",
+        "ended_at": "2026-09-24T14:22:12",
+        "duration_seconds": 24.1,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-09-24T14:22:12",
+        "ended_at": "2026-09-24T14:22:12",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-09-24T14:22:12",
+        "ended_at": "2026-09-24T14:22:12",
+        "duration_seconds": 0.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-09-24T14:22:12",
+        "ended_at": "2026-09-24T14:22:12",
+        "duration_seconds": 0.1,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -726,8 +875,7 @@
         "status": "disabled"
       },
       "news_push": {
-        "status": "failed",
-        "error": "\nfatal: unable to access 'https://github.com/ViktorPosa/hirek.git/': Failed to connect to github.com port 443 after 20 ms: Couldn't connect to server\n"
+        "status": "ok"
       },
       "images_push": {
         "status": "ok"
@@ -739,8 +887,7 @@
       "status": "disabled"
     },
     "news_push": {
-      "status": "failed",
-      "error": "\nfatal: unable to access 'https://github.com/ViktorPosa/hirek.git/': Failed to connect to github.com port 443 after 20 ms: Couldn't connect to server\n"
+      "status": "ok"
     },
     "images_push": {
       "status": "ok"
