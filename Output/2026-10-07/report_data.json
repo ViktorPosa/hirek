@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-07T20:14:54",
+  "generated_at": "2026-10-07T20:25:21",
   "date": "2026-10-07",
   "criticality": "INFO",
   "criticality_reasons": [
-    "images_missing:37"
+    "images_missing:34"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-07T20:06:47",
-        "ended_at": "2026-10-07T20:14:54",
-        "duration_seconds": 487,
+        "ended_at": "2026-10-07T20:25:21",
+        "duration_seconds": 1114,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -43,21 +43,21 @@
     ]
   },
   "articles": {
-    "total": 812,
-    "with_image": 775,
-    "without_image": 37,
+    "total": 823,
+    "with_image": 789,
+    "without_image": 34,
     "by_importance": {
-      "1": 411,
-      "2": 169,
-      "3": 133,
+      "1": 420,
+      "2": 175,
+      "3": 129,
       "4": 94,
       "5": 5
     },
     "by_section": {
-      "szorakozas": 167,
-      "tech": 129,
-      "uzlet": 117,
-      "belfold_kulfold": 112,
+      "szorakozas": 169,
+      "tech": 131,
+      "belfold_kulfold": 118,
+      "uzlet": 118,
       "eletmod": 92,
       "gamer": 68,
       "tudomany": 50,
@@ -67,41 +67,62 @@
     }
   },
   "images": {
-    "attempted": 812,
-    "with_image": 775,
-    "without_image": 37,
-    "failed": 37,
-    "failure_rate_pct": 4.6,
-    "download_errors_logged": 6
+    "attempted": 823,
+    "with_image": 789,
+    "without_image": 34,
+    "failed": 34,
+    "failure_rate_pct": 4.1,
+    "download_errors_logged": 2
   },
   "rss": {
     "total_feeds": 109,
     "ok_feeds": 109,
     "failed_feeds": 0,
     "success_rate_pct": 100.0,
-    "failed_feed_list": []
+    "failed_feed_list": [
+      {
+        "url": "https://caravantimes.co.uk/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to caravantim"
+      },
+      {
+        "url": "https://travelmagazin.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to travelmaga"
+      },
+      {
+        "url": "https://9to5mac.com/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to 9to5mac.co"
+      },
+      {
+        "url": "https://tldr.tech/rss/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to tldr.tech "
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
+    "rss_timeout": 4,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 1,
-    "items_missing_from_batch": 0,
+    "api_no_response": 0,
+    "items_missing_from_batch": 1,
     "pairing_failures": 0,
     "pairing_fixed": 0,
-    "image_failures": 6,
+    "image_failures": 2,
     "process_killed": 0,
     "watchdog_kills": 0
   },
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 713
+      "item_count": 724
     },
     "data_i4_json": {
       "exists": true,
@@ -161,7 +182,7 @@
     },
     {
       "date": "2026-10-07",
-      "articles": 713,
+      "articles": 724,
       "status": "OK",
       "exit_code": 0
     }
@@ -169,8 +190,8 @@
   "run_timing": {
     "date": "2026-10-07",
     "started_at": "2026-10-07T20:06:47",
-    "ended_at": "2026-10-07T20:14:54",
-    "duration_seconds": 487.2,
+    "ended_at": "2026-10-07T20:25:21",
+    "duration_seconds": 1114.3,
     "steps": [
       {
         "name": "link_dedup.py",
@@ -371,6 +392,94 @@
         "ended_at": "2026-10-07T20:14:54",
         "duration_seconds": 0.5,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-07T20:20:08",
+        "ended_at": "2026-10-07T20:23:00",
+        "duration_seconds": 171.7,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-07T20:20:08",
+        "ended_at": "2026-10-07T20:23:10",
+        "duration_seconds": 182.1,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-07T20:23:10",
+        "ended_at": "2026-10-07T20:23:13",
+        "duration_seconds": 2.7,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-07T20:23:15",
+        "ended_at": "2026-10-07T20:24:23",
+        "duration_seconds": 67.5,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-07T20:24:23",
+        "ended_at": "2026-10-07T20:24:33",
+        "duration_seconds": 9.8,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-07T20:24:33",
+        "ended_at": "2026-10-07T20:25:02",
+        "duration_seconds": 29.5,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-07T20:25:02",
+        "ended_at": "2026-10-07T20:25:03",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-07T20:25:03",
+        "ended_at": "2026-10-07T20:25:20",
+        "duration_seconds": 16.6,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-10-07T20:25:20",
+        "ended_at": "2026-10-07T20:25:20",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-07T20:25:20",
+        "ended_at": "2026-10-07T20:25:21",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-07T20:25:21",
+        "ended_at": "2026-10-07T20:25:21",
+        "duration_seconds": 0.5,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -378,6 +487,9 @@
         "status": "disabled"
       },
       "news_push": {
+        "status": "ok"
+      },
+      "images_push": {
         "status": "ok"
       }
     }
@@ -387,6 +499,9 @@
       "status": "disabled"
     },
     "news_push": {
+      "status": "ok"
+    },
+    "images_push": {
       "status": "ok"
     }
   }
