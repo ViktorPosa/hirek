@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-15T17:25:39",
+  "generated_at": "2026-10-15T17:34:22",
   "date": "2026-10-15",
   "criticality": "INFO",
   "criticality_reasons": [
@@ -11,8 +11,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-15T00:02:22",
-        "ended_at": "2026-10-15T17:25:38",
-        "duration_seconds": 62596,
+        "ended_at": "2026-10-15T17:34:22",
+        "duration_seconds": 63120,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -73,58 +73,18 @@
     "without_image": 17,
     "failed": 17,
     "failure_rate_pct": 4.5,
-    "download_errors_logged": 1
+    "download_errors_logged": 0
   },
   "rss": {
     "total_feeds": 109,
-    "ok_feeds": 107,
-    "failed_feeds": 2,
-    "success_rate_pct": 98.2,
+    "ok_feeds": 108,
+    "failed_feeds": 1,
+    "success_rate_pct": 99.1,
     "failed_feed_list": [
-      {
-        "url": "https://offmedia.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to offmedia.h"
-      },
-      {
-        "url": "https://travelmagazin.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to travelmaga"
-      },
-      {
-        "url": "https://marieclaire.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to marieclair"
-      },
-      {
-        "url": "https://ng.24.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to ng.24.hu p"
-      },
-      {
-        "url": "https://the-zone.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to the-zone.h"
-      },
-      {
-        "url": "https://fhm.com/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to fhm.com po"
-      },
-      {
-        "url": "https://femina.hu/24ora/rss/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to femina.hu "
-      },
-      {
-        "url": "https://funzine.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to funzine.hu"
-      },
       {
         "url": "https://allampapirkalkulator.hu/rss",
         "error_type": "rss_timeout",
-        "error_short": "Timeout"
+        "error_short": "Failed to perform, curl: (7) Failed to connect to allampapir"
       },
       {
         "url": "https://hetediksor.hu/feed/",
@@ -132,9 +92,24 @@
         "error_short": "Failed to perform, curl: (7) Failed to connect to hetediksor"
       },
       {
-        "url": "https://www.tomshardware.com/feeds.xml",
+        "url": "https://nlc.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to nlc.hu por"
+      },
+      {
+        "url": "https://the-zone.hu/feed",
         "error_type": "rss_timeout",
         "error_short": "Timeout"
+      },
+      {
+        "url": "https://travelmagazin.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://www.makeuseof.com/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.makeus"
       }
     ]
   },
@@ -143,15 +118,15 @@
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 11,
+    "rss_timeout": 6,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 15,
+    "api_no_response": 6,
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
-    "image_failures": 1,
+    "image_failures": 0,
     "process_killed": 0,
     "watchdog_kills": 0
   },
@@ -226,8 +201,8 @@
   "run_timing": {
     "date": "2026-10-15",
     "started_at": "2026-10-15T00:02:22",
-    "ended_at": "2026-10-15T17:25:38",
-    "duration_seconds": 62596.0,
+    "ended_at": "2026-10-15T17:34:22",
+    "duration_seconds": 63120.2,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -15788,6 +15763,38 @@
         "ended_at": "2026-10-15T17:25:36",
         "duration_seconds": 0.5,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-15T17:26:12",
+        "ended_at": "2026-10-15T17:29:44",
+        "duration_seconds": 211.6,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-15T17:26:13",
+        "ended_at": "2026-10-15T17:29:49",
+        "duration_seconds": 217.0,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-15T17:29:50",
+        "ended_at": "2026-10-15T17:30:32",
+        "duration_seconds": 42.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-15T17:30:39",
+        "ended_at": "2026-10-15T17:34:22",
+        "duration_seconds": 222.3,
+        "status": "ERROR"
       }
     ],
     "publish": {
