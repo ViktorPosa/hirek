@@ -1,10 +1,10 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-22T17:53:45",
+  "generated_at": "2026-10-22T18:05:28",
   "date": "2026-10-22",
   "criticality": "INFO",
   "criticality_reasons": [
-    "pairing_failures:6",
+    "pairing_failures:4",
     "images_missing:1"
   ],
   "pipeline": {
@@ -12,8 +12,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-22T14:58:20",
-        "ended_at": "2026-10-22T17:53:45",
-        "duration_seconds": 10525,
+        "ended_at": "2026-10-22T18:05:28",
+        "duration_seconds": 11229,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -27,6 +27,7 @@
       "image_downloader.py",
       "image_tags_sidecar.py",
       "importance_assessor.py",
+      "importance_calibrator.py",
       "justwatch_scraper.py",
       "link_dedup.py",
       "market_generator.py",
@@ -44,23 +45,23 @@
     ]
   },
   "articles": {
-    "total": 676,
-    "with_image": 675,
+    "total": 681,
+    "with_image": 680,
     "without_image": 1,
     "by_importance": {
-      "1": 188,
-      "2": 273,
-      "3": 163,
-      "4": 50,
+      "1": 189,
+      "2": 284,
+      "3": 158,
+      "4": 48,
       "5": 2
     },
     "by_section": {
-      "tech": 126,
-      "szorakozas": 110,
-      "uzlet": 96,
+      "tech": 130,
+      "szorakozas": 112,
+      "uzlet": 94,
       "eletmod": 89,
       "belfold_kulfold": 82,
-      "gamer": 59,
+      "gamer": 60,
       "tudomany": 41,
       "bulvar": 30,
       "kripto": 25,
@@ -68,8 +69,8 @@
     }
   },
   "images": {
-    "attempted": 676,
-    "with_image": 675,
+    "attempted": 681,
+    "with_image": 680,
     "without_image": 1,
     "failed": 1,
     "failure_rate_pct": 0.1,
@@ -80,20 +81,26 @@
     "ok_feeds": 109,
     "failed_feeds": 0,
     "success_rate_pct": 100.0,
-    "failed_feed_list": []
+    "failed_feed_list": [
+      {
+        "url": "https://www.gsplus.hu/elet/uj-ingyenes-jatekaban-az-mnbbotrany-egyik-foszereplojet-matolcsy-gyorgy-fiat-kerestetik-velunk-az-nka-run-fejlesztoje-389868.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.gsplus"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
+    "rss_timeout": 1,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
     "api_no_response": 3,
-    "items_missing_from_batch": 4,
-    "pairing_failures": 6,
+    "items_missing_from_batch": 2,
+    "pairing_failures": 4,
     "pairing_fixed": 0,
     "image_failures": 0,
     "process_killed": 0,
@@ -102,11 +109,11 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 406
+      "item_count": 337
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 49
+      "item_count": 37
     },
     "data_i5_json": {
       "exists": true,
@@ -162,7 +169,7 @@
     },
     {
       "date": "2026-10-22",
-      "articles": 676,
+      "articles": 681,
       "status": "OK",
       "exit_code": 0
     }
@@ -170,8 +177,8 @@
   "run_timing": {
     "date": "2026-10-22",
     "started_at": "2026-10-22T14:58:20",
-    "ended_at": "2026-10-22T17:53:45",
-    "duration_seconds": 10525.2,
+    "ended_at": "2026-10-22T18:05:28",
+    "duration_seconds": 11228.7,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -1532,6 +1539,102 @@
         "ended_at": "2026-10-22T17:51:05",
         "duration_seconds": 12.4,
         "status": "ERROR"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-22T17:54:12",
+        "ended_at": "2026-10-22T17:56:08",
+        "duration_seconds": 116.6,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-22T17:54:12",
+        "ended_at": "2026-10-22T17:56:35",
+        "duration_seconds": 143.1,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-22T17:56:35",
+        "ended_at": "2026-10-22T17:56:37",
+        "duration_seconds": 2.3,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-22T17:56:40",
+        "ended_at": "2026-10-22T17:58:48",
+        "duration_seconds": 128.3,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-22T17:58:48",
+        "ended_at": "2026-10-22T17:58:57",
+        "duration_seconds": 8.7,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-22T17:58:57",
+        "ended_at": "2026-10-22T18:01:20",
+        "duration_seconds": 143.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-22T18:01:20",
+        "ended_at": "2026-10-22T18:01:21",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-22T18:01:21",
+        "ended_at": "2026-10-22T18:02:14",
+        "duration_seconds": 53.4,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-10-22T18:02:14",
+        "ended_at": "2026-10-22T18:02:15",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-22T18:02:15",
+        "ended_at": "2026-10-22T18:02:15",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-22T18:02:15",
+        "ended_at": "2026-10-22T18:02:16",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "importance_calibrator.py",
+        "description": "Refining News Importance & Engagement (Hourly)",
+        "started_at": "2026-10-22T18:02:16",
+        "ended_at": "2026-10-22T18:02:33",
+        "duration_seconds": 17.3,
+        "status": "OK"
       }
     ],
     "publish": {
