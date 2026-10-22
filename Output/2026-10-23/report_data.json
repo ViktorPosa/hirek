@@ -1,18 +1,19 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-23T00:03:55",
+  "generated_at": "2026-10-23T00:18:41",
   "date": "2026-10-23",
-  "criticality": "CRITICAL",
+  "criticality": "WARNING",
   "criticality_reasons": [
-    "no_articles"
+    "missing_files:data_i4.json,data_i5.json",
+    "low_article_count:10"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-23T00:03:41",
-        "ended_at": "2026-10-23T00:03:55",
-        "duration_seconds": 14,
+        "ended_at": "2026-10-23T00:18:41",
+        "duration_seconds": 900,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -20,54 +21,171 @@
       }
     ],
     "overall_exit_code": 0,
-    "completed_steps": [],
+    "completed_steps": [
+      "dedup_fast.py",
+      "filter_importance.py",
+      "image_downloader.py",
+      "image_tags_sidecar.py",
+      "importance_assessor.py",
+      "importance_calibrator.py",
+      "justwatch_scraper.py",
+      "link_dedup.py",
+      "news_filter.py",
+      "rss_creator.py",
+      "section_validator.py",
+      "split_localization.py",
+      "summarizer_json.py",
+      "toplist_generator.py",
+      "youtube_scraper.py"
+    ],
     "missing_steps": [
       "weather_generator.py",
       "market_generator.py",
-      "rss_creator.py",
-      "news_filter.py",
-      "link_dedup.py",
-      "summarizer_json.py",
-      "image_downloader.py",
-      "section_validator.py",
-      "filter_importance.py",
       "randomize_sections.py"
     ]
   },
   "articles": {
-    "total": 0,
-    "with_image": 0,
+    "total": 10,
+    "with_image": 10,
     "without_image": 0,
     "by_importance": {
       "1": 0,
-      "2": 0,
-      "3": 0,
+      "2": 6,
+      "3": 4,
       "4": 0,
       "5": 0
     },
-    "by_section": {}
+    "by_section": {
+      "szorakozas": 10
+    }
   },
   "images": {
-    "attempted": 0,
-    "with_image": 0,
+    "attempted": 10,
+    "with_image": 10,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
     "download_errors_logged": 0
   },
   "rss": {
-    "total_feeds": 0,
-    "ok_feeds": 0,
-    "failed_feeds": 0,
-    "success_rate_pct": 0.0,
-    "failed_feed_list": []
+    "total_feeds": 110,
+    "ok_feeds": 102,
+    "failed_feeds": 8,
+    "success_rate_pct": 92.7,
+    "failed_feed_list": [
+      {
+        "url": "https://techpowerup.com/rss/news",
+        "error_type": "rss_403",
+        "error_short": "HTTP 403"
+      },
+      {
+        "url": "https://caravantimes.co.uk/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to caravantim"
+      },
+      {
+        "url": "https://fhm.com/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to fhm.com po"
+      },
+      {
+        "url": "https://www.thestreet.com/.rss/full/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.thestr"
+      },
+      {
+        "url": "https://www.gsplus.hu/elet/az-airbnb-mostantol-lekorlatozta-milyen-hazimunkak-elvegzesere-lehet-kotelezni-a-vendegeket-a-szallasadok-ki-is-akadtak-389854.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.gsplus"
+      },
+      {
+        "url": "https://www.gsplus.hu/elet/uj-ingyenes-jatekaban-az-mnbbotrany-egyik-foszereplojet-matolcsy-gyorgy-fiat-kerestetik-velunk-az-nka-run-fejlesztoje-389868.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.gsplus"
+      },
+      {
+        "url": "https://femina.hu/24ora/rss/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to femina.hu "
+      },
+      {
+        "url": "https://9to5mac.com/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to 9to5mac.co"
+      },
+      {
+        "url": "https://www.gsplus.hu/hir/a-microsoft-a-ps5-nyomaba-ered-erkezik-az-amd-kepfelskalazo-technologiaja-az-xbox-konzolokra-389848.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.gsplus"
+      },
+      {
+        "url": "https://www.tomshardware.com/feeds.xml",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.tomsha"
+      },
+      {
+        "url": "https://allampapirkalkulator.hu/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to allampapir"
+      },
+      {
+        "url": "https://ng.24.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://androgeek.hu/rss/rss.php",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to androgeek."
+      },
+      {
+        "url": "https://hetediksor.hu/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to hetediksor"
+      },
+      {
+        "url": "https://nlc.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to nlc.hu por"
+      },
+      {
+        "url": "https://velvet.hu/24ora/rss/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to velvet.hu "
+      },
+      {
+        "url": "https://offmedia.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://totalcar.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to totalcar.h"
+      },
+      {
+        "url": "https://marieclaire.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://minner.hu/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to minner.hu "
+      },
+      {
+        "url": "https://the-zone.hu/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to the-zone.h"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
-    "rss_403": 0,
+    "rss_403": 1,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
+    "rss_timeout": 20,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
@@ -81,8 +199,8 @@
   },
   "files": {
     "data_json": {
-      "exists": false,
-      "item_count": null
+      "exists": true,
+      "item_count": 10
     },
     "data_i4_json": {
       "exists": false,
@@ -93,8 +211,8 @@
       "item_count": null
     },
     "data_toplist_json": {
-      "exists": false,
-      "item_count": null
+      "exists": true,
+      "item_count": 3
     },
     "idojaras_json": {
       "exists": false
@@ -136,28 +254,152 @@
     },
     {
       "date": "2026-10-22",
-      "articles": 899,
+      "articles": 904,
       "status": "OK",
       "exit_code": 0
     },
     {
       "date": "2026-10-23",
-      "articles": 0,
-      "status": "CRITICAL",
-      "exit_code": 1
+      "articles": 10,
+      "status": "WARNING",
+      "exit_code": 0
     }
   ],
   "run_timing": {
     "date": "2026-10-23",
     "started_at": "2026-10-23T00:03:41",
-    "ended_at": "2026-10-23T00:03:55",
-    "duration_seconds": 14.0,
-    "steps": [],
+    "ended_at": "2026-10-23T00:18:41",
+    "duration_seconds": 900.0,
+    "steps": [
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-23T00:05:11",
+        "ended_at": "2026-10-23T00:08:19",
+        "duration_seconds": 188.4,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-23T00:05:11",
+        "ended_at": "2026-10-23T00:08:23",
+        "duration_seconds": 191.6,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-23T00:08:23",
+        "ended_at": "2026-10-23T00:08:27",
+        "duration_seconds": 3.8,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-23T00:08:29",
+        "ended_at": "2026-10-23T00:11:28",
+        "duration_seconds": 178.9,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-23T00:11:28",
+        "ended_at": "2026-10-23T00:11:38",
+        "duration_seconds": 10.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-23T00:11:38",
+        "ended_at": "2026-10-23T00:15:16",
+        "duration_seconds": 217.9,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-23T00:15:16",
+        "ended_at": "2026-10-23T00:15:17",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-23T00:15:17",
+        "ended_at": "2026-10-23T00:15:30",
+        "duration_seconds": 12.9,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-10-23T00:15:30",
+        "ended_at": "2026-10-23T00:15:30",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-23T00:15:30",
+        "ended_at": "2026-10-23T00:15:31",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-23T00:15:31",
+        "ended_at": "2026-10-23T00:15:31",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "importance_calibrator.py",
+        "description": "Refining News Importance & Engagement (Hourly)",
+        "started_at": "2026-10-23T00:15:31",
+        "ended_at": "2026-10-23T00:15:32",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "toplist_generator.py",
+        "description": "Generating Toplists from specific URLs",
+        "started_at": "2026-10-23T00:15:32",
+        "ended_at": "2026-10-23T00:15:49",
+        "duration_seconds": 16.6,
+        "status": "OK"
+      },
+      {
+        "name": "justwatch_scraper.py",
+        "description": "Scraping JustWatch SkyShowtime Trending",
+        "started_at": "2026-10-23T00:15:49",
+        "ended_at": "2026-10-23T00:15:50",
+        "duration_seconds": 1.7,
+        "status": "OK"
+      },
+      {
+        "name": "youtube_scraper.py",
+        "description": "Scraping YouTube Creators for New Videos",
+        "started_at": "2026-10-23T00:15:50",
+        "ended_at": "2026-10-23T00:16:02",
+        "duration_seconds": 11.4,
+        "status": "OK"
+      }
+    ],
     "publish": {
       "weather_market_push": {
         "status": "disabled"
       },
       "images_push": {
+        "status": "ok"
+      },
+      "news_push": {
         "status": "ok"
       }
     }
@@ -167,6 +409,9 @@
       "status": "disabled"
     },
     "images_push": {
+      "status": "ok"
+    },
+    "news_push": {
       "status": "ok"
     }
   }
