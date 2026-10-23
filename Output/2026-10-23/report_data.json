@@ -1,16 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-23T18:20:47",
+  "generated_at": "2026-10-23T18:30:56",
   "date": "2026-10-23",
-  "criticality": "OK",
-  "criticality_reasons": [],
+  "criticality": "INFO",
+  "criticality_reasons": [
+    "pairing_failures:2"
+  ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-23T12:52:59",
-        "ended_at": "2026-10-23T18:20:47",
-        "duration_seconds": 19668,
+        "ended_at": "2026-10-23T18:30:56",
+        "duration_seconds": 20277,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -42,32 +44,32 @@
     ]
   },
   "articles": {
-    "total": 631,
-    "with_image": 631,
+    "total": 644,
+    "with_image": 644,
     "without_image": 0,
     "by_importance": {
-      "1": 238,
-      "2": 243,
-      "3": 121,
+      "1": 243,
+      "2": 250,
+      "3": 122,
       "4": 27,
       "5": 2
     },
     "by_section": {
       "tech": 107,
-      "szorakozas": 104,
-      "belfold_kulfold": 90,
-      "uzlet": 82,
-      "eletmod": 80,
+      "szorakozas": 106,
+      "belfold_kulfold": 93,
+      "eletmod": 85,
+      "uzlet": 83,
       "tudomany": 54,
-      "gamer": 52,
+      "gamer": 53,
       "bulvar": 23,
-      "sport": 21,
+      "sport": 22,
       "kripto": 18
     }
   },
   "images": {
-    "attempted": 631,
-    "with_image": 631,
+    "attempted": 644,
+    "with_image": 644,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
@@ -90,8 +92,8 @@
     "rss_ssl": 0,
     "api_timeout": 0,
     "api_no_response": 3,
-    "items_missing_from_batch": 7,
-    "pairing_failures": 0,
+    "items_missing_from_batch": 3,
+    "pairing_failures": 2,
     "pairing_fixed": 0,
     "image_failures": 0,
     "process_killed": 0,
@@ -100,7 +102,7 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 238
+      "item_count": 248
     },
     "data_i4_json": {
       "exists": true,
@@ -160,7 +162,7 @@
     },
     {
       "date": "2026-10-23",
-      "articles": 631,
+      "articles": 644,
       "status": "OK",
       "exit_code": 0
     }
@@ -168,8 +170,8 @@
   "run_timing": {
     "date": "2026-10-23",
     "started_at": "2026-10-23T12:52:59",
-    "ended_at": "2026-10-23T18:20:47",
-    "duration_seconds": 19667.5,
+    "ended_at": "2026-10-23T18:30:56",
+    "duration_seconds": 20276.9,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -2640,6 +2642,118 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-10-23T18:17:46",
         "ended_at": "2026-10-23T18:17:46",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-23T18:21:03",
+        "ended_at": "2026-10-23T18:22:58",
+        "duration_seconds": 115.0,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-23T18:21:03",
+        "ended_at": "2026-10-23T18:23:22",
+        "duration_seconds": 139.0,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-23T18:23:22",
+        "ended_at": "2026-10-23T18:23:23",
+        "duration_seconds": 1.7,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-23T18:23:26",
+        "ended_at": "2026-10-23T18:25:35",
+        "duration_seconds": 128.5,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-23T18:25:35",
+        "ended_at": "2026-10-23T18:25:44",
+        "duration_seconds": 9.4,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-23T18:25:44",
+        "ended_at": "2026-10-23T18:27:54",
+        "duration_seconds": 130.4,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-23T18:27:54",
+        "ended_at": "2026-10-23T18:27:55",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-23T18:27:55",
+        "ended_at": "2026-10-23T18:28:16",
+        "duration_seconds": 21.0,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-10-23T18:28:16",
+        "ended_at": "2026-10-23T18:28:16",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-23T18:28:16",
+        "ended_at": "2026-10-23T18:28:17",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-23T18:28:17",
+        "ended_at": "2026-10-23T18:28:17",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "toplist_generator.py",
+        "description": "Generating Toplists from specific URLs",
+        "started_at": "2026-10-23T18:28:17",
+        "ended_at": "2026-10-23T18:28:18",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "justwatch_scraper.py",
+        "description": "Scraping JustWatch SkyShowtime Trending",
+        "started_at": "2026-10-23T18:28:18",
+        "ended_at": "2026-10-23T18:28:19",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "youtube_scraper.py",
+        "description": "Scraping YouTube Creators for New Videos",
+        "started_at": "2026-10-23T18:28:19",
+        "ended_at": "2026-10-23T18:28:19",
         "duration_seconds": 0.5,
         "status": "OK"
       }
