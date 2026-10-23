@@ -1,16 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-23T19:34:24",
+  "generated_at": "2026-10-23T19:45:48",
   "date": "2026-10-23",
-  "criticality": "OK",
-  "criticality_reasons": [],
+  "criticality": "INFO",
+  "criticality_reasons": [
+    "pairing_failures:6"
+  ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-23T12:52:59",
-        "ended_at": "2026-10-23T19:34:24",
-        "duration_seconds": 24085,
+        "ended_at": "2026-10-23T19:45:48",
+        "duration_seconds": 24769,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -42,32 +44,32 @@
     ]
   },
   "articles": {
-    "total": 682,
-    "with_image": 682,
+    "total": 692,
+    "with_image": 692,
     "without_image": 0,
     "by_importance": {
-      "1": 259,
-      "2": 266,
+      "1": 272,
+      "2": 262,
       "3": 129,
-      "4": 28,
+      "4": 29,
       "5": 0
     },
     "by_section": {
-      "szorakozas": 119,
-      "tech": 109,
-      "belfold_kulfold": 97,
-      "eletmod": 94,
+      "szorakozas": 120,
+      "tech": 110,
+      "belfold_kulfold": 100,
+      "eletmod": 95,
       "uzlet": 90,
       "tudomany": 56,
-      "gamer": 55,
+      "gamer": 56,
+      "sport": 24,
       "bulvar": 23,
-      "sport": 22,
-      "kripto": 17
+      "kripto": 18
     }
   },
   "images": {
-    "attempted": 682,
-    "with_image": 682,
+    "attempted": 692,
+    "with_image": 692,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
@@ -75,9 +77,9 @@
   },
   "rss": {
     "total_feeds": 109,
-    "ok_feeds": 108,
-    "failed_feeds": 1,
-    "success_rate_pct": 99.1,
+    "ok_feeds": 109,
+    "failed_feeds": 0,
+    "success_rate_pct": 100.0,
     "failed_feed_list": []
   },
   "errors": {
@@ -90,8 +92,8 @@
     "rss_ssl": 0,
     "api_timeout": 0,
     "api_no_response": 3,
-    "items_missing_from_batch": 2,
-    "pairing_failures": 0,
+    "items_missing_from_batch": 10,
+    "pairing_failures": 6,
     "pairing_fixed": 0,
     "image_failures": 0,
     "process_killed": 0,
@@ -100,7 +102,7 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 279
+      "item_count": 260
     },
     "data_i4_json": {
       "exists": true,
@@ -160,7 +162,7 @@
     },
     {
       "date": "2026-10-23",
-      "articles": 682,
+      "articles": 692,
       "status": "OK",
       "exit_code": 0
     }
@@ -168,8 +170,8 @@
   "run_timing": {
     "date": "2026-10-23",
     "started_at": "2026-10-23T12:52:59",
-    "ended_at": "2026-10-23T19:34:24",
-    "duration_seconds": 24084.9,
+    "ended_at": "2026-10-23T19:45:48",
+    "duration_seconds": 24768.9,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -3193,6 +3195,102 @@
         "started_at": "2026-10-23T19:31:14",
         "ended_at": "2026-10-23T19:31:15",
         "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-23T19:34:43",
+        "ended_at": "2026-10-23T19:36:30",
+        "duration_seconds": 106.6,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-23T19:34:43",
+        "ended_at": "2026-10-23T19:36:55",
+        "duration_seconds": 131.6,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-23T19:36:55",
+        "ended_at": "2026-10-23T19:36:57",
+        "duration_seconds": 2.2,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-23T19:37:00",
+        "ended_at": "2026-10-23T19:39:14",
+        "duration_seconds": 134.0,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-23T19:39:14",
+        "ended_at": "2026-10-23T19:39:23",
+        "duration_seconds": 9.0,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-23T19:39:23",
+        "ended_at": "2026-10-23T19:42:21",
+        "duration_seconds": 178.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-23T19:42:21",
+        "ended_at": "2026-10-23T19:42:22",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-23T19:42:22",
+        "ended_at": "2026-10-23T19:42:40",
+        "duration_seconds": 17.8,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-10-23T19:42:40",
+        "ended_at": "2026-10-23T19:42:40",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-23T19:42:40",
+        "ended_at": "2026-10-23T19:42:41",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-23T19:42:41",
+        "ended_at": "2026-10-23T19:42:41",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_calibrator.py",
+        "description": "Refining News Importance & Engagement (Hourly)",
+        "started_at": "2026-10-23T19:42:41",
+        "ended_at": "2026-10-23T19:42:49",
+        "duration_seconds": 7.6,
         "status": "OK"
       }
     ],
