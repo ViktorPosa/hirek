@@ -1,9 +1,10 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-23T13:10:08",
+  "generated_at": "2026-10-23T13:25:22",
   "date": "2026-10-23",
   "criticality": "INFO",
   "criticality_reasons": [
+    "api_timeout:1",
     "pairing_failures:2"
   ],
   "pipeline": {
@@ -11,8 +12,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-23T12:52:59",
-        "ended_at": "2026-10-23T13:10:07",
-        "duration_seconds": 1028,
+        "ended_at": "2026-10-23T13:25:22",
+        "duration_seconds": 1943,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -43,32 +44,32 @@
     ]
   },
   "articles": {
-    "total": 310,
-    "with_image": 310,
+    "total": 330,
+    "with_image": 330,
     "without_image": 0,
     "by_importance": {
-      "1": 119,
-      "2": 125,
-      "3": 55,
+      "1": 127,
+      "2": 132,
+      "3": 59,
       "4": 10,
-      "5": 1
+      "5": 2
     },
     "by_section": {
-      "szorakozas": 63,
-      "tech": 45,
+      "szorakozas": 65,
+      "tech": 49,
       "eletmod": 45,
-      "belfold_kulfold": 41,
-      "uzlet": 32,
-      "tudomany": 29,
-      "gamer": 27,
-      "sport": 10,
-      "bulvar": 10,
-      "kripto": 8
+      "belfold_kulfold": 45,
+      "uzlet": 36,
+      "tudomany": 31,
+      "gamer": 28,
+      "sport": 11,
+      "bulvar": 11,
+      "kripto": 9
     }
   },
   "images": {
-    "attempted": 310,
-    "with_image": 310,
+    "attempted": 330,
+    "with_image": 330,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
@@ -89,9 +90,9 @@
     "rss_timeout": 0,
     "rss_dns": 0,
     "rss_ssl": 0,
-    "api_timeout": 0,
-    "api_no_response": 3,
-    "items_missing_from_batch": 5,
+    "api_timeout": 1,
+    "api_no_response": 4,
+    "items_missing_from_batch": 9,
     "pairing_failures": 2,
     "pairing_fixed": 0,
     "image_failures": 0,
@@ -101,7 +102,7 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 161
+      "item_count": 180
     },
     "data_i4_json": {
       "exists": true,
@@ -109,7 +110,7 @@
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 1
+      "item_count": 2
     },
     "data_toplist_json": {
       "exists": true,
@@ -161,7 +162,7 @@
     },
     {
       "date": "2026-10-23",
-      "articles": 310,
+      "articles": 330,
       "status": "OK",
       "exit_code": 0
     }
@@ -169,8 +170,8 @@
   "run_timing": {
     "date": "2026-10-23",
     "started_at": "2026-10-23T12:52:59",
-    "ended_at": "2026-10-23T13:10:07",
-    "duration_seconds": 1028.1,
+    "ended_at": "2026-10-23T13:25:22",
+    "duration_seconds": 1943.0,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -307,6 +308,102 @@
         "ended_at": "2026-10-23T13:06:28",
         "duration_seconds": 0.6,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-23T13:10:25",
+        "ended_at": "2026-10-23T13:12:14",
+        "duration_seconds": 109.4,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-23T13:10:25",
+        "ended_at": "2026-10-23T13:12:36",
+        "duration_seconds": 131.8,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-23T13:12:37",
+        "ended_at": "2026-10-23T13:12:37",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-23T13:12:40",
+        "ended_at": "2026-10-23T13:21:05",
+        "duration_seconds": 505.4,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-23T13:21:05",
+        "ended_at": "2026-10-23T13:21:12",
+        "duration_seconds": 6.5,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-23T13:21:12",
+        "ended_at": "2026-10-23T13:22:08",
+        "duration_seconds": 56.1,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-23T13:22:08",
+        "ended_at": "2026-10-23T13:22:08",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-23T13:22:08",
+        "ended_at": "2026-10-23T13:22:19",
+        "duration_seconds": 10.6,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-10-23T13:22:19",
+        "ended_at": "2026-10-23T13:22:20",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-23T13:22:20",
+        "ended_at": "2026-10-23T13:22:20",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-23T13:22:20",
+        "ended_at": "2026-10-23T13:22:21",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_calibrator.py",
+        "description": "Refining News Importance & Engagement (Hourly)",
+        "started_at": "2026-10-23T13:22:21",
+        "ended_at": "2026-10-23T13:22:46",
+        "duration_seconds": 25.2,
+        "status": "ERROR"
       }
     ],
     "publish": {
