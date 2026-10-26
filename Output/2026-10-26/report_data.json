@@ -1,16 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-26T12:58:30",
+  "generated_at": "2026-10-26T13:16:50",
   "date": "2026-10-26",
-  "criticality": "OK",
-  "criticality_reasons": [],
+  "criticality": "INFO",
+  "criticality_reasons": [
+    "pairing_failures:2"
+  ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-26T11:28:41",
-        "ended_at": "2026-10-26T12:58:29",
-        "duration_seconds": 5387,
+        "ended_at": "2026-10-26T13:16:50",
+        "duration_seconds": 6488,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -41,32 +43,32 @@
     ]
   },
   "articles": {
-    "total": 345,
-    "with_image": 345,
+    "total": 359,
+    "with_image": 359,
     "without_image": 0,
     "by_importance": {
-      "1": 128,
-      "2": 117,
-      "3": 82,
-      "4": 17,
+      "1": 129,
+      "2": 122,
+      "3": 86,
+      "4": 21,
       "5": 1
     },
     "by_section": {
       "szorakozas": 73,
-      "uzlet": 58,
+      "uzlet": 63,
       "eletmod": 57,
-      "belfold_kulfold": 45,
-      "tech": 42,
+      "belfold_kulfold": 48,
+      "tech": 46,
       "gamer": 25,
       "tudomany": 17,
       "sport": 11,
-      "bulvar": 10,
-      "kripto": 7
+      "bulvar": 11,
+      "kripto": 8
     }
   },
   "images": {
-    "attempted": 345,
-    "with_image": 345,
+    "attempted": 359,
+    "with_image": 359,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
@@ -77,7 +79,13 @@
     "ok_feeds": 109,
     "failed_feeds": 0,
     "success_rate_pct": 100.0,
-    "failed_feed_list": []
+    "failed_feed_list": [
+      {
+        "url": "https://totalcar.hu/feed",
+        "error_type": "rss_ssl",
+        "error_short": "SSL/TLS Error"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
@@ -86,11 +94,11 @@
     "rss_500": 0,
     "rss_timeout": 0,
     "rss_dns": 0,
-    "rss_ssl": 0,
+    "rss_ssl": 1,
     "api_timeout": 0,
     "api_no_response": 0,
     "items_missing_from_batch": 0,
-    "pairing_failures": 0,
+    "pairing_failures": 2,
     "pairing_fixed": 0,
     "image_failures": 0,
     "process_killed": 0,
@@ -99,11 +107,11 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 268
+      "item_count": 278
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 16
+      "item_count": 20
     },
     "data_i5_json": {
       "exists": true,
@@ -159,7 +167,7 @@
     },
     {
       "date": "2026-10-26",
-      "articles": 345,
+      "articles": 359,
       "status": "OK",
       "exit_code": 0
     }
@@ -167,8 +175,8 @@
   "run_timing": {
     "date": "2026-10-26",
     "started_at": "2026-10-26T11:28:41",
-    "ended_at": "2026-10-26T12:58:29",
-    "duration_seconds": 5387.3,
+    "ended_at": "2026-10-26T13:16:50",
+    "duration_seconds": 6488.1,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -713,6 +721,102 @@
         "ended_at": "2026-10-26T12:58:00",
         "duration_seconds": 0.6,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-26T12:59:01",
+        "ended_at": "2026-10-26T13:00:36",
+        "duration_seconds": 95.1,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-26T12:59:01",
+        "ended_at": "2026-10-26T13:01:01",
+        "duration_seconds": 119.9,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-26T13:01:01",
+        "ended_at": "2026-10-26T13:01:03",
+        "duration_seconds": 1.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-26T13:01:05",
+        "ended_at": "2026-10-26T13:07:15",
+        "duration_seconds": 369.3,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-26T13:07:15",
+        "ended_at": "2026-10-26T13:09:20",
+        "duration_seconds": 125.9,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-26T13:09:20",
+        "ended_at": "2026-10-26T13:11:33",
+        "duration_seconds": 132.2,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-26T13:11:33",
+        "ended_at": "2026-10-26T13:11:33",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-26T13:11:33",
+        "ended_at": "2026-10-26T13:14:33",
+        "duration_seconds": 179.8,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4/5 into Separate Files",
+        "started_at": "2026-10-26T13:14:33",
+        "ended_at": "2026-10-26T13:14:34",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-26T13:14:34",
+        "ended_at": "2026-10-26T13:14:34",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-26T13:14:34",
+        "ended_at": "2026-10-26T13:14:35",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_calibrator.py",
+        "description": "Refining News Importance & Engagement (Hourly)",
+        "started_at": "2026-10-26T13:14:35",
+        "ended_at": "2026-10-26T13:16:06",
+        "duration_seconds": 91.2,
+        "status": "ERROR"
       }
     ],
     "publish": {
