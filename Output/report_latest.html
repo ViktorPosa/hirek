@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Derűshírek Pipeline Monitor — 2026-10-30</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f9fafb;
+    --card: #ffffff;
+    --header: #1e293b;
+    --text: #1e293b;
+    --muted: #6b7280;
+    --radius: 10px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
+  a { color: inherit; }
+  .header { background: var(--header); color: #fff; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+  .header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+  .header .meta { font-size: 0.85rem; color: #94a3b8; }
+  .status-badge { padding: 0.35rem 0.9rem; border-radius: 999px; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.03em; color: #fff; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem 3rem; }
+  .section-title { font-size: 1.05rem; font-weight: 700; color: var(--header); margin-bottom: 0.75rem; margin-top: 2rem; border-bottom: 2px solid #e5e7eb; padding-bottom: 0.4rem; }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.25rem 1.5rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1rem; }
+  .metric-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.25rem 1.5rem; text-align: center; border-top: 4px solid #e5e7eb; }
+  .metric-card .metric-value { font-size: 2.2rem; font-weight: 800; line-height: 1; margin-bottom: 0.3rem; }
+  .metric-card .metric-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th { background: #f1f5f9; text-align: left; padding: 0.6rem 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.04em; }
+  td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  .chart-wrap { position: relative; height: 280px; }
+  .chart-wrap-lg { position: relative; height: 320px; }
+  .steps-wrap { font-size: 0.85rem; line-height: 2; flex-wrap: wrap; display: flex; gap: 0.4rem; }
+  ul.files-list { list-style: none; padding: 0; line-height: 2.2; font-size: 0.95rem; }
+  .footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 3rem; padding: 1rem; }
+  @media (max-width: 640px) {
+    .header { padding: 1rem; }
+    .container { padding: 1rem; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<script>const REPORT = {
+  "schema_version": "1.1",
+  "generated_at": "2026-10-30T12:19:13",
+  "date": "2026-10-30",
+  "criticality": "CRITICAL",
+  "criticality_reasons": [
+    "news_push_failed:Command '['git', 'add', '-A', '--', '.', ':(glob,exclude)Output/**/tts_text_meta.json', ':(glob,exclude)Output/**/tts_generation_status.json', ':(glob,exclude)Output/**/tts_run_status.json', ':(glob,e"
+  ],
+  "pipeline": {
+    "runs": [
+      {
+        "scheduled_at": "közvetlen",
+        "started_at": "2026-10-30T11:49:52",
+        "ended_at": "2026-10-30T12:19:13",
+        "duration_seconds": 1762,
+        "exit_code": 0,
+        "status": "OK",
+        "process_killed": false,
+        "watchdog_triggered": false
+      }
+    ],
+    "overall_exit_code": 0,
+    "completed_steps": [
+      "dedup_fast.py",
+      "filter_importance.py",
+      "image_downloader.py",
+      "image_tags_sidecar.py",
+      "importance_assessor.py",
+      "importance_calibrator.py",
+      "justwatch_scraper.py",
+      "link_dedup.py",
+      "market_generator.py",
+      "news_filter.py",
+      "rss_creator.py",
+      "section_validator.py",
+      "split_localization.py",
+      "summarizer_json.py",
+      "toplist_generator.py",
+      "weather_generator.py",
+      "youtube_scraper.py"
+    ],
+    "missing_steps": []
+  },
+  "articles": {
+    "total": 220,
+    "with_image": 220,
+    "without_image": 0,
+    "by_importance": {
+      "1": 3,
+      "2": 20,
+      "3": 61,
+      "4": 71,
+      "5": 53,
+      "6": 11,
+      "7": 1
+    },
+    "by_section": {
+      "szorakozas": 48,
+      "belfold_kulfold": 41,
+      "eletmod": 32,
+      "tech": 26,
+      "uzlet": 26,
+      "gamer": 13,
+      "tudomany": 11,
+      "bulvar": 11,
+      "sport": 8,
+      "kripto": 4
+    }
+  },
+  "images": {
+    "attempted": 220,
+    "with_image": 220,
+    "without_image": 0,
+    "failed": 0,
+    "failure_rate_pct": 0.0,
+    "download_errors_logged": 0
+  },
+  "rss": {
+    "total_feeds": 98,
+    "ok_feeds": 98,
+    "failed_feeds": 0,
+    "success_rate_pct": 100.0,
+    "failed_feed_list": []
+  },
+  "errors": {
+    "rss_404": 0,
+    "rss_403": 0,
+    "rss_503": 0,
+    "rss_500": 0,
+    "rss_timeout": 0,
+    "rss_dns": 0,
+    "rss_ssl": 0,
+    "api_timeout": 0,
+    "api_no_response": 0,
+    "items_missing_from_batch": 0,
+    "pairing_failures": 0,
+    "pairing_fixed": 0,
+    "image_failures": 0,
+    "process_killed": 0,
+    "watchdog_kills": 0
+  },
+  "files": {
+    "data_json": {
+      "exists": true,
+      "item_count": 55
+    },
+    "data_i4_json": {
+      "exists": true,
+      "item_count": 116
+    },
+    "data_i5_json": {
+      "exists": true,
+      "item_count": 12
+    },
+    "data_toplist_json": {
+      "exists": true,
+      "item_count": 3
+    },
+    "idojaras_json": {
+      "exists": true
+    },
+    "piacok_json": {
+      "exists": true
+    }
+  },
+  "history_7d": [
+    {
+      "date": "2026-10-24",
+      "articles": 549,
+      "status": "OK",
+      "exit_code": 0
+    },
+    {
+      "date": "2026-10-25",
+      "articles": 583,
+      "status": "OK",
+      "exit_code": 0
+    },
+    {
+      "date": "2026-10-26",
+      "articles": 566,
+      "status": "OK",
+      "exit_code": 0
+    },
+    {
+      "date": "2026-10-27",
+      "articles": 513,
+      "status": "OK",
+      "exit_code": 0
+    },
+    {
+      "date": "2026-10-28",
+      "articles": 938,
+      "status": "OK",
+      "exit_code": 0
+    },
+    {
+      "date": "2026-10-29",
+      "articles": 680,
+      "status": "OK",
+      "exit_code": 0
+    },
+    {
+      "date": "2026-10-30",
+      "articles": 220,
+      "status": "OK",
+      "exit_code": 0
+    }
+  ],
+  "run_timing": {
+    "date": "2026-10-30",
+    "started_at": "2026-10-30T11:49:52",
+    "ended_at": "2026-10-30T12:19:13",
+    "duration_seconds": 1761.5,
+    "steps": [
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-30T11:49:55",
+        "ended_at": "2026-10-30T11:49:55",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-30T11:49:58",
+        "ended_at": "2026-10-30T11:50:02",
+        "duration_seconds": 4.1,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-30T11:50:02",
+        "ended_at": "2026-10-30T11:50:58",
+        "duration_seconds": 55.8,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-30T11:50:58",
+        "ended_at": "2026-10-30T11:52:11",
+        "duration_seconds": 72.8,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-30T11:52:11",
+        "ended_at": "2026-10-30T11:52:11",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-30T11:52:11",
+        "ended_at": "2026-10-30T11:52:27",
+        "duration_seconds": 15.4,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-10-30T11:52:27",
+        "ended_at": "2026-10-30T11:52:27",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-30T11:52:27",
+        "ended_at": "2026-10-30T11:52:28",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-30T11:52:28",
+        "ended_at": "2026-10-30T11:52:28",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "weather_generator.py",
+        "description": "Generating Weather Forecast",
+        "started_at": "2026-10-30T11:52:29",
+        "ended_at": "2026-10-30T11:52:30",
+        "duration_seconds": 1.1,
+        "status": "OK"
+      },
+      {
+        "name": "market_generator.py",
+        "description": "Generating Market Analysis",
+        "started_at": "2026-10-30T11:52:30",
+        "ended_at": "2026-10-30T11:52:31",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-30T11:52:31",
+        "ended_at": "2026-10-30T11:54:06",
+        "duration_seconds": 94.6,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-30T11:52:31",
+        "ended_at": "2026-10-30T11:54:09",
+        "duration_seconds": 97.7,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-30T11:54:09",
+        "ended_at": "2026-10-30T11:54:10",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-30T11:54:12",
+        "ended_at": "2026-10-30T11:58:30",
+        "duration_seconds": 258.4,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-30T11:58:30",
+        "ended_at": "2026-10-30T11:59:42",
+        "duration_seconds": 71.7,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-30T11:59:42",
+        "ended_at": "2026-10-30T12:00:53",
+        "duration_seconds": 71.3,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-30T12:00:54",
+        "ended_at": "2026-10-30T12:00:54",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-30T12:00:54",
+        "ended_at": "2026-10-30T12:01:15",
+        "duration_seconds": 21.3,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-10-30T12:01:15",
+        "ended_at": "2026-10-30T12:01:16",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-30T12:01:16",
+        "ended_at": "2026-10-30T12:01:17",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-30T12:01:17",
+        "ended_at": "2026-10-30T12:01:17",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-30T12:01:19",
+        "ended_at": "2026-10-30T12:02:32",
+        "duration_seconds": 73.7,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-30T12:01:19",
+        "ended_at": "2026-10-30T12:02:36",
+        "duration_seconds": 77.1,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-30T12:02:36",
+        "ended_at": "2026-10-30T12:02:38",
+        "duration_seconds": 2.2,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-30T12:02:41",
+        "ended_at": "2026-10-30T12:02:48",
+        "duration_seconds": 7.6,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-30T12:02:48",
+        "ended_at": "2026-10-30T12:03:48",
+        "duration_seconds": 60.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-30T12:03:48",
+        "ended_at": "2026-10-30T12:05:02",
+        "duration_seconds": 73.4,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-30T12:05:02",
+        "ended_at": "2026-10-30T12:05:02",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-30T12:05:02",
+        "ended_at": "2026-10-30T12:05:36",
+        "duration_seconds": 33.6,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-10-30T12:05:36",
+        "ended_at": "2026-10-30T12:05:37",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-30T12:05:37",
+        "ended_at": "2026-10-30T12:05:37",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-30T12:05:37",
+        "ended_at": "2026-10-30T12:05:38",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_calibrator.py",
+        "description": "Refining News Importance & Engagement (Hourly)",
+        "started_at": "2026-10-30T12:06:31",
+        "ended_at": "2026-10-30T12:07:31",
+        "duration_seconds": 59.5,
+        "status": "OK"
+      },
+      {
+        "name": "toplist_generator.py",
+        "description": "Generating Toplists from specific URLs",
+        "started_at": "2026-10-30T12:07:31",
+        "ended_at": "2026-10-30T12:07:31",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "justwatch_scraper.py",
+        "description": "Scraping JustWatch SkyShowtime Trending",
+        "started_at": "2026-10-30T12:07:31",
+        "ended_at": "2026-10-30T12:07:32",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "youtube_scraper.py",
+        "description": "Scraping YouTube Creators for New Videos",
+        "started_at": "2026-10-30T12:07:32",
+        "ended_at": "2026-10-30T12:08:28",
+        "duration_seconds": 55.5,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-30T12:08:28",
+        "ended_at": "2026-10-30T12:08:29",
+        "duration_seconds": 1.2,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-30T12:08:32",
+        "ended_at": "2026-10-30T12:11:14",
+        "duration_seconds": 162.2,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-30T12:11:14",
+        "ended_at": "2026-10-30T12:14:36",
+        "duration_seconds": 201.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-30T12:14:36",
+        "ended_at": "2026-10-30T12:19:00",
+        "duration_seconds": 264.2,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-30T12:19:00",
+        "ended_at": "2026-10-30T12:19:00",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-30T12:19:00",
+        "ended_at": "2026-10-30T12:19:09",
+        "duration_seconds": 8.9,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-10-30T12:19:09",
+        "ended_at": "2026-10-30T12:19:10",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-30T12:19:10",
+        "ended_at": "2026-10-30T12:19:11",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-30T12:19:11",
+        "ended_at": "2026-10-30T12:19:11",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      }
+    ],
+    "publish": {
+      "weather_market_push": {
+        "status": "disabled"
+      },
+      "images_push": {
+        "status": "ok"
+      },
+      "news_push": {
+        "status": "failed",
+        "error": "Command '['git', 'add', '-A', '--', '.', ':(glob,exclude)Output/**/tts_text_meta.json', ':(glob,exclude)Output/**/tts_generation_status.json', ':(glob,exclude)Output/**/tts_run_status.json', ':(glob,e"
+      }
+    }
+  },
+  "publish": {
+    "weather_market_push": {
+      "status": "disabled"
+    },
+    "images_push": {
+      "status": "ok"
+    },
+    "news_push": {
+      "status": "failed",
+      "error": "Command '['git', 'add', '-A', '--', '.', ':(glob,exclude)Output/**/tts_text_meta.json', ':(glob,exclude)Output/**/tts_generation_status.json', ':(glob,exclude)Output/**/tts_run_status.json', ':(glob,e"
+    }
+  }
+};</script>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>📰 Derűshírek Pipeline Monitor</h1>
+    <div class="meta">Dátum: <strong>2026-10-30</strong> &nbsp;·&nbsp; Generálva: 2026-10-30T12:19:13</div>
+  </div>
+  <div>
+    <span class="status-badge" style="background:#dc2626;">
+      🔴 KRITIKUS
+    </span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ALERTS -->
+  
+<div class="alert alert-critical" style="background:#fee2e2;border-left:5px solid #f87171;color:#991b1b;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
+  <strong>🔴 KRITIKUS</strong>
+  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>🔴 KRITIKUS: a hírek git-push NEM sikerült — a weboldal nem frissült! Ok: Command '['git', 'add', '-A', '--', '.', ':(glob,exclude)Output/**/tts_text_meta.json', ':(glob,exclude)Output/**/tts_generation_status.json', ':(glob,exclude)Output/**/tts_run_status.json', ':(glob,e</li>
+</ul>
+</div>
+
+  <!-- PUBLISH STATUS (prominent) -->
+  
+<div style="background:#7f1d1d;color:#fff;padding:1rem 1.25rem;border-radius:10px;margin-bottom:1rem;border:3px solid #dc2626;font-size:1.05rem;font-weight:800;">
+  🔴 GIT PUSH SIKERTELEN — a weboldal NEM frissült!
+  <div style="font-weight:500;font-size:0.85rem;margin-top:0.35rem;opacity:0.95;">Ok: Command '['git', 'add', '-A', '--', '.', ':(glob,exclude)Output/**/tts_text_meta.json', ':(glob,exclude)Output/**/tts_generation_status.json', ':(glob,exclude)Output/**/tts_run_status.json', ':(glob,e</div>
+</div>
+
+  <!-- KEY METRICS -->
+  <div class="section-title">Fő mutatók</div>
+  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:0.8rem;font-weight:700;">Hírek: 🔴 SIKERTELEN</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
+  <div class="grid-4">
+    <div class="metric-card" style="border-top-color:#dc2626;">
+      <div class="metric-value" style="color:#dc2626;">220</div>
+      <div class="metric-label">Cikk összesen</div>
+    </div>
+    <div class="metric-card" style="border-top-color:#22c55e;">
+      <div class="metric-value" style="color:#22c55e;">100.0%</div>
+      <div class="metric-label">RSS sikerráta</div>
+    </div>
+    <div class="metric-card" style="border-top-color:#22c55e;">
+      <div class="metric-value" style="color:#22c55e;">100.0%</div>
+      <div class="metric-label">Képek rendben</div>
+    </div>
+    <div class="metric-card" style="border-top-color:#dc2626;">
+      <div class="metric-value" style="color:#dc2626;">🔴</div>
+      <div class="metric-label">Pipeline státusz</div>
+    </div>
+  </div>
+
+  <!-- PIPELINE RUNS -->
+  <div class="section-title">Pipeline futások</div>
+  <div class="card">
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr>
+          <th>Ütemezés</th><th>Indítás</th><th>Befejezés</th><th>Időtartam</th><th>Exit code</th><th>Megjegyzés</th><th>Státusz</th>
+        </tr></thead>
+        <tbody><tr>
+          <td>közvetlen</td>
+          <td>11:49:52</td>
+          <td>12:19:13</td>
+          <td>29p 22s</td>
+          <td>0</td>
+          <td> </td>
+          <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div style="margin-top:1rem;">
+      <div style="font-size:0.85rem;font-weight:600;color:var(--muted);margin-bottom:0.4rem;">Befejezett lépések:</div>
+      <div class="steps-wrap"><span style="margin-right:0.5rem;">✅ weather_generator.py</span><span style="margin-right:0.5rem;">✅ market_generator.py</span><span style="margin-right:0.5rem;">✅ rss_creator.py</span><span style="margin-right:0.5rem;">✅ news_filter.py</span><span style="margin-right:0.5rem;">✅ link_dedup.py</span><span style="margin-right:0.5rem;">✅ summarizer_json.py</span><span style="margin-right:0.5rem;">✅ image_downloader.py</span><span style="margin-right:0.5rem;">✅ section_validator.py</span><span style="margin-right:0.5rem;">✅ filter_importance.py</span></div>
+      
+    </div>
+  </div>
+  
+  <div class="section-title">Futás időzítése</div>
+  <div class="card">
+    <div class="grid-4" style="margin-bottom:1rem;">
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Dátum</div><div style="font-size:1.15rem;font-weight:800;">2026-10-30</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Indítás</div><div style="font-size:1.15rem;font-weight:800;">11:49:52</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">12:19:13</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">29p 22s</div></div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Lépés</th><th>Indítás</th><th>Befejezés</th><th>Időtartam</th><th>Státusz</th></tr></thead>
+        <tbody><tr>
+              <td>Deduplicating Links by Topic <span style="color:#6b7280;font-size:0.85em;">(link_dedup.py)</span></td>
+              <td>11:49:55</td>
+              <td>11:49:55</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Summarizing to JSON (Filter + Categorize) <span style="color:#6b7280;font-size:0.85em;">(summarizer_json.py)</span></td>
+              <td>11:49:58</td>
+              <td>11:50:02</td>
+              <td style="font-weight:700;">4s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating News (Multi-file) <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>11:50:02</td>
+              <td>11:50:58</td>
+              <td style="font-weight:700;">56s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Downloading Images <span style="color:#6b7280;font-size:0.85em;">(image_downloader.py)</span></td>
+              <td>11:50:58</td>
+              <td>11:52:11</td>
+              <td style="font-weight:700;">1p 13s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Validating Section Fields <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>11:52:11</td>
+              <td>11:52:11</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Assessing New/Changed News Importance <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>11:52:11</td>
+              <td>11:52:27</td>
+              <td style="font-weight:700;">15s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Importance 4–7 into Separate Files <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>11:52:27</td>
+              <td>11:52:27</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Writing per-image tag sidecars (local only) <span style="color:#6b7280;font-size:0.85em;">(image_tags_sidecar.py)</span></td>
+              <td>11:52:27</td>
+              <td>11:52:28</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>11:52:28</td>
+              <td>11:52:28</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Generating Weather Forecast <span style="color:#6b7280;font-size:0.85em;">(weather_generator.py)</span></td>
+              <td>11:52:29</td>
+              <td>11:52:30</td>
+              <td style="font-weight:700;">1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Generating Market Analysis <span style="color:#6b7280;font-size:0.85em;">(market_generator.py)</span></td>
+              <td>11:52:30</td>
+              <td>11:52:31</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Generating Custom RSS Feeds <span style="color:#6b7280;font-size:0.85em;">(rss_creator.py)</span></td>
+              <td>11:52:31</td>
+              <td>11:54:06</td>
+              <td style="font-weight:700;">1p 35s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Collecting RSS Links <span style="color:#6b7280;font-size:0.85em;">(news_filter.py)</span></td>
+              <td>11:52:31</td>
+              <td>11:54:09</td>
+              <td style="font-weight:700;">1p 38s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating Links by Topic <span style="color:#6b7280;font-size:0.85em;">(link_dedup.py)</span></td>
+              <td>11:54:09</td>
+              <td>11:54:10</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Summarizing to JSON (Filter + Categorize) <span style="color:#6b7280;font-size:0.85em;">(summarizer_json.py)</span></td>
+              <td>11:54:12</td>
+              <td>11:58:30</td>
+              <td style="font-weight:700;">4p 18s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating News (Multi-file) <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>11:58:30</td>
+              <td>11:59:42</td>
+              <td style="font-weight:700;">1p 12s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Downloading Images <span style="color:#6b7280;font-size:0.85em;">(image_downloader.py)</span></td>
+              <td>11:59:42</td>
+              <td>12:00:53</td>
+              <td style="font-weight:700;">1p 11s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Validating Section Fields <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>12:00:54</td>
+              <td>12:00:54</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Assessing New/Changed News Importance <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>12:00:54</td>
+              <td>12:01:15</td>
+              <td style="font-weight:700;">21s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Importance 4–7 into Separate Files <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>12:01:15</td>
+              <td>12:01:16</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Writing per-image tag sidecars (local only) <span style="color:#6b7280;font-size:0.85em;">(image_tags_sidecar.py)</span></td>
+              <td>12:01:16</td>
+              <td>12:01:17</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>12:01:17</td>
+              <td>12:01:17</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Generating Custom RSS Feeds <span style="color:#6b7280;font-size:0.85em;">(rss_creator.py)</span></td>
+              <td>12:01:19</td>
+              <td>12:02:32</td>
+              <td style="font-weight:700;">1p 14s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Collecting RSS Links <span style="color:#6b7280;font-size:0.85em;">(news_filter.py)</span></td>
+              <td>12:01:19</td>
+              <td>12:02:36</td>
+              <td style="font-weight:700;">1p 17s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating Links by Topic <span style="color:#6b7280;font-size:0.85em;">(link_dedup.py)</span></td>
+              <td>12:02:36</td>
+              <td>12:02:38</td>
+              <td style="font-weight:700;">2s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Summarizing to JSON (Filter + Categorize) <span style="color:#6b7280;font-size:0.85em;">(summarizer_json.py)</span></td>
+              <td>12:02:41</td>
+              <td>12:02:48</td>
+              <td style="font-weight:700;">8s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating News (Multi-file) <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>12:02:48</td>
+              <td>12:03:48</td>
+              <td style="font-weight:700;">1p 0s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Downloading Images <span style="color:#6b7280;font-size:0.85em;">(image_downloader.py)</span></td>
+              <td>12:03:48</td>
+              <td>12:05:02</td>
+              <td style="font-weight:700;">1p 13s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Validating Section Fields <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>12:05:02</td>
+              <td>12:05:02</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Assessing New/Changed News Importance <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>12:05:02</td>
+              <td>12:05:36</td>
+              <td style="font-weight:700;">34s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Importance 4–7 into Separate Files <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>12:05:36</td>
+              <td>12:05:37</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Writing per-image tag sidecars (local only) <span style="color:#6b7280;font-size:0.85em;">(image_tags_sidecar.py)</span></td>
+              <td>12:05:37</td>
+              <td>12:05:37</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>12:05:37</td>
+              <td>12:05:38</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Refining News Importance & Engagement (Hourly) <span style="color:#6b7280;font-size:0.85em;">(importance_calibrator.py)</span></td>
+              <td>12:06:31</td>
+              <td>12:07:31</td>
+              <td style="font-weight:700;">1p 0s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Generating Toplists from specific URLs <span style="color:#6b7280;font-size:0.85em;">(toplist_generator.py)</span></td>
+              <td>12:07:31</td>
+              <td>12:07:31</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Scraping JustWatch SkyShowtime Trending <span style="color:#6b7280;font-size:0.85em;">(justwatch_scraper.py)</span></td>
+              <td>12:07:31</td>
+              <td>12:07:32</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Scraping YouTube Creators for New Videos <span style="color:#6b7280;font-size:0.85em;">(youtube_scraper.py)</span></td>
+              <td>12:07:32</td>
+              <td>12:08:28</td>
+              <td style="font-weight:700;">56s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating Links by Topic <span style="color:#6b7280;font-size:0.85em;">(link_dedup.py)</span></td>
+              <td>12:08:28</td>
+              <td>12:08:29</td>
+              <td style="font-weight:700;">1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Summarizing to JSON (Filter + Categorize) <span style="color:#6b7280;font-size:0.85em;">(summarizer_json.py)</span></td>
+              <td>12:08:32</td>
+              <td>12:11:14</td>
+              <td style="font-weight:700;">2p 42s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating News (Multi-file) <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>12:11:14</td>
+              <td>12:14:36</td>
+              <td style="font-weight:700;">3p 22s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Downloading Images <span style="color:#6b7280;font-size:0.85em;">(image_downloader.py)</span></td>
+              <td>12:14:36</td>
+              <td>12:19:00</td>
+              <td style="font-weight:700;">4p 24s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Validating Section Fields <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>12:19:00</td>
+              <td>12:19:00</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Assessing New/Changed News Importance <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>12:19:00</td>
+              <td>12:19:09</td>
+              <td style="font-weight:700;">9s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Importance 4–7 into Separate Files <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>12:19:09</td>
+              <td>12:19:10</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Writing per-image tag sidecars (local only) <span style="color:#6b7280;font-size:0.85em;">(image_tags_sidecar.py)</span></td>
+              <td>12:19:10</td>
+              <td>12:19:11</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>12:19:11</td>
+              <td>12:19:11</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ARTICLE ANALYSIS -->
+  <div class="section-title">Cikkelemzés</div>
+  <div class="card">
+    <div style="font-weight:600;margin-bottom:0.75rem;">Szekciónkénti cikkszám</div>
+    <div class="chart-wrap"><canvas id="chartSection"></canvas></div>
+  </div>
+
+  <!-- 7-DAY TREND -->
+  <div class="section-title">Heti cikkszám trend (7 nap)</div>
+  <div class="card">
+    <div class="chart-wrap-lg"><canvas id="chartTrend"></canvas></div>
+  </div>
+
+  <!-- RSS -->
+  <div class="section-title">RSS Feedek</div>
+  <div class="grid-2">
+    <div class="card">
+      <div style="font-weight:600;margin-bottom:0.75rem;">Feed sikeresség</div>
+      <div style="max-width:260px;margin:0 auto;"><canvas id="chartRss"></canvas></div>
+      <div style="text-align:center;margin-top:0.75rem;font-size:0.9rem;">
+        Összes: <strong>98</strong> &nbsp;·&nbsp;
+        Sikeres: <strong style="color:#22c55e;">98</strong> &nbsp;·&nbsp;
+        Sikertelen: <strong style="color:#ef4444;">0</strong>
+      </div>
+    </div>
+    <div class="card" style="overflow-x:auto;">
+      <div style="font-weight:600;margin-bottom:0.75rem;">Sikertelen feedek (top 50)</div>
+      <table>
+        <thead><tr><th>URL</th><th>Hiba</th><th>Leírás</th></tr></thead>
+        <tbody><tr><td colspan="3" style="text-align:center;color:#6b7280;">Nincsenek sikertelen RSS feedek.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ERROR SUMMARY -->
+  <div class="section-title">Hibák összefoglalója</div>
+  <div class="card">
+    <div class="chart-wrap"><canvas id="chartErrors"></canvas></div>
+    
+  </div>
+
+  <!-- OUTPUT FILES -->
+  <div class="section-title">Output fájlok</div>
+  <div class="card">
+    <ul class="files-list"><li>✅ <code>data.json</code> <span style="color:#6b7280;font-size:0.85em;">(55 db)</span></li>
+<li>✅ <code>data_i4.json</code> <span style="color:#6b7280;font-size:0.85em;">(116 db)</span></li>
+<li>✅ <code>data_i5.json</code> <span style="color:#6b7280;font-size:0.85em;">(12 db)</span></li>
+<li>✅ <code>data_toplist.json</code> <span style="color:#6b7280;font-size:0.85em;">(3 db)</span></li>
+<li>✅ <code>idojaras.json</code></li>
+<li>✅ <code>piacok.json</code></li>
+</ul>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-10-30T12:19:13
+  </div>
+
+</div>
+
+<script>
+// --- Chart.js defaults ---
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+Chart.defaults.color = '#374151';
+
+// Section horizontal bar chart
+new Chart(document.getElementById('chartSection'), {
+  type: 'bar',
+  data: {
+    labels: ["szorakozas", "belfold_kulfold", "eletmod", "tech", "uzlet", "gamer", "tudomany", "bulvar", "sport", "kripto"],
+    datasets: [{
+      label: 'Cikkszám',
+      data: [48, 41, 32, 26, 26, 13, 11, 11, 8, 4],
+      backgroundColor: ["#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316", "#22c55e", "#eab308", "#ef4444", "#06b6d4", "#a78bfa"],
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { beginAtZero: true, ticks: { precision: 0 } }
+    }
+  }
+});
+
+// 7-day trend line chart
+new Chart(document.getElementById('chartTrend'), {
+  type: 'line',
+  data: {
+    labels: ["2026-10-24", "2026-10-25", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30"],
+    datasets: [{
+      label: 'Cikkszám',
+      data: [549, 583, 566, 513, 938, 680, 220],
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59,130,246,0.08)',
+      pointBackgroundColor: ["#22c55e", "#22c55e", "#22c55e", "#22c55e", "#22c55e", "#22c55e", "#22c55e"],
+      pointRadius: 6,
+      tension: 0.3,
+      fill: true,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { precision: 0 } }
+    }
+  }
+});
+
+// RSS doughnut
+new Chart(document.getElementById('chartRss'), {
+  type: 'doughnut',
+  data: {
+    labels: ["Sikeres", "Sikertelen"],
+    datasets: [{
+      data: [98, 0],
+      backgroundColor: ['#22c55e', '#ef4444'],
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' }
+    }
+  }
+});
+
+// Errors horizontal bar chart
+new Chart(document.getElementById('chartErrors'), {
+  type: 'bar',
+  data: {
+    labels: ["RSS 404", "RSS 403", "RSS 503", "RSS Timeout", "RSS DNS", "RSS SSL", "API Timeout", "API No Resp.", "Batch Missing", "Pairing Fail", "Image Fail"],
+    datasets: [{
+      label: 'Darabszám',
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      backgroundColor: ["#f87171", "#fb923c", "#fbbf24", "#a78bfa", "#818cf8", "#22d3ee", "#f472b6", "#c084fc", "#94a3b8", "#fb7185", "#38bdf8"],
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { beginAtZero: true, ticks: { precision: 0 } }
+    }
+  }
+});
+</script>
+</body>
+</html>

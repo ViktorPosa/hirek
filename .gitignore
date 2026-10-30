@@ -1,45 +1,43 @@
-# runtime / generated
-Input/
-Output/
-logs/
+# Ignore everything
+*
+
+# Except Output folder and its contents
+!Output/
+!Output/**
+
+# Whitelist specifically generated files, reject everything else (e.g. .dmg, .wav)
+Output/**/*
+!Output/**/
+!Output/**/*.json
+!Output/**/*.txt
+!Output/**/*.log
+!Output/**/*.html
+
+# Keep .gitignore itself
+!.gitignore
+
+# Ignore RSS feeds folder inside Output
+Output/*/rss_feeds/
+Output/*/rss_feeds/**
+
+# Ignore private internal state markers inside Output
+Output/**/.importance_split_pending.json
+Output/**/.image_update_pending.json
+Output/**/.filter_pending_*
+Output/**/tts_text_meta.json
+Output/**/tts_generation_status.json
+Output/**/tts_run_status.json
+
+# Secure cookies - NEVER push to git
+Input/gemini_cookies.json
+gemini_chat_api/
+
+# Dedicated image repository folder
 ImageRepo/
+
+# Local-only per-image tag sidecars
 ImageTags/
-<<<<<<< HEAD
 
 # Scraper .py are versioned in a SEPARATE local-only repo (.scraper.git), NEVER on hirek
 .scraper.git/
-=======
-Ajanlott/
-rss_feeds/
-*.log
-*.out
-*.tmp
-history.json
-.pipeline.lock
-.omni_heartbeat.json
-omni_worker_control.json
-STOP_PERSISTENT
-batch_state.json
-status.json
-# böngésző-profilok / driverek (nagy, gép-lokális)
-ChromeSeleniumProfile*
-PerplexityChromeProfile*
-gemini_profile*
-drivers/
-lightpanda/
-gemini_chat_api/
-# python / venv / cache / bundle
-__pycache__/
-*.py[cod]
-venv/
-.venv/
-python/
-# editor / OS
-.DS_Store
-# TITKOK — soha ne kerüljön verziókövetésbe
-.env
-.env.local
-*.key
-credentials*
-secret*
->>>>>>> df1b210d9 (security: Gemini API-kulcs kiszervezve (env + gitignore-olt Input/gemini_api_keys.txt); forrásból eltávolítva)
+.pygit/
