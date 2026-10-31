@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-31T13:25:40",
+  "generated_at": "2026-10-31T13:34:04",
   "date": "2026-10-31",
   "criticality": "OK",
   "criticality_reasons": [],
@@ -9,8 +9,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-31T09:22:48",
-        "ended_at": "2026-10-31T13:25:40",
-        "duration_seconds": 14572,
+        "ended_at": "2026-10-31T13:34:04",
+        "duration_seconds": 15076,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -42,34 +42,34 @@
     ]
   },
   "articles": {
-    "total": 190,
-    "with_image": 190,
+    "total": 200,
+    "with_image": 200,
     "without_image": 0,
     "by_importance": {
       "1": 14,
-      "2": 28,
-      "3": 70,
-      "4": 47,
-      "5": 28,
-      "6": 3,
+      "2": 29,
+      "3": 72,
+      "4": 49,
+      "5": 32,
+      "6": 4,
       "7": 0
     },
     "by_section": {
-      "eletmod": 46,
-      "szorakozas": 32,
-      "tech": 28,
+      "eletmod": 48,
+      "szorakozas": 33,
+      "tech": 29,
       "belfold_kulfold": 26,
-      "uzlet": 13,
-      "sport": 13,
-      "bulvar": 13,
+      "uzlet": 16,
+      "sport": 14,
+      "bulvar": 14,
+      "tudomany": 9,
       "gamer": 9,
-      "tudomany": 8,
       "kripto": 2
     }
   },
   "images": {
-    "attempted": 190,
-    "with_image": 190,
+    "attempted": 200,
+    "with_image": 200,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
@@ -80,19 +80,25 @@
     "ok_feeds": 93,
     "failed_feeds": 5,
     "success_rate_pct": 94.9,
-    "failed_feed_list": []
+    "failed_feed_list": [
+      {
+        "url": "https://www.drive.com.au/feed/",
+        "error_type": "rss_403",
+        "error_short": "HTTP 403"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
-    "rss_403": 0,
+    "rss_403": 1,
     "rss_503": 0,
     "rss_500": 0,
     "rss_timeout": 0,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 3,
-    "items_missing_from_batch": 2,
+    "api_no_response": 0,
+    "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
     "image_failures": 0,
@@ -102,15 +108,15 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 71
+      "item_count": 74
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 69
+      "item_count": 75
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 3
+      "item_count": 4
     },
     "data_toplist_json": {
       "exists": true,
@@ -162,7 +168,7 @@
     },
     {
       "date": "2026-10-31",
-      "articles": 190,
+      "articles": 200,
       "status": "OK",
       "exit_code": 0
     }
@@ -170,8 +176,8 @@
   "run_timing": {
     "date": "2026-10-31",
     "started_at": "2026-10-31T09:22:48",
-    "ended_at": "2026-10-31T13:25:40",
-    "duration_seconds": 14571.8,
+    "ended_at": "2026-10-31T13:34:04",
+    "duration_seconds": 15076.2,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -2330,6 +2336,94 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-10-31T13:25:36",
         "ended_at": "2026-10-31T13:25:37",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-10-31T13:25:46",
+        "ended_at": "2026-10-31T13:27:58",
+        "duration_seconds": 132.2,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-10-31T13:25:46",
+        "ended_at": "2026-10-31T13:27:59",
+        "duration_seconds": 133.2,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-31T13:28:00",
+        "ended_at": "2026-10-31T13:28:01",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-31T13:28:03",
+        "ended_at": "2026-10-31T13:31:07",
+        "duration_seconds": 184.0,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-31T13:31:07",
+        "ended_at": "2026-10-31T13:32:01",
+        "duration_seconds": 53.5,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-31T13:32:01",
+        "ended_at": "2026-10-31T13:32:57",
+        "duration_seconds": 55.8,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-31T13:32:57",
+        "ended_at": "2026-10-31T13:32:57",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-31T13:32:57",
+        "ended_at": "2026-10-31T13:33:56",
+        "duration_seconds": 59.2,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-10-31T13:33:56",
+        "ended_at": "2026-10-31T13:33:57",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-31T13:33:57",
+        "ended_at": "2026-10-31T13:33:58",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-31T13:33:58",
+        "ended_at": "2026-10-31T13:33:58",
         "duration_seconds": 0.6,
         "status": "OK"
       }
