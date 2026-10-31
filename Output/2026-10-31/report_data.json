@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-10-31T20:45:55",
+  "generated_at": "2026-10-31T20:55:34",
   "date": "2026-10-31",
   "criticality": "INFO",
   "criticality_reasons": [
-    "images_missing:4"
+    "images_missing:2"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-10-31T18:54:42",
-        "ended_at": "2026-10-31T20:45:55",
-        "duration_seconds": 6672,
+        "ended_at": "2026-10-31T20:55:34",
+        "duration_seconds": 7252,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -44,14 +44,14 @@
   },
   "articles": {
     "total": 354,
-    "with_image": 350,
-    "without_image": 4,
+    "with_image": 352,
+    "without_image": 2,
     "by_importance": {
       "1": 25,
-      "2": 56,
-      "3": 141,
-      "4": 84,
-      "5": 39,
+      "2": 57,
+      "3": 144,
+      "4": 81,
+      "5": 38,
       "6": 9,
       "7": 0
     },
@@ -70,10 +70,10 @@
   },
   "images": {
     "attempted": 354,
-    "with_image": 350,
-    "without_image": 4,
-    "failed": 4,
-    "failure_rate_pct": 1.1,
+    "with_image": 352,
+    "without_image": 2,
+    "failed": 2,
+    "failure_rate_pct": 0.6,
     "download_errors_logged": 0
   },
   "rss": {
@@ -103,11 +103,11 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 123
+      "item_count": 127
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 106
+      "item_count": 102
     },
     "data_i5_json": {
       "exists": true,
@@ -171,8 +171,8 @@
   "run_timing": {
     "date": "2026-10-31",
     "started_at": "2026-10-31T18:54:42",
-    "ended_at": "2026-10-31T20:45:55",
-    "duration_seconds": 6672.3,
+    "ended_at": "2026-10-31T20:55:34",
+    "duration_seconds": 7251.8,
     "steps": [
       {
         "name": "weather_generator.py",
@@ -1179,6 +1179,86 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-10-31T20:45:50",
         "ended_at": "2026-10-31T20:45:51",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "reprocess_all_today_perplexity.py",
+        "description": "Topic-Grouped Reprocessing (>= 10 articles/topic)",
+        "started_at": "2026-10-31T20:46:00",
+        "ended_at": "2026-10-31T20:46:09",
+        "duration_seconds": 8.8,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-10-31T20:46:10",
+        "ended_at": "2026-10-31T20:46:11",
+        "duration_seconds": 1.1,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-10-31T20:46:14",
+        "ended_at": "2026-10-31T20:48:52",
+        "duration_seconds": 157.8,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-10-31T20:48:52",
+        "ended_at": "2026-10-31T20:53:06",
+        "duration_seconds": 254.1,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-10-31T20:53:06",
+        "ended_at": "2026-10-31T20:55:27",
+        "duration_seconds": 141.4,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-10-31T20:55:27",
+        "ended_at": "2026-10-31T20:55:28",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-10-31T20:55:28",
+        "ended_at": "2026-10-31T20:55:29",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-10-31T20:55:29",
+        "ended_at": "2026-10-31T20:55:29",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-10-31T20:55:29",
+        "ended_at": "2026-10-31T20:55:30",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-10-31T20:55:30",
+        "ended_at": "2026-10-31T20:55:30",
         "duration_seconds": 0.5,
         "status": "OK"
       }
