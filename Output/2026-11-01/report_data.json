@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-01T18:53:45",
+  "generated_at": "2026-11-01T18:57:26",
   "date": "2026-11-01",
   "criticality": "OK",
   "criticality_reasons": [],
@@ -9,21 +9,22 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-01T18:53:38",
-        "ended_at": "2026-11-01T18:53:45",
-        "duration_seconds": 7,
+        "ended_at": "2026-11-01T18:57:26",
+        "duration_seconds": 228,
         "exit_code": 0,
-        "status": "OK",
+        "status": "WARNING",
         "process_killed": false,
         "watchdog_triggered": false
       }
     ],
     "overall_exit_code": 0,
-    "completed_steps": [],
+    "completed_steps": [
+      "news_filter.py"
+    ],
     "missing_steps": [
       "weather_generator.py",
       "market_generator.py",
       "rss_creator.py",
-      "news_filter.py",
       "link_dedup.py",
       "summarizer_json.py",
       "image_downloader.py",
@@ -67,43 +68,17 @@
   },
   "rss": {
     "total_feeds": 98,
-    "ok_feeds": 88,
-    "failed_feeds": 10,
-    "success_rate_pct": 89.8,
-    "failed_feed_list": [
-      {
-        "url": "https://fhm.com/category/bd-entertainment/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to fhm.com po"
-      },
-      {
-        "url": "https://fhm.com/category/women/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to fhm.com po"
-      },
-      {
-        "url": "https://caravantimes.co.uk/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to caravantim"
-      },
-      {
-        "url": "https://ng.24.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to ng.24.hu p"
-      },
-      {
-        "url": "https://fhm.com/category/bd-sports/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to fhm.com po"
-      }
-    ]
+    "ok_feeds": 89,
+    "failed_feeds": 9,
+    "success_rate_pct": 90.8,
+    "failed_feed_list": []
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 5,
+    "rss_timeout": 0,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
@@ -186,14 +161,34 @@
   "run_timing": {
     "date": "2026-11-01",
     "started_at": "2026-11-01T18:53:38",
-    "ended_at": "2026-11-01T18:53:45",
-    "duration_seconds": 7.0,
-    "steps": [],
+    "ended_at": "2026-11-01T18:57:26",
+    "duration_seconds": 227.7,
+    "steps": [
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-01T18:54:00",
+        "ended_at": "2026-11-01T18:57:09",
+        "duration_seconds": 188.4,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-01T18:54:00",
+        "ended_at": "2026-11-01T18:57:12",
+        "duration_seconds": 191.6,
+        "status": "OK"
+      }
+    ],
     "publish": {
       "weather_market_push": {
         "status": "disabled"
       },
       "images_push": {
+        "status": "ok"
+      },
+      "news_push": {
         "status": "ok"
       }
     }
@@ -203,6 +198,9 @@
       "status": "disabled"
     },
     "images_push": {
+      "status": "ok"
+    },
+    "news_push": {
       "status": "ok"
     }
   }
