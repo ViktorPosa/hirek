@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-01T23:14:07",
+  "generated_at": "2026-11-01T23:19:37",
   "date": "2026-11-01",
   "criticality": "OK",
   "criticality_reasons": [],
@@ -9,10 +9,10 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-01T23:06:57",
-        "ended_at": "2026-11-01T23:14:07",
-        "duration_seconds": 430,
+        "ended_at": "2026-11-01T23:19:37",
+        "duration_seconds": 760,
         "exit_code": 0,
-        "status": "OK",
+        "status": "WARNING",
         "process_killed": false,
         "watchdog_triggered": false
       }
@@ -37,34 +37,34 @@
     ]
   },
   "articles": {
-    "total": 324,
-    "with_image": 324,
+    "total": 332,
+    "with_image": 332,
     "without_image": 0,
     "by_importance": {
       "1": 19,
-      "2": 43,
-      "3": 141,
-      "4": 82,
-      "5": 27,
-      "6": 12,
+      "2": 49,
+      "3": 152,
+      "4": 76,
+      "5": 26,
+      "6": 10,
       "7": 0
     },
     "by_section": {
-      "tech": 63,
+      "tech": 64,
+      "eletmod": 62,
       "szorakozas": 61,
-      "eletmod": 60,
-      "belfold_kulfold": 45,
-      "gamer": 27,
+      "belfold_kulfold": 47,
+      "gamer": 28,
       "bulvar": 19,
       "uzlet": 18,
       "tudomany": 17,
-      "sport": 10,
+      "sport": 12,
       "kripto": 4
     }
   },
   "images": {
-    "attempted": 324,
-    "with_image": 324,
+    "attempted": 332,
+    "with_image": 332,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
@@ -86,8 +86,8 @@
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 0,
-    "items_missing_from_batch": 0,
+    "api_no_response": 3,
+    "items_missing_from_batch": 1,
     "pairing_failures": 0,
     "pairing_fixed": 0,
     "image_failures": 0,
@@ -97,15 +97,15 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 76
+      "item_count": 78
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 59
+      "item_count": 57
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 9
+      "item_count": 8
     },
     "data_toplist_json": {
       "exists": true,
@@ -157,7 +157,7 @@
     },
     {
       "date": "2026-11-01",
-      "articles": 324,
+      "articles": 332,
       "status": "OK",
       "exit_code": 0
     }
@@ -165,8 +165,8 @@
   "run_timing": {
     "date": "2026-11-01",
     "started_at": "2026-11-01T23:06:57",
-    "ended_at": "2026-11-01T23:14:07",
-    "duration_seconds": 430.0,
+    "ended_at": "2026-11-01T23:19:37",
+    "duration_seconds": 760.4,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -245,6 +245,78 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-11-01T23:14:03",
         "ended_at": "2026-11-01T23:14:04",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-01T23:14:13",
+        "ended_at": "2026-11-01T23:15:02",
+        "duration_seconds": 49.2,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-01T23:14:13",
+        "ended_at": "2026-11-01T23:15:03",
+        "duration_seconds": 50.3,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-01T23:15:04",
+        "ended_at": "2026-11-01T23:15:05",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-01T23:15:08",
+        "ended_at": "2026-11-01T23:17:31",
+        "duration_seconds": 143.8,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-01T23:17:31",
+        "ended_at": "2026-11-01T23:19:02",
+        "duration_seconds": 91.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-01T23:19:02",
+        "ended_at": "2026-11-01T23:19:03",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-11-01T23:19:03",
+        "ended_at": "2026-11-01T23:19:21",
+        "duration_seconds": 18.1,
+        "status": "ERROR"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-01T23:19:21",
+        "ended_at": "2026-11-01T23:19:22",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-01T23:19:22",
+        "ended_at": "2026-11-01T23:19:22",
         "duration_seconds": 0.6,
         "status": "OK"
       }
