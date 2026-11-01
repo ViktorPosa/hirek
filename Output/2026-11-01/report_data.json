@@ -1,152 +1,92 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-01T11:11:54",
+  "generated_at": "2026-11-01T11:33:04",
   "date": "2026-11-01",
   "criticality": "INFO",
   "criticality_reasons": [
-    "images_missing:5"
+    "images_missing:2"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-01T11:11:42",
-        "ended_at": "2026-11-01T11:11:54",
-        "duration_seconds": 11,
+        "ended_at": "2026-11-01T11:33:04",
+        "duration_seconds": 1282,
         "exit_code": 0,
-        "status": "OK",
+        "status": "WARNING",
         "process_killed": false,
         "watchdog_triggered": false
       }
     ],
     "overall_exit_code": 0,
-    "completed_steps": [],
-    "missing_steps": [
-      "weather_generator.py",
-      "market_generator.py",
-      "rss_creator.py",
-      "news_filter.py",
-      "link_dedup.py",
-      "summarizer_json.py",
+    "completed_steps": [
+      "dedup_fast.py",
+      "filter_importance.py",
       "image_downloader.py",
+      "image_tags_sidecar.py",
+      "importance_assessor.py",
+      "link_dedup.py",
+      "market_generator.py",
+      "news_filter.py",
       "section_validator.py",
-      "filter_importance.py"
+      "split_localization.py",
+      "summarizer_json.py",
+      "weather_generator.py"
+    ],
+    "missing_steps": [
+      "rss_creator.py"
     ]
   },
   "articles": {
-    "total": 117,
-    "with_image": 112,
-    "without_image": 5,
+    "total": 128,
+    "with_image": 126,
+    "without_image": 2,
     "by_importance": {
       "1": 15,
       "2": 14,
       "3": 54,
-      "4": 26,
-      "5": 6,
+      "4": 33,
+      "5": 10,
       "6": 2,
       "7": 0
     },
     "by_section": {
-      "eletmod": 33,
-      "szorakozas": 25,
-      "belfold_kulfold": 17,
-      "tech": 10,
+      "eletmod": 35,
+      "szorakozas": 26,
+      "belfold_kulfold": 18,
+      "tech": 11,
+      "tudomany": 9,
       "bulvar": 9,
-      "tudomany": 7,
-      "gamer": 6,
+      "gamer": 8,
+      "uzlet": 6,
       "sport": 5,
-      "uzlet": 4,
       "kripto": 1
     }
   },
   "images": {
-    "attempted": 117,
-    "with_image": 112,
-    "without_image": 5,
-    "failed": 5,
-    "failure_rate_pct": 4.3,
+    "attempted": 128,
+    "with_image": 126,
+    "without_image": 2,
+    "failed": 2,
+    "failure_rate_pct": 1.6,
     "download_errors_logged": 0
   },
   "rss": {
     "total_feeds": 98,
-    "ok_feeds": 90,
-    "failed_feeds": 8,
-    "success_rate_pct": 91.8,
+    "ok_feeds": 91,
+    "failed_feeds": 7,
+    "success_rate_pct": 92.9,
     "failed_feed_list": [
       {
-        "url": "https://allampapirkalkulator.hu/rss",
+        "url": "https://www.penzcentrum.hu/rss/all.xml",
         "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to allampapir"
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.penzce"
       },
       {
-        "url": "https://fhm.com/category/lifestyle/feed/",
+        "url": "https://www.xda-developers.com/feed/",
         "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to fhm.com po"
-      },
-      {
-        "url": "https://9to5mac.com/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://gsplus.hu/site/rss/rss.xml",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://fhm.com/category/featured/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://androgeek.hu/rss/rss.php",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://caravantimes.co.uk/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://fhm.com/category/bd-sports/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to fhm.com po"
-      },
-      {
-        "url": "https://offmedia.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://www.vice.com/en/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.vice.c"
-      },
-      {
-        "url": "https://travelmagazin.hu/feed",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://www.tomshardware.com/feeds.xml",
-        "error_type": "rss_timeout",
-        "error_short": "Timeout"
-      },
-      {
-        "url": "https://www.hollywoodreporter.com/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.hollyw"
-      },
-      {
-        "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.cnbc.c"
-      },
-      {
-        "url": "https://www.independent.co.uk/news/rss",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.indepe"
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.xda-de"
       }
     ]
   },
@@ -155,12 +95,12 @@
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 15,
+    "rss_timeout": 2,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 5,
-    "items_missing_from_batch": 2,
+    "api_no_response": 4,
+    "items_missing_from_batch": 4,
     "pairing_failures": 0,
     "pairing_fixed": 0,
     "image_failures": 0,
@@ -174,7 +114,7 @@
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 26
+      "item_count": 37
     },
     "data_i5_json": {
       "exists": true,
@@ -230,7 +170,7 @@
     },
     {
       "date": "2026-11-01",
-      "articles": 117,
+      "articles": 128,
       "status": "OK",
       "exit_code": 0
     }
@@ -238,14 +178,122 @@
   "run_timing": {
     "date": "2026-11-01",
     "started_at": "2026-11-01T11:11:42",
-    "ended_at": "2026-11-01T11:11:54",
-    "duration_seconds": 11.3,
-    "steps": [],
+    "ended_at": "2026-11-01T11:33:04",
+    "duration_seconds": 1281.8,
+    "steps": [
+      {
+        "name": "weather_generator.py",
+        "description": "Generating Weather Forecast",
+        "started_at": "2026-11-01T11:12:29",
+        "ended_at": "2026-11-01T11:12:31",
+        "duration_seconds": 1.3,
+        "status": "OK"
+      },
+      {
+        "name": "market_generator.py",
+        "description": "Generating Market Analysis",
+        "started_at": "2026-11-01T11:12:31",
+        "ended_at": "2026-11-01T11:12:31",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-01T11:12:31",
+        "ended_at": "2026-11-01T11:15:11",
+        "duration_seconds": 160.1,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-01T11:12:31",
+        "ended_at": "2026-11-01T11:15:15",
+        "duration_seconds": 163.4,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-01T11:15:16",
+        "ended_at": "2026-11-01T11:15:17",
+        "duration_seconds": 1.7,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-01T11:15:22",
+        "ended_at": "2026-11-01T11:26:10",
+        "duration_seconds": 648.1,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-01T11:26:10",
+        "ended_at": "2026-11-01T11:26:48",
+        "duration_seconds": 37.8,
+        "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-11-01T11:26:48",
+        "ended_at": "2026-11-01T11:31:53",
+        "duration_seconds": 305.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-01T11:31:53",
+        "ended_at": "2026-11-01T11:31:54",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-11-01T11:31:54",
+        "ended_at": "2026-11-01T11:32:32",
+        "duration_seconds": 38.5,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-01T11:32:32",
+        "ended_at": "2026-11-01T11:32:33",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-11-01T11:32:33",
+        "ended_at": "2026-11-01T11:32:34",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-01T11:32:34",
+        "ended_at": "2026-11-01T11:32:34",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      }
+    ],
     "publish": {
       "weather_market_push": {
         "status": "disabled"
       },
       "images_push": {
+        "status": "ok"
+      },
+      "news_push": {
         "status": "ok"
       }
     }
@@ -255,6 +303,9 @@
       "status": "disabled"
     },
     "images_push": {
+      "status": "ok"
+    },
+    "news_push": {
       "status": "ok"
     }
   }
