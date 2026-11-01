@@ -1,23 +1,23 @@
 {
   "date": "2026-11-01",
-  "updated_at": "2026-11-01T16:12:15.801862",
+  "updated_at": "2026-11-01T16:33:20.533389",
   "current_batch_size": 20,
   "base_batch_size": 20,
   "min_batch_size": 10,
   "max_batch_size": 35,
   "consecutive_truncations": 0,
-  "consecutive_clean_batches": 34,
-  "total_batches": 81,
-  "successful_batches": 77,
+  "consecutive_clean_batches": 35,
+  "total_batches": 84,
+  "successful_batches": 78,
   "truncated_batches": 1,
-  "failed_batches": 3,
-  "total_articles_submitted": 334,
-  "total_articles_succeeded": 263,
-  "total_articles_retried": 81,
-  "total_articles_failed": 19,
-  "article_success_rate_pct": 78.7,
+  "failed_batches": 5,
+  "total_articles_submitted": 346,
+  "total_articles_succeeded": 266,
+  "total_articles_retried": 86,
+  "total_articles_failed": 28,
+  "article_success_rate_pct": 76.9,
   "final_success_rate_pct": 100.0,
-  "unique_articles_succeeded": 263,
+  "unique_articles_succeeded": 266,
   "permanently_failed_articles": 0,
   "articles_recovered": 62,
   "truncation_events": 1,
@@ -27,30 +27,31 @@
     "invalid_json": 0,
     "api_timeout": 0,
     "empty_response": 0,
-    "backend_exhausted": 3,
+    "backend_exhausted": 5,
     "missing_items": 19,
     "rate_limit": 0,
     "other": 0
   },
   "errors_by_backend": {
-    "FreeGeminiAPI_1": 12,
+    "FreeGeminiAPI_1": 13,
     "FreeGeminiAPI_2": 9,
-    "GeminiSelenium_1": 4
+    "GeminiSelenium_1": 4,
+    "GeminiSelenium": 2
   },
   "model_stats": {
     "FreeGeminiAPI_1": {
-      "submitted": 174,
+      "submitted": 178,
       "succeeded": 150,
-      "errors": 12
+      "errors": 13
     },
     "GeminiSelenium": {
-      "submitted": 30,
+      "submitted": 40,
       "succeeded": 23,
-      "errors": 0
+      "errors": 2
     },
     "FreeGeminiAPI_2": {
-      "submitted": 101,
-      "succeeded": 76,
+      "submitted": 104,
+      "succeeded": 79,
       "errors": 9
     },
     "FreeGeminiAPI": {
@@ -481,6 +482,31 @@
       "filtered_count": 0,
       "submitted_count": 1,
       "details": "Mentő köteg sikeres: 1/1 cikk helyreállítva"
+    },
+    {
+      "timestamp": "2026-11-01T16:26:29.607303",
+      "event": "batch_failure",
+      "backend": "FreeGeminiAPI_1",
+      "error_type": "backend_exhausted",
+      "articles_count": 4,
+      "details": "Minden modell (elsődleges: Free Gemini Pool (Flash 2.5) + tartalékok) kimerült vagy hibát adott",
+      "is_rescue": false
+    },
+    {
+      "timestamp": "2026-11-01T16:33:20.532648",
+      "event": "rescue_failed",
+      "backend": "GeminiSelenium",
+      "articles_count": 5,
+      "details": "Mentő köteg sikertelen (5 cikk) — következő körben próbálkozik újra"
+    },
+    {
+      "timestamp": "2026-11-01T16:33:20.532648",
+      "event": "batch_failure",
+      "backend": "GeminiSelenium",
+      "error_type": "backend_exhausted",
+      "articles_count": 5,
+      "details": "Minden modell (elsődleges: Gemini API + tartalékok) kimerült vagy hibát adott",
+      "is_rescue": true
     }
   ]
 }
