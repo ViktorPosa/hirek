@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-02T19:58:00",
+  "generated_at": "2026-11-02T20:06:58",
   "date": "2026-11-02",
   "criticality": "INFO",
   "criticality_reasons": [
-    "images_missing:21"
+    "images_missing:22"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-02T19:50:44",
-        "ended_at": "2026-11-02T19:57:59",
-        "duration_seconds": 436,
+        "ended_at": "2026-11-02T20:06:58",
+        "duration_seconds": 974,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -38,13 +38,13 @@
   },
   "articles": {
     "total": 492,
-    "with_image": 471,
-    "without_image": 21,
+    "with_image": 470,
+    "without_image": 22,
     "by_importance": {
       "1": 47,
-      "2": 167,
+      "2": 168,
       "3": 131,
-      "4": 69,
+      "4": 68,
       "5": 44,
       "6": 34,
       "7": 0
@@ -64,10 +64,10 @@
   },
   "images": {
     "attempted": 492,
-    "with_image": 471,
-    "without_image": 21,
-    "failed": 21,
-    "failure_rate_pct": 4.3,
+    "with_image": 470,
+    "without_image": 22,
+    "failed": 22,
+    "failure_rate_pct": 4.5,
     "download_errors_logged": 0
   },
   "rss": {
@@ -127,7 +127,7 @@
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 78
+      "item_count": 76
     },
     "data_i5_json": {
       "exists": true,
@@ -191,8 +191,8 @@
   "run_timing": {
     "date": "2026-11-02",
     "started_at": "2026-11-02T19:50:44",
-    "ended_at": "2026-11-02T19:57:59",
-    "duration_seconds": 435.7,
+    "ended_at": "2026-11-02T20:06:58",
+    "duration_seconds": 974.2,
     "steps": [
       {
         "name": "link_dedup.py",
@@ -265,6 +265,70 @@
         "ended_at": "2026-11-02T19:56:31",
         "duration_seconds": 177.4,
         "status": "OK"
+      },
+      {
+        "name": "image_downloader.py",
+        "description": "Downloading Images",
+        "started_at": "2026-11-02T19:58:31",
+        "ended_at": "2026-11-02T20:03:33",
+        "duration_seconds": 302.7,
+        "status": "TIMEOUT"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-02T20:03:41",
+        "ended_at": "2026-11-02T20:03:43",
+        "duration_seconds": 1.5,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-02T20:03:46",
+        "ended_at": "2026-11-02T20:03:55",
+        "duration_seconds": 8.9,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-02T20:03:55",
+        "ended_at": "2026-11-02T20:06:16",
+        "duration_seconds": 141.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-02T20:06:16",
+        "ended_at": "2026-11-02T20:06:16",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-11-02T20:06:16",
+        "ended_at": "2026-11-02T20:06:26",
+        "duration_seconds": 9.5,
+        "status": "ERROR"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-02T20:06:26",
+        "ended_at": "2026-11-02T20:06:27",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-02T20:06:27",
+        "ended_at": "2026-11-02T20:06:27",
+        "duration_seconds": 0.6,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -272,6 +336,9 @@
         "status": "disabled"
       },
       "images_push": {
+        "status": "ok"
+      },
+      "news_push": {
         "status": "ok"
       }
     }
@@ -281,6 +348,9 @@
       "status": "disabled"
     },
     "images_push": {
+      "status": "ok"
+    },
+    "news_push": {
       "status": "ok"
     }
   }
