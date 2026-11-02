@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-02T22:53:37",
+  "generated_at": "2026-11-02T22:57:33",
   "date": "2026-11-02",
   "criticality": "INFO",
   "criticality_reasons": [
@@ -11,8 +11,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-02T22:50:33",
-        "ended_at": "2026-11-02T22:53:37",
-        "duration_seconds": 184,
+        "ended_at": "2026-11-02T22:57:33",
+        "duration_seconds": 419,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -21,17 +21,19 @@
     ],
     "overall_exit_code": 0,
     "completed_steps": [
-      "news_filter.py"
+      "dedup_fast.py",
+      "filter_importance.py",
+      "link_dedup.py",
+      "news_filter.py",
+      "section_validator.py",
+      "split_localization.py",
+      "summarizer_json.py"
     ],
     "missing_steps": [
       "weather_generator.py",
       "market_generator.py",
       "rss_creator.py",
-      "link_dedup.py",
-      "summarizer_json.py",
-      "image_downloader.py",
-      "section_validator.py",
-      "filter_importance.py"
+      "image_downloader.py"
     ]
   },
   "articles": {
@@ -39,12 +41,12 @@
     "with_image": 510,
     "without_image": 38,
     "by_importance": {
-      "1": 52,
-      "2": 195,
-      "3": 147,
-      "4": 74,
-      "5": 44,
-      "6": 36,
+      "1": 55,
+      "2": 209,
+      "3": 145,
+      "4": 63,
+      "5": 39,
+      "6": 37,
       "7": 0
     },
     "by_section": {
@@ -95,15 +97,15 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 103
+      "item_count": 100
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 75
+      "item_count": 57
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 33
+      "item_count": 34
     },
     "data_toplist_json": {
       "exists": true,
@@ -163,8 +165,8 @@
   "run_timing": {
     "date": "2026-11-02",
     "started_at": "2026-11-02T22:50:33",
-    "ended_at": "2026-11-02T22:53:37",
-    "duration_seconds": 183.8,
+    "ended_at": "2026-11-02T22:57:33",
+    "duration_seconds": 419.3,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -180,6 +182,70 @@
         "started_at": "2026-11-02T22:51:09",
         "ended_at": "2026-11-02T22:53:25",
         "duration_seconds": 135.9,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-11-02T22:54:01",
+        "ended_at": "2026-11-02T22:54:20",
+        "duration_seconds": 18.9,
+        "status": "ERROR"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-02T22:54:25",
+        "ended_at": "2026-11-02T22:54:27",
+        "duration_seconds": 1.7,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-02T22:54:29",
+        "ended_at": "2026-11-02T22:54:38",
+        "duration_seconds": 8.8,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-02T22:54:38",
+        "ended_at": "2026-11-02T22:57:02",
+        "duration_seconds": 144.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-02T22:57:02",
+        "ended_at": "2026-11-02T22:57:03",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-11-02T22:57:03",
+        "ended_at": "2026-11-02T22:57:06",
+        "duration_seconds": 2.8,
+        "status": "ERROR"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-02T22:57:06",
+        "ended_at": "2026-11-02T22:57:06",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-02T22:57:06",
+        "ended_at": "2026-11-02T22:57:07",
+        "duration_seconds": 0.6,
         "status": "OK"
       }
     ],
