@@ -1,24 +1,24 @@
 {
   "token_budget_state": {},
   "date": "2026-11-02",
-  "updated_at": "2026-11-02T12:51:44.781962",
+  "updated_at": "2026-11-02T13:10:19.092227",
   "current_batch_size": 20,
   "base_batch_size": 20,
   "min_batch_size": 10,
   "max_batch_size": 35,
   "consecutive_truncations": 0,
-  "consecutive_clean_batches": 25,
-  "total_batches": 248,
-  "successful_batches": 242,
+  "consecutive_clean_batches": 0,
+  "total_batches": 254,
+  "successful_batches": 244,
   "truncated_batches": 0,
-  "failed_batches": 6,
-  "total_articles_submitted": 321,
-  "total_articles_succeeded": 284,
-  "total_articles_retried": 22,
-  "total_articles_failed": 28,
-  "article_success_rate_pct": 88.5,
+  "failed_batches": 10,
+  "total_articles_submitted": 343,
+  "total_articles_succeeded": 288,
+  "total_articles_retried": 31,
+  "total_articles_failed": 46,
+  "article_success_rate_pct": 84.0,
   "final_success_rate_pct": 100.0,
-  "unique_articles_succeeded": 284,
+  "unique_articles_succeeded": 288,
   "permanently_failed_articles": 0,
   "articles_recovered": 8,
   "truncation_events": 0,
@@ -28,27 +28,27 @@
     "invalid_json": 0,
     "api_timeout": 0,
     "empty_response": 0,
-    "backend_exhausted": 6,
+    "backend_exhausted": 10,
     "missing_items": 6,
     "rate_limit": 0,
     "other": 0
   },
   "errors_by_backend": {
-    "FreeGeminiAPI_2": 4,
-    "FreeGeminiAPI_1": 5,
+    "FreeGeminiAPI_2": 5,
+    "FreeGeminiAPI_1": 6,
     "FreeGeminiAPI": 2,
-    "GeminiSelenium_1": 4
+    "GeminiSelenium_1": 8
   },
   "model_stats": {
     "FreeGeminiAPI_1": {
-      "submitted": 231,
-      "succeeded": 213,
-      "errors": 5
+      "submitted": 240,
+      "succeeded": 216,
+      "errors": 6
     },
     "FreeGeminiAPI_2": {
-      "submitted": 64,
-      "succeeded": 59,
-      "errors": 4
+      "submitted": 68,
+      "succeeded": 60,
+      "errors": 5
     },
     "GeminiSelenium": {
       "submitted": 3,
@@ -61,9 +61,9 @@
       "errors": 2
     },
     "GeminiSelenium_1": {
-      "submitted": 29,
+      "submitted": 47,
       "succeeded": 3,
-      "errors": 4
+      "errors": 8
     },
     "FreeGeminiAPI_3": {
       "submitted": 4,
@@ -254,46 +254,96 @@
       "filtered_count": 0,
       "submitted_count": 2,
       "details": "Mentő köteg sikeres: 2/2 cikk helyreállítva"
+    },
+    {
+      "timestamp": "2026-11-02T13:07:21.961980",
+      "event": "batch_failure",
+      "backend": "FreeGeminiAPI_1",
+      "error_type": "backend_exhausted",
+      "articles_count": 6,
+      "details": "Minden modell (elsődleges: Free Gemini Pool (Flash 2.5) + tartalékok) kimerült vagy hibát adott",
+      "is_rescue": false
+    },
+    {
+      "timestamp": "2026-11-02T13:07:27.691403",
+      "event": "batch_failure",
+      "backend": "FreeGeminiAPI_2",
+      "error_type": "backend_exhausted",
+      "articles_count": 3,
+      "details": "Minden modell (elsődleges: Free Gemini Pool (Flash 2.5) + tartalékok) kimerült vagy hibát adott",
+      "is_rescue": false
+    },
+    {
+      "timestamp": "2026-11-02T13:09:15.680575",
+      "event": "rescue_failed",
+      "backend": "GeminiSelenium_1",
+      "articles_count": 7,
+      "details": "Mentő köteg sikertelen (7 cikk) — következő körben próbálkozik újra"
+    },
+    {
+      "timestamp": "2026-11-02T13:09:15.680575",
+      "event": "batch_failure",
+      "backend": "GeminiSelenium_1",
+      "error_type": "backend_exhausted",
+      "articles_count": 7,
+      "details": "Minden modell (elsődleges: Gemini API + tartalékok) kimerült vagy hibát adott",
+      "is_rescue": true
+    },
+    {
+      "timestamp": "2026-11-02T13:10:19.091682",
+      "event": "rescue_failed",
+      "backend": "GeminiSelenium_1",
+      "articles_count": 2,
+      "details": "Mentő köteg sikertelen (2 cikk) — következő körben próbálkozik újra"
+    },
+    {
+      "timestamp": "2026-11-02T13:10:19.091682",
+      "event": "batch_failure",
+      "backend": "GeminiSelenium_1",
+      "error_type": "backend_exhausted",
+      "articles_count": 2,
+      "details": "Minden modell (elsődleges: Gemini API + tartalékok) kimerült vagy hibát adott",
+      "is_rescue": true
     }
   ],
   "last_token_budget": {
-    "count": 2,
-    "estimated_input_tokens": 7574,
-    "raw_estimated_input_tokens": 6885,
-    "reserved_output_tokens": 1024,
+    "count": 3,
+    "estimated_input_tokens": 9326,
+    "raw_estimated_input_tokens": 8478,
+    "reserved_output_tokens": 1408,
     "input_budget": 16384,
     "output_budget": 8192,
     "limited_by": "backlog",
     "oversized_single": false
   },
   "last_token_usage": {
-    "selected_count": 2,
-    "backend_invocations": 1,
-    "kind": "ok",
+    "selected_count": 3,
+    "backend_invocations": 5,
+    "kind": "model_cooldown",
     "requests": 1,
-    "input_tokens_dispatched": 6175,
-    "input_tokens_exact": 6175,
+    "input_tokens_dispatched": 6837,
+    "input_tokens_exact": 6837,
     "input_tokens_estimated": 0,
-    "estimated_input_tokens_dispatched": 6885,
-    "estimated_input_tokens_for_exact": 6885,
+    "estimated_input_tokens_dispatched": 8478,
+    "estimated_input_tokens_for_exact": 8478,
     "generation_requests": 1,
-    "measurement_input_tokens_dispatched": 6175,
-    "total_input_tokens_dispatched": 12350,
+    "measurement_input_tokens_dispatched": 6837,
+    "total_input_tokens_dispatched": 13674,
     "token_count_requests": 1,
     "token_count_cache_hits": 0,
-    "confirmed_input_tokens": 6175,
-    "confirmed_output_tokens": 929,
+    "confirmed_input_tokens": 0,
+    "confirmed_output_tokens": 0,
     "confirmed_thought_tokens": 0,
     "confirmed_cached_tokens": 0,
-    "confirmed_total_tokens": 7104,
-    "usage_observations": 1,
-    "unconfirmed_usage_requests": 0,
+    "confirmed_total_tokens": 0,
+    "usage_observations": 0,
+    "unconfirmed_usage_requests": 1,
     "token_budget": {
-      "count": 2,
-      "estimated_input_tokens": 7299,
-      "raw_estimated_input_tokens": 6885,
-      "reserved_output_tokens": 1396,
-      "input_budget": 8764,
+      "count": 3,
+      "estimated_input_tokens": 9185,
+      "raw_estimated_input_tokens": 8478,
+      "reserved_output_tokens": 2935,
+      "input_budget": 16384,
       "output_budget": 8192,
       "limited_by": "backlog",
       "oversized_single": false
@@ -302,33 +352,35 @@
       {
         "generation_requests": 1,
         "token_count_requests": 1,
-        "input_tokens_dispatched": 6175,
-        "input_tokens_exact": 6175,
+        "input_tokens_dispatched": 6837,
+        "input_tokens_exact": 6837,
         "input_tokens_estimated": 0,
-        "measurement_input_tokens_dispatched": 6175,
-        "unconfirmed_usage_requests": 0,
-        "confirmed_input_tokens": 6175,
-        "confirmed_output_tokens": 929,
+        "measurement_input_tokens_dispatched": 6837,
+        "unconfirmed_usage_requests": 1,
+        "confirmed_input_tokens": 0,
+        "confirmed_output_tokens": 0,
         "confirmed_thought_tokens": 0,
         "confirmed_cached_tokens": 0,
-        "confirmed_total_tokens": 7104,
-        "model": "gemini-3.5-flash-lite",
+        "confirmed_total_tokens": 0,
+        "model": "gemini-3.8-flash",
         "request_format": "standard",
         "token_budget": {
-          "count": 2,
-          "estimated_input_tokens": 7299,
-          "raw_estimated_input_tokens": 6885,
-          "reserved_output_tokens": 1396,
-          "input_budget": 8764,
+          "count": 3,
+          "estimated_input_tokens": 9185,
+          "raw_estimated_input_tokens": 8478,
+          "reserved_output_tokens": 2935,
+          "input_budget": 16384,
           "output_budget": 8192,
           "limited_by": "backlog",
           "oversized_single": false
         },
-        "kind": "ok",
+        "kind": "overload",
         "requests": 1,
-        "usage_observations": 1,
-        "estimated_input_tokens_for_exact": 6885
+        "usage_observations": 0,
+        "estimated_input_tokens_for_exact": 8478
       }
-    ]
+    ],
+    "unmeasured_backend_invocations": 2,
+    "estimated_backend_input_tokens_dispatched": 16956
   }
 }
