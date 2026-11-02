@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-02T20:41:55",
+  "generated_at": "2026-11-02T20:56:56",
   "date": "2026-11-02",
   "criticality": "INFO",
   "criticality_reasons": [
@@ -11,26 +11,29 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-02T20:41:38",
-        "ended_at": "2026-11-02T20:41:55",
-        "duration_seconds": 18,
+        "ended_at": "2026-11-02T20:56:56",
+        "duration_seconds": 918,
         "exit_code": 0,
-        "status": "OK",
+        "status": "WARNING",
         "process_killed": false,
         "watchdog_triggered": false
       }
     ],
     "overall_exit_code": 0,
-    "completed_steps": [],
+    "completed_steps": [
+      "dedup_fast.py",
+      "filter_importance.py",
+      "link_dedup.py",
+      "news_filter.py",
+      "section_validator.py",
+      "split_localization.py",
+      "summarizer_json.py"
+    ],
     "missing_steps": [
       "weather_generator.py",
       "market_generator.py",
       "rss_creator.py",
-      "news_filter.py",
-      "link_dedup.py",
-      "summarizer_json.py",
-      "image_downloader.py",
-      "section_validator.py",
-      "filter_importance.py"
+      "image_downloader.py"
     ]
   },
   "articles": {
@@ -38,12 +41,12 @@
     "with_image": 482,
     "without_image": 25,
     "by_importance": {
-      "1": 48,
-      "2": 171,
-      "3": 136,
-      "4": 71,
-      "5": 46,
-      "6": 35,
+      "1": 49,
+      "2": 174,
+      "3": 135,
+      "4": 69,
+      "5": 44,
+      "6": 36,
       "7": 0
     },
     "by_section": {
@@ -69,19 +72,54 @@
   },
   "rss": {
     "total_feeds": 98,
-    "ok_feeds": 89,
-    "failed_feeds": 9,
-    "success_rate_pct": 90.8,
+    "ok_feeds": 90,
+    "failed_feeds": 8,
+    "success_rate_pct": 91.8,
     "failed_feed_list": [
       {
-        "url": "https://travelmagazin.hu/feed",
+        "url": "https://androgeek.hu/rss/rss.php",
         "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.travel"
+        "error_short": "Failed to perform, curl: (7) Failed to connect to androgeek."
       },
       {
-        "url": "https://mafab.hu/rss",
+        "url": "https://www.xda-developers.com/feed/",
         "error_type": "rss_timeout",
         "error_short": "Timeout"
+      },
+      {
+        "url": "https://www.makeuseof.com/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://www.koncert.hu/rss/hirek",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.koncer"
+      },
+      {
+        "url": "https://refresher.hu/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to refresher."
+      },
+      {
+        "url": "https://wccftech.com/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to wccftech.c"
+      },
+      {
+        "url": "https://www.hollywoodreporter.com/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.hollyw"
+      },
+      {
+        "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.cnbc.c"
+      },
+      {
+        "url": "https://www.independent.co.uk/news/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.indepe"
       }
     ]
   },
@@ -90,11 +128,11 @@
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 2,
+    "rss_timeout": 9,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 0,
+    "api_no_response": 12,
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
@@ -105,15 +143,15 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 96
+      "item_count": 97
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 77
+      "item_count": 75
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 32
+      "item_count": 33
     },
     "data_toplist_json": {
       "exists": true,
@@ -173,14 +211,90 @@
   "run_timing": {
     "date": "2026-11-02",
     "started_at": "2026-11-02T20:41:38",
-    "ended_at": "2026-11-02T20:41:55",
-    "duration_seconds": 17.8,
-    "steps": [],
+    "ended_at": "2026-11-02T20:56:56",
+    "duration_seconds": 918.1,
+    "steps": [
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-02T20:42:28",
+        "ended_at": "2026-11-02T20:44:52",
+        "duration_seconds": 143.3,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-02T20:42:28",
+        "ended_at": "2026-11-02T20:44:55",
+        "duration_seconds": 146.6,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-02T20:44:56",
+        "ended_at": "2026-11-02T20:44:59",
+        "duration_seconds": 2.3,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-02T20:45:02",
+        "ended_at": "2026-11-02T20:52:07",
+        "duration_seconds": 424.9,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-02T20:52:07",
+        "ended_at": "2026-11-02T20:54:28",
+        "duration_seconds": 141.4,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-02T20:54:28",
+        "ended_at": "2026-11-02T20:54:29",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-11-02T20:54:29",
+        "ended_at": "2026-11-02T20:56:44",
+        "duration_seconds": 135.5,
+        "status": "ERROR"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-02T20:56:44",
+        "ended_at": "2026-11-02T20:56:45",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-02T20:56:45",
+        "ended_at": "2026-11-02T20:56:46",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      }
+    ],
     "publish": {
       "weather_market_push": {
         "status": "disabled"
       },
       "images_push": {
+        "status": "ok"
+      },
+      "news_push": {
         "status": "ok"
       }
     }
@@ -190,6 +304,9 @@
       "status": "disabled"
     },
     "images_push": {
+      "status": "ok"
+    },
+    "news_push": {
       "status": "ok"
     }
   }
