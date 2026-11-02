@@ -51,19 +51,17 @@
 <body>
 <script>const REPORT = {
   "schema_version": "1.1",
-  "generated_at": "2026-11-02T17:22:50",
+  "generated_at": "2026-11-02T17:26:23",
   "date": "2026-11-02",
-  "criticality": "INFO",
-  "criticality_reasons": [
-    "images_missing:2"
-  ],
+  "criticality": "OK",
+  "criticality_reasons": [],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-02T17:10:23",
-        "ended_at": "2026-11-02T17:22:50",
-        "duration_seconds": 747,
+        "ended_at": "2026-11-02T17:26:23",
+        "duration_seconds": 960,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -90,8 +88,8 @@
   },
   "articles": {
     "total": 401,
-    "with_image": 399,
-    "without_image": 2,
+    "with_image": 401,
+    "without_image": 0,
     "by_importance": {
       "1": 42,
       "2": 140,
@@ -116,22 +114,47 @@
   },
   "images": {
     "attempted": 401,
-    "with_image": 399,
-    "without_image": 2,
-    "failed": 2,
-    "failure_rate_pct": 0.5,
+    "with_image": 401,
+    "without_image": 0,
+    "failed": 0,
+    "failure_rate_pct": 0.0,
     "download_errors_logged": 0
   },
   "rss": {
     "total_feeds": 98,
-    "ok_feeds": 88,
-    "failed_feeds": 10,
-    "success_rate_pct": 89.8,
+    "ok_feeds": 89,
+    "failed_feeds": 9,
+    "success_rate_pct": 90.8,
     "failed_feed_list": [
+      {
+        "url": "https://refresher.hu/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to refresher."
+      },
+      {
+        "url": "https://wccftech.com/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
       {
         "url": "https://vt.co/rss",
         "error_type": "rss_timeout",
         "error_short": "Failed to perform, curl: (7) Failed to connect to vt.co port"
+      },
+      {
+        "url": "https://www.hollywoodreporter.com/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.hollyw"
+      },
+      {
+        "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.cnbc.c"
+      },
+      {
+        "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.cnbc.c"
       }
     ]
   },
@@ -140,12 +163,12 @@
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 1,
+    "rss_timeout": 6,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 6,
-    "items_missing_from_batch": 1,
+    "api_no_response": 0,
+    "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
     "image_failures": 0,
@@ -223,8 +246,8 @@
   "run_timing": {
     "date": "2026-11-02",
     "started_at": "2026-11-02T17:10:23",
-    "ended_at": "2026-11-02T17:22:50",
-    "duration_seconds": 746.9,
+    "ended_at": "2026-11-02T17:26:23",
+    "duration_seconds": 959.9,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -361,6 +384,22 @@
         "ended_at": "2026-11-02T17:22:40",
         "duration_seconds": 0.6,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-02T17:23:08",
+        "ended_at": "2026-11-02T17:25:40",
+        "duration_seconds": 151.6,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-02T17:23:08",
+        "ended_at": "2026-11-02T17:25:42",
+        "duration_seconds": 153.7,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -392,11 +431,11 @@
 <div class="header">
   <div>
     <h1>📰 Derűshírek Pipeline Monitor</h1>
-    <div class="meta">Dátum: <strong>2026-11-02</strong> &nbsp;·&nbsp; Generálva: 2026-11-02T17:22:50</div>
+    <div class="meta">Dátum: <strong>2026-11-02</strong> &nbsp;·&nbsp; Generálva: 2026-11-02T17:26:23</div>
   </div>
   <div>
-    <span class="status-badge" style="background:#3b82f6;">
-      🔵 INFO
+    <span class="status-badge" style="background:#22c55e;">
+      🟢 RENDBEN
     </span>
   </div>
 </div>
@@ -405,11 +444,6 @@
 
   <!-- ALERTS -->
   
-<div class="alert alert-info" style="background:#eff6ff;border-left:5px solid #93c5fd;color:#1e40af;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
-  <strong>🔵 INFO</strong>
-  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>2 cikk maradt kép nélkül (a többinél a képillesztés sikerült).</li>
-</ul>
-</div>
 
   <!-- PUBLISH STATUS (prominent) -->
   
@@ -421,20 +455,20 @@
   <div class="section-title">Fő mutatók</div>
   <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Hírek: ✅ OK</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
   <div class="grid-4">
-    <div class="metric-card" style="border-top-color:#3b82f6;">
-      <div class="metric-value" style="color:#3b82f6;">401</div>
+    <div class="metric-card" style="border-top-color:#22c55e;">
+      <div class="metric-value" style="color:#22c55e;">401</div>
       <div class="metric-label">Cikk összesen</div>
     </div>
-    <div class="metric-card" style="border-top-color:#eab308;">
-      <div class="metric-value" style="color:#eab308;">89.8%</div>
+    <div class="metric-card" style="border-top-color:#22c55e;">
+      <div class="metric-value" style="color:#22c55e;">90.8%</div>
       <div class="metric-label">RSS sikerráta</div>
     </div>
     <div class="metric-card" style="border-top-color:#22c55e;">
-      <div class="metric-value" style="color:#22c55e;">99.5%</div>
+      <div class="metric-value" style="color:#22c55e;">100.0%</div>
       <div class="metric-label">Képek rendben</div>
     </div>
-    <div class="metric-card" style="border-top-color:#3b82f6;">
-      <div class="metric-value" style="color:#3b82f6;">🔵</div>
+    <div class="metric-card" style="border-top-color:#22c55e;">
+      <div class="metric-value" style="color:#22c55e;">🟢</div>
       <div class="metric-label">Pipeline státusz</div>
     </div>
   </div>
@@ -450,8 +484,8 @@
         <tbody><tr>
           <td>közvetlen</td>
           <td>17:10:23</td>
-          <td>17:22:50</td>
-          <td>12p 27s</td>
+          <td>17:26:23</td>
+          <td>16p 0s</td>
           <td>0</td>
           <td> </td>
           <td><span class="badge" style="background:#ca8a04;color:#fff;">WARNING</span></td>
@@ -470,8 +504,8 @@
     <div class="grid-4" style="margin-bottom:1rem;">
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Dátum</div><div style="font-size:1.15rem;font-weight:800;">2026-11-02</div></div>
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Indítás</div><div style="font-size:1.15rem;font-weight:800;">17:10:23</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">17:22:50</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">12p 27s</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">17:26:23</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">16p 0s</div></div>
     </div>
     <div style="overflow-x:auto;">
       <table>
@@ -578,6 +612,18 @@
               <td>17:22:40</td>
               <td style="font-weight:700;"><1s</td>
               <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Generating Custom RSS Feeds <span style="color:#6b7280;font-size:0.85em;">(rss_creator.py)</span></td>
+              <td>17:23:08</td>
+              <td>17:25:40</td>
+              <td style="font-weight:700;">2p 32s</td>
+              <td><span class="badge" style="background:#dc2626;color:#fff;">ERROR</span></td>
+            </tr><tr>
+              <td>Collecting RSS Links <span style="color:#6b7280;font-size:0.85em;">(news_filter.py)</span></td>
+              <td>17:23:08</td>
+              <td>17:25:42</td>
+              <td style="font-weight:700;">2p 34s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
             </tr></tbody>
       </table>
     </div>
@@ -604,8 +650,8 @@
       <div style="max-width:260px;margin:0 auto;"><canvas id="chartRss"></canvas></div>
       <div style="text-align:center;margin-top:0.75rem;font-size:0.9rem;">
         Összes: <strong>98</strong> &nbsp;·&nbsp;
-        Sikeres: <strong style="color:#22c55e;">88</strong> &nbsp;·&nbsp;
-        Sikertelen: <strong style="color:#ef4444;">10</strong>
+        Sikeres: <strong style="color:#22c55e;">89</strong> &nbsp;·&nbsp;
+        Sikertelen: <strong style="color:#ef4444;">9</strong>
       </div>
     </div>
     <div class="card" style="overflow-x:auto;">
@@ -613,8 +659,28 @@
       <table>
         <thead><tr><th>URL</th><th>Hiba</th><th>Leírás</th></tr></thead>
         <tbody><tr>
+          <td style="font-size:0.8em;word-break:break-all;">https://refresher.hu/rss</td>
+          <td><span class="badge" style="background:#ef4444;color:#fff;">Failed to perform, curl: (7) Failed to connect to refresher.</span></td>
+          <td style="font-size:0.85em;">Az RSS lekérés időtúllépéssel zárult. A szerver lassú vagy elérhetetlenné vált.</td>
+        </tr><tr>
+          <td style="font-size:0.8em;word-break:break-all;">https://wccftech.com/feed/</td>
+          <td><span class="badge" style="background:#ef4444;color:#fff;">Timeout</span></td>
+          <td style="font-size:0.85em;">Az RSS lekérés időtúllépéssel zárult. A szerver lassú vagy elérhetetlenné vált.</td>
+        </tr><tr>
           <td style="font-size:0.8em;word-break:break-all;">https://vt.co/rss</td>
           <td><span class="badge" style="background:#ef4444;color:#fff;">Failed to perform, curl: (7) Failed to connect to vt.co port</span></td>
+          <td style="font-size:0.85em;">Az RSS lekérés időtúllépéssel zárult. A szerver lassú vagy elérhetetlenné vált.</td>
+        </tr><tr>
+          <td style="font-size:0.8em;word-break:break-all;">https://www.hollywoodreporter.com/feed/</td>
+          <td><span class="badge" style="background:#ef4444;color:#fff;">Failed to perform, curl: (7) Failed to connect to www.hollyw</span></td>
+          <td style="font-size:0.85em;">Az RSS lekérés időtúllépéssel zárult. A szerver lassú vagy elérhetetlenné vált.</td>
+        </tr><tr>
+          <td style="font-size:0.8em;word-break:break-all;">https://www.cnbc.com/id/19854910/device/rss/rss.html</td>
+          <td><span class="badge" style="background:#ef4444;color:#fff;">Failed to perform, curl: (7) Failed to connect to www.cnbc.c</span></td>
+          <td style="font-size:0.85em;">Az RSS lekérés időtúllépéssel zárult. A szerver lassú vagy elérhetetlenné vált.</td>
+        </tr><tr>
+          <td style="font-size:0.8em;word-break:break-all;">https://www.cnbc.com/id/100003114/device/rss/rss.html</td>
+          <td><span class="badge" style="background:#ef4444;color:#fff;">Failed to perform, curl: (7) Failed to connect to www.cnbc.c</span></td>
           <td style="font-size:0.85em;">Az RSS lekérés időtúllépéssel zárult. A szerver lassú vagy elérhetetlenné vált.</td>
         </tr></tbody>
       </table>
@@ -639,24 +705,8 @@
           <span style="display:inline-block;width:12px;height:12px;background:#a78bfa;border-radius:3px;margin-right:6px;vertical-align:middle;"></span>
           <strong>RSS Timeout</strong>
         </td>
-        <td style="color:#374151;font-weight:700;text-align:center;padding-right:1.2rem;">1</td>
-        <td style="color:#4b5563;">Az RSS lekérés időtúllépéssel zárult. A szerver lassú vagy elérhetetlenné vált.</td>
-      </tr>
-      <tr>
-        <td style="white-space:nowrap;">
-          <span style="display:inline-block;width:12px;height:12px;background:#c084fc;border-radius:3px;margin-right:6px;vertical-align:middle;"></span>
-          <strong>API No Resp.</strong>
-        </td>
         <td style="color:#374151;font-weight:700;text-align:center;padding-right:1.2rem;">6</td>
-        <td style="color:#4b5563;">A Gemini API nem válaszolt (3 kísérlet után sem). A batch átkerült újrafeldolgozásra.</td>
-      </tr>
-      <tr>
-        <td style="white-space:nowrap;">
-          <span style="display:inline-block;width:12px;height:12px;background:#94a3b8;border-radius:3px;margin-right:6px;vertical-align:middle;"></span>
-          <strong>Batch Missing</strong>
-        </td>
-        <td style="color:#374151;font-weight:700;text-align:center;padding-right:1.2rem;">1</td>
-        <td style="color:#4b5563;">Az AI a cikk forrás-linkjét nem találta meg a feldolgozási batch-ben. A cikk megmaradt tartalommal, de a kép hiányozhat.</td>
+        <td style="color:#4b5563;">Az RSS lekérés időtúllépéssel zárult. A szerver lassú vagy elérhetetlenné vált.</td>
       </tr></tbody>
     </table>
   </div>
@@ -675,7 +725,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-02T17:22:50
+    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-02T17:26:23
   </div>
 
 </div>
@@ -738,7 +788,7 @@ new Chart(document.getElementById('chartRss'), {
   data: {
     labels: ["Sikeres", "Sikertelen"],
     datasets: [{
-      data: [88, 10],
+      data: [89, 9],
       backgroundColor: ['#22c55e', '#ef4444'],
       borderWidth: 2,
     }]
@@ -758,7 +808,7 @@ new Chart(document.getElementById('chartErrors'), {
     labels: ["RSS 404", "RSS 403", "RSS 503", "RSS Timeout", "RSS DNS", "RSS SSL", "API Timeout", "API No Resp.", "Batch Missing", "Pairing Fail", "Image Fail"],
     datasets: [{
       label: 'Darabszám',
-      data: [0, 0, 0, 1, 0, 0, 0, 6, 1, 0, 0],
+      data: [0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0],
       backgroundColor: ["#f87171", "#fb923c", "#fbbf24", "#a78bfa", "#818cf8", "#22d3ee", "#f472b6", "#c084fc", "#94a3b8", "#fb7185", "#38bdf8"],
       borderRadius: 4,
     }]
