@@ -51,19 +51,19 @@
 <body>
 <script>const REPORT = {
   "schema_version": "1.1",
-  "generated_at": "2026-11-03T08:49:15",
+  "generated_at": "2026-11-03T08:52:47",
   "date": "2026-11-03",
-  "criticality": "WARNING",
+  "criticality": "CRITICAL",
   "criticality_reasons": [
-    "image_missing_rate:28.8%"
+    "news_push_failed:\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Could not resolve host: github.com\n"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-03T08:48:04",
-        "ended_at": "2026-11-03T08:49:14",
-        "duration_seconds": 70,
+        "ended_at": "2026-11-03T08:52:47",
+        "duration_seconds": 283,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -213,8 +213,8 @@
   "run_timing": {
     "date": "2026-11-03",
     "started_at": "2026-11-03T08:48:04",
-    "ended_at": "2026-11-03T08:49:14",
-    "duration_seconds": 70.5,
+    "ended_at": "2026-11-03T08:52:47",
+    "duration_seconds": 283.2,
     "steps": [],
     "publish": {
       "weather_market_push": {
@@ -224,7 +224,8 @@
         "status": "ok"
       },
       "news_push": {
-        "status": "ok"
+        "status": "failed",
+        "error": "\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Could not resolve host: github.com\n"
       }
     }
   },
@@ -236,7 +237,8 @@
       "status": "ok"
     },
     "news_push": {
-      "status": "ok"
+      "status": "failed",
+      "error": "\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Could not resolve host: github.com\n"
     }
   }
 };</script>
@@ -245,11 +247,11 @@
 <div class="header">
   <div>
     <h1>📰 Derűshírek Pipeline Monitor</h1>
-    <div class="meta">Dátum: <strong>2026-11-03</strong> &nbsp;·&nbsp; Generálva: 2026-11-03T08:49:15</div>
+    <div class="meta">Dátum: <strong>2026-11-03</strong> &nbsp;·&nbsp; Generálva: 2026-11-03T08:52:47</div>
   </div>
   <div>
-    <span class="status-badge" style="background:#ca8a04;">
-      🟡 FIGYELMEZTETÉS
+    <span class="status-badge" style="background:#dc2626;">
+      🔴 KRITIKUS
     </span>
   </div>
 </div>
@@ -258,24 +260,29 @@
 
   <!-- ALERTS -->
   
-<div class="alert alert-warning" style="background:#fef9c3;border-left:5px solid #facc15;color:#854d0e;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
-  <strong>🟡 FIGYELMEZTETÉS</strong>
-  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>Sok cikk maradt kép nélkül: 28.8% a cikkeknek.</li>
+<div class="alert alert-critical" style="background:#fee2e2;border-left:5px solid #f87171;color:#991b1b;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
+  <strong>🔴 KRITIKUS</strong>
+  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>🔴 KRITIKUS: a hírek git-push NEM sikerült — a weboldal nem frissült! Ok: 
+fatal: unable to access 'https://github.com/ViktorPosa/hirek/': Could not resolve host: github.com
+</li>
 </ul>
 </div>
 
   <!-- PUBLISH STATUS (prominent) -->
   
-<div style="background:#dcfce7;color:#166534;padding:0.75rem 1.25rem;border-radius:10px;margin-bottom:1rem;border-left:5px solid #22c55e;font-weight:700;">
-  ✅ Publikálva (git push OK)
+<div style="background:#7f1d1d;color:#fff;padding:1rem 1.25rem;border-radius:10px;margin-bottom:1rem;border:3px solid #dc2626;font-size:1.05rem;font-weight:800;">
+  🔴 GIT PUSH SIKERTELEN — a weboldal NEM frissült!
+  <div style="font-weight:500;font-size:0.85rem;margin-top:0.35rem;opacity:0.95;">Ok: 
+fatal: unable to access 'https://github.com/ViktorPosa/hirek/': Could not resolve host: github.com
+</div>
 </div>
 
   <!-- KEY METRICS -->
   <div class="section-title">Fő mutatók</div>
-  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Hírek: ✅ OK</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
+  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:0.8rem;font-weight:700;">Hírek: 🔴 SIKERTELEN</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
   <div class="grid-4">
-    <div class="metric-card" style="border-top-color:#ca8a04;">
-      <div class="metric-value" style="color:#ca8a04;">132</div>
+    <div class="metric-card" style="border-top-color:#dc2626;">
+      <div class="metric-value" style="color:#dc2626;">132</div>
       <div class="metric-label">Cikk összesen</div>
     </div>
     <div class="metric-card" style="border-top-color:#22c55e;">
@@ -286,8 +293,8 @@
       <div class="metric-value" style="color:#ef4444;">71.2%</div>
       <div class="metric-label">Képek rendben</div>
     </div>
-    <div class="metric-card" style="border-top-color:#ca8a04;">
-      <div class="metric-value" style="color:#ca8a04;">🟡</div>
+    <div class="metric-card" style="border-top-color:#dc2626;">
+      <div class="metric-value" style="color:#dc2626;">🔴</div>
       <div class="metric-label">Pipeline státusz</div>
     </div>
   </div>
@@ -303,8 +310,8 @@
         <tbody><tr>
           <td>közvetlen</td>
           <td>08:48:04</td>
-          <td>08:49:14</td>
-          <td>1p 10s</td>
+          <td>08:52:47</td>
+          <td>4p 43s</td>
           <td>0</td>
           <td> </td>
           <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
@@ -374,7 +381,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-03T08:49:15
+    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-03T08:52:47
   </div>
 
 </div>
