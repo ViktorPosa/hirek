@@ -1,77 +1,81 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-03T14:08:55",
+  "generated_at": "2026-11-03T14:17:07",
   "date": "2026-11-03",
   "criticality": "WARNING",
   "criticality_reasons": [
-    "image_missing_rate:13.3%"
+    "image_missing_rate:11.9%"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-03T14:08:35",
-        "ended_at": "2026-11-03T14:08:55",
-        "duration_seconds": 20,
+        "ended_at": "2026-11-03T14:17:07",
+        "duration_seconds": 511,
         "exit_code": 0,
-        "status": "OK",
+        "status": "WARNING",
         "process_killed": false,
         "watchdog_triggered": false
       }
     ],
     "overall_exit_code": 0,
-    "completed_steps": [],
+    "completed_steps": [
+      "dedup_fast.py",
+      "filter_importance.py",
+      "importance_assessor.py",
+      "link_dedup.py",
+      "news_filter.py",
+      "section_validator.py",
+      "split_localization.py",
+      "summarizer_json.py"
+    ],
     "missing_steps": [
       "weather_generator.py",
       "market_generator.py",
       "rss_creator.py",
-      "news_filter.py",
-      "link_dedup.py",
-      "summarizer_json.py",
-      "image_downloader.py",
-      "section_validator.py",
-      "filter_importance.py"
+      "image_downloader.py"
     ]
   },
   "articles": {
-    "total": 324,
-    "with_image": 281,
-    "without_image": 43,
+    "total": 344,
+    "with_image": 303,
+    "without_image": 41,
     "by_importance": {
-      "1": 49,
-      "2": 107,
-      "3": 66,
-      "4": 48,
-      "5": 35,
-      "6": 19,
+      "1": 52,
+      "2": 113,
+      "3": 70,
+      "4": 51,
+      "5": 38,
+      "6": 20,
       "7": 0
     },
     "by_section": {
-      "eletmod": 57,
-      "belfold_kulfold": 53,
-      "tech": 48,
-      "szorakozas": 47,
-      "uzlet": 40,
-      "bulvar": 26,
-      "gamer": 18,
+      "eletmod": 58,
+      "belfold_kulfold": 56,
+      "tech": 52,
+      "szorakozas": 50,
+      "uzlet": 43,
+      "bulvar": 27,
+      "gamer": 20,
+      "tudomany": 17,
       "sport": 17,
-      "tudomany": 15,
-      "kripto": 3
+      "kripto": 4
     }
   },
   "images": {
-    "attempted": 324,
-    "with_image": 281,
-    "without_image": 43,
-    "failed": 43,
-    "failure_rate_pct": 13.3,
+    "attempted": 344,
+    "with_image": 303,
+    "without_image": 41,
+    "failed": 41,
+    "failure_rate_pct": 11.9,
     "download_errors_logged": 0
   },
   "rss": {
     "total_feeds": 99,
-    "ok_feeds": 99,
-    "failed_feeds": 0,
-    "success_rate_pct": 100.0,
+    "ok_feeds": 98,
+    "failed_feeds": 1,
+    "success_rate_pct": 99.0,
     "failed_feed_list": []
   },
   "errors": {
@@ -94,15 +98,15 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 74
+      "item_count": 76
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 50
+      "item_count": 54
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 17
+      "item_count": 18
     },
     "data_toplist_json": {
       "exists": true,
@@ -154,7 +158,7 @@
     },
     {
       "date": "2026-11-03",
-      "articles": 324,
+      "articles": 344,
       "status": "OK",
       "exit_code": 0
     }
@@ -162,14 +166,90 @@
   "run_timing": {
     "date": "2026-11-03",
     "started_at": "2026-11-03T14:08:35",
-    "ended_at": "2026-11-03T14:08:55",
-    "duration_seconds": 19.5,
-    "steps": [],
+    "ended_at": "2026-11-03T14:17:07",
+    "duration_seconds": 511.2,
+    "steps": [
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-03T14:09:28",
+        "ended_at": "2026-11-03T14:10:26",
+        "duration_seconds": 57.7,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-03T14:09:29",
+        "ended_at": "2026-11-03T14:10:29",
+        "duration_seconds": 60.9,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-03T14:10:31",
+        "ended_at": "2026-11-03T14:10:31",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-03T14:10:34",
+        "ended_at": "2026-11-03T14:15:00",
+        "duration_seconds": 266.5,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-03T14:15:00",
+        "ended_at": "2026-11-03T14:16:25",
+        "duration_seconds": 84.6,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-03T14:16:25",
+        "ended_at": "2026-11-03T14:16:26",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-11-03T14:16:26",
+        "ended_at": "2026-11-03T14:16:37",
+        "duration_seconds": 11.5,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-03T14:16:37",
+        "ended_at": "2026-11-03T14:16:38",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-03T14:16:38",
+        "ended_at": "2026-11-03T14:16:38",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      }
+    ],
     "publish": {
       "weather_market_push": {
         "status": "disabled"
       },
       "images_push": {
+        "status": "ok"
+      },
+      "news_push": {
         "status": "ok"
       }
     }
@@ -179,6 +259,9 @@
       "status": "disabled"
     },
     "images_push": {
+      "status": "ok"
+    },
+    "news_push": {
       "status": "ok"
     }
   }
