@@ -51,20 +51,20 @@
 <body>
 <script>const REPORT = {
   "schema_version": "1.1",
-  "generated_at": "2026-11-03T03:42:37",
+  "generated_at": "2026-11-03T03:47:54",
   "date": "2026-11-03",
   "criticality": "WARNING",
   "criticality_reasons": [
-    "low_article_count:39",
-    "image_missing_rate:30.8%"
+    "low_article_count:46",
+    "image_missing_rate:26.1%"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-02T23:57:13",
-        "ended_at": "2026-11-03T03:42:37",
-        "duration_seconds": 13524,
+        "ended_at": "2026-11-03T03:47:54",
+        "duration_seconds": 13841,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -94,35 +94,35 @@
     ]
   },
   "articles": {
-    "total": 39,
-    "with_image": 27,
+    "total": 46,
+    "with_image": 34,
     "without_image": 12,
     "by_importance": {
       "1": 8,
-      "2": 19,
-      "3": 8,
+      "2": 22,
+      "3": 9,
       "4": 3,
-      "5": 1,
-      "6": 0,
+      "5": 3,
+      "6": 1,
       "7": 0
     },
     "by_section": {
-      "szorakozas": 8,
-      "tech": 7,
+      "szorakozas": 10,
+      "tech": 9,
+      "belfold_kulfold": 9,
       "uzlet": 6,
       "eletmod": 6,
-      "belfold_kulfold": 6,
       "gamer": 3,
       "bulvar": 2,
       "sport": 1
     }
   },
   "images": {
-    "attempted": 39,
-    "with_image": 27,
+    "attempted": 46,
+    "with_image": 34,
     "without_image": 12,
     "failed": 12,
-    "failure_rate_pct": 30.8,
+    "failure_rate_pct": 26.1,
     "download_errors_logged": 0
   },
   "rss": {
@@ -152,15 +152,15 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 10
+      "item_count": 12
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 2
+      "item_count": 3
     },
     "data_i5_json": {
       "exists": true,
-      "item_count": 0
+      "item_count": 1
     },
     "data_toplist_json": {
       "exists": true,
@@ -212,7 +212,7 @@
     },
     {
       "date": "2026-11-03",
-      "articles": 39,
+      "articles": 46,
       "status": "WARNING",
       "exit_code": 0
     }
@@ -220,8 +220,8 @@
   "run_timing": {
     "date": "2026-11-03",
     "started_at": "2026-11-02T23:57:13",
-    "ended_at": "2026-11-03T03:42:37",
-    "duration_seconds": 13523.9,
+    "ended_at": "2026-11-03T03:47:54",
+    "duration_seconds": 13840.8,
     "steps": [
       {
         "name": "link_dedup.py",
@@ -2558,6 +2558,78 @@
         "ended_at": "2026-11-03T03:42:21",
         "duration_seconds": 0.7,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-03T03:43:06",
+        "ended_at": "2026-11-03T03:43:53",
+        "duration_seconds": 47.3,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-03T03:43:06",
+        "ended_at": "2026-11-03T03:43:55",
+        "duration_seconds": 49.5,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-03T03:43:56",
+        "ended_at": "2026-11-03T03:43:58",
+        "duration_seconds": 1.9,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-03T03:44:01",
+        "ended_at": "2026-11-03T03:47:08",
+        "duration_seconds": 187.5,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-03T03:47:08",
+        "ended_at": "2026-11-03T03:47:23",
+        "duration_seconds": 14.6,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-03T03:47:23",
+        "ended_at": "2026-11-03T03:47:23",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Assessing New/Changed News Importance",
+        "started_at": "2026-11-03T03:47:23",
+        "ended_at": "2026-11-03T03:47:28",
+        "duration_seconds": 5.0,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-03T03:47:28",
+        "ended_at": "2026-11-03T03:47:29",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-03T03:47:29",
+        "ended_at": "2026-11-03T03:47:30",
+        "duration_seconds": 0.6,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -2589,7 +2661,7 @@
 <div class="header">
   <div>
     <h1>📰 Derűshírek Pipeline Monitor</h1>
-    <div class="meta">Dátum: <strong>2026-11-03</strong> &nbsp;·&nbsp; Generálva: 2026-11-03T03:42:37</div>
+    <div class="meta">Dátum: <strong>2026-11-03</strong> &nbsp;·&nbsp; Generálva: 2026-11-03T03:47:54</div>
   </div>
   <div>
     <span class="status-badge" style="background:#ca8a04;">
@@ -2604,8 +2676,8 @@
   
 <div class="alert alert-warning" style="background:#fef9c3;border-left:5px solid #facc15;color:#854d0e;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
   <strong>🟡 FIGYELMEZTETÉS</strong>
-  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>Kevés cikk: csak 39 db készült el (minimum elvárás: 100).</li>
-<li>Sok cikk maradt kép nélkül: 30.8% a cikkeknek.</li>
+  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>Kevés cikk: csak 46 db készült el (minimum elvárás: 100).</li>
+<li>Sok cikk maradt kép nélkül: 26.1% a cikkeknek.</li>
 </ul>
 </div>
 
@@ -2620,7 +2692,7 @@
   <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Hírek: ✅ OK</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
   <div class="grid-4">
     <div class="metric-card" style="border-top-color:#ca8a04;">
-      <div class="metric-value" style="color:#ca8a04;">39</div>
+      <div class="metric-value" style="color:#ca8a04;">46</div>
       <div class="metric-label">Cikk összesen</div>
     </div>
     <div class="metric-card" style="border-top-color:#22c55e;">
@@ -2628,7 +2700,7 @@
       <div class="metric-label">RSS sikerráta</div>
     </div>
     <div class="metric-card" style="border-top-color:#ef4444;">
-      <div class="metric-value" style="color:#ef4444;">69.2%</div>
+      <div class="metric-value" style="color:#ef4444;">73.9%</div>
       <div class="metric-label">Képek rendben</div>
     </div>
     <div class="metric-card" style="border-top-color:#ca8a04;">
@@ -2648,8 +2720,8 @@
         <tbody><tr>
           <td>közvetlen</td>
           <td>23:57:13</td>
-          <td>03:42:37</td>
-          <td>3ó 45p</td>
+          <td>03:47:54</td>
+          <td>3ó 50p</td>
           <td>0</td>
           <td> </td>
           <td><span class="badge" style="background:#ca8a04;color:#fff;">WARNING</span></td>
@@ -2668,8 +2740,8 @@
     <div class="grid-4" style="margin-bottom:1rem;">
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Dátum</div><div style="font-size:1.15rem;font-weight:800;">2026-11-03</div></div>
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Indítás</div><div style="font-size:1.15rem;font-weight:800;">23:57:13</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">03:42:37</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">3ó 45p</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">03:47:54</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">3ó 50p</div></div>
     </div>
     <div style="overflow-x:auto;">
       <table>
@@ -4426,6 +4498,60 @@
               <td>03:42:21</td>
               <td style="font-weight:700;"><1s</td>
               <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Generating Custom RSS Feeds <span style="color:#6b7280;font-size:0.85em;">(rss_creator.py)</span></td>
+              <td>03:43:06</td>
+              <td>03:43:53</td>
+              <td style="font-weight:700;">47s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Collecting RSS Links <span style="color:#6b7280;font-size:0.85em;">(news_filter.py)</span></td>
+              <td>03:43:06</td>
+              <td>03:43:55</td>
+              <td style="font-weight:700;">50s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating Links by Topic <span style="color:#6b7280;font-size:0.85em;">(link_dedup.py)</span></td>
+              <td>03:43:56</td>
+              <td>03:43:58</td>
+              <td style="font-weight:700;">2s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Summarizing to JSON (Filter + Categorize) <span style="color:#6b7280;font-size:0.85em;">(summarizer_json.py)</span></td>
+              <td>03:44:01</td>
+              <td>03:47:08</td>
+              <td style="font-weight:700;">3p 8s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating News (Multi-file) <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>03:47:08</td>
+              <td>03:47:23</td>
+              <td style="font-weight:700;">15s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Validating Section Fields <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>03:47:23</td>
+              <td>03:47:23</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Assessing New/Changed News Importance <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>03:47:23</td>
+              <td>03:47:28</td>
+              <td style="font-weight:700;">5s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Importance 4–7 into Separate Files <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>03:47:28</td>
+              <td>03:47:29</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>03:47:29</td>
+              <td>03:47:30</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
             </tr></tbody>
       </table>
     </div>
@@ -4475,9 +4601,9 @@
   <!-- OUTPUT FILES -->
   <div class="section-title">Output fájlok</div>
   <div class="card">
-    <ul class="files-list"><li>✅ <code>data.json</code> <span style="color:#6b7280;font-size:0.85em;">(10 db)</span></li>
-<li>✅ <code>data_i4.json</code> <span style="color:#6b7280;font-size:0.85em;">(2 db)</span></li>
-<li>✅ <code>data_i5.json</code> <span style="color:#6b7280;font-size:0.85em;">(0 db)</span></li>
+    <ul class="files-list"><li>✅ <code>data.json</code> <span style="color:#6b7280;font-size:0.85em;">(12 db)</span></li>
+<li>✅ <code>data_i4.json</code> <span style="color:#6b7280;font-size:0.85em;">(3 db)</span></li>
+<li>✅ <code>data_i5.json</code> <span style="color:#6b7280;font-size:0.85em;">(1 db)</span></li>
 <li>✅ <code>data_toplist.json</code> <span style="color:#6b7280;font-size:0.85em;">(3 db)</span></li>
 <li>❌ <code>idojaras.json</code></li>
 <li>❌ <code>piacok.json</code></li>
@@ -4486,7 +4612,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-03T03:42:37
+    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-03T03:47:54
   </div>
 
 </div>
@@ -4500,10 +4626,10 @@ Chart.defaults.color = '#374151';
 new Chart(document.getElementById('chartSection'), {
   type: 'bar',
   data: {
-    labels: ["szorakozas", "tech", "uzlet", "eletmod", "belfold_kulfold", "gamer", "bulvar", "sport"],
+    labels: ["szorakozas", "tech", "belfold_kulfold", "uzlet", "eletmod", "gamer", "bulvar", "sport"],
     datasets: [{
       label: 'Cikkszám',
-      data: [8, 7, 6, 6, 6, 3, 2, 1],
+      data: [10, 9, 9, 6, 6, 3, 2, 1],
       backgroundColor: ["#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316", "#22c55e", "#eab308", "#ef4444"],
       borderRadius: 4,
     }]
@@ -4525,7 +4651,7 @@ new Chart(document.getElementById('chartTrend'), {
     labels: ["2026-10-28", "2026-10-29", "2026-10-30", "2026-10-31", "2026-11-01", "2026-11-02", "2026-11-03"],
     datasets: [{
       label: 'Cikkszám',
-      data: [938, 680, 655, 410, 338, 610, 39],
+      data: [938, 680, 655, 410, 338, 610, 46],
       borderColor: '#3b82f6',
       backgroundColor: 'rgba(59,130,246,0.08)',
       pointBackgroundColor: ["#22c55e", "#22c55e", "#22c55e", "#22c55e", "#22c55e", "#22c55e", "#eab308"],
