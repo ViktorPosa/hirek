@@ -51,20 +51,19 @@
 <body>
 <script>const REPORT = {
   "schema_version": "1.1",
-  "generated_at": "2026-11-04T11:29:58",
+  "generated_at": "2026-11-04T11:37:56",
   "date": "2026-11-04",
-  "criticality": "WARNING",
+  "criticality": "CRITICAL",
   "criticality_reasons": [
-    "missing_files:data_toplist.json",
-    "image_missing_rate:41.3%"
+    "news_push_failed:\nremote: Internal Server Error        \nremote: Request ID 1DF3:13F02B:4BF8DB0:6A39B1E:6AEB0965        \nremote: Time 2026-11-04T10:31:02Z\nTo https://github.com/ViktorPosa/hirek.git\n ! [remote rejected]"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-04T11:15:42",
-        "ended_at": "2026-11-04T11:29:58",
-        "duration_seconds": 856,
+        "ended_at": "2026-11-04T11:37:56",
+        "duration_seconds": 1334,
         "exit_code": 0,
         "status": "OK",
         "process_killed": false,
@@ -75,6 +74,7 @@
     "completed_steps": [
       "dedup_fast.py",
       "filter_importance.py",
+      "image_tags_sidecar.py",
       "importance_assessor.py",
       "link_dedup.py",
       "news_filter.py",
@@ -218,8 +218,8 @@
   "run_timing": {
     "date": "2026-11-04",
     "started_at": "2026-11-04T11:15:42",
-    "ended_at": "2026-11-04T11:29:58",
-    "duration_seconds": 856.0,
+    "ended_at": "2026-11-04T11:37:56",
+    "duration_seconds": 1333.6,
     "steps": [
       {
         "name": "link_dedup.py",
@@ -348,6 +348,70 @@
         "ended_at": "2026-11-04T11:28:57",
         "duration_seconds": 0.5,
         "status": "OK"
+      },
+      {
+        "name": "image_tags_sidecar.py",
+        "description": "Writing per-image tag sidecars (local only)",
+        "started_at": "2026-11-04T11:31:34",
+        "ended_at": "2026-11-04T11:31:34",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-04T11:31:35",
+        "ended_at": "2026-11-04T11:31:36",
+        "duration_seconds": 1.1,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-04T11:31:39",
+        "ended_at": "2026-11-04T11:34:12",
+        "duration_seconds": 152.8,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-04T11:34:12",
+        "ended_at": "2026-11-04T11:37:33",
+        "duration_seconds": 201.5,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-04T11:37:33",
+        "ended_at": "2026-11-04T11:37:34",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-04T11:37:34",
+        "ended_at": "2026-11-04T11:37:34",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-04T11:37:34",
+        "ended_at": "2026-11-04T11:37:35",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-04T11:37:35",
+        "ended_at": "2026-11-04T11:37:35",
+        "duration_seconds": 0.6,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -356,6 +420,10 @@
       },
       "images_push": {
         "status": "ok"
+      },
+      "news_push": {
+        "status": "failed",
+        "error": "\nremote: Internal Server Error        \nremote: Request ID 1DF3:13F02B:4BF8DB0:6A39B1E:6AEB0965        \nremote: Time 2026-11-04T10:31:02Z\nTo https://github.com/ViktorPosa/hirek.git\n ! [remote rejected]"
       }
     }
   },
@@ -365,6 +433,10 @@
     },
     "images_push": {
       "status": "ok"
+    },
+    "news_push": {
+      "status": "failed",
+      "error": "\nremote: Internal Server Error        \nremote: Request ID 1DF3:13F02B:4BF8DB0:6A39B1E:6AEB0965        \nremote: Time 2026-11-04T10:31:02Z\nTo https://github.com/ViktorPosa/hirek.git\n ! [remote rejected]"
     }
   }
 };</script>
@@ -373,11 +445,11 @@
 <div class="header">
   <div>
     <h1>📰 Derűshírek Pipeline Monitor</h1>
-    <div class="meta">Dátum: <strong>2026-11-04</strong> &nbsp;·&nbsp; Generálva: 2026-11-04T11:29:58</div>
+    <div class="meta">Dátum: <strong>2026-11-04</strong> &nbsp;·&nbsp; Generálva: 2026-11-04T11:37:56</div>
   </div>
   <div>
-    <span class="status-badge" style="background:#ca8a04;">
-      🟡 FIGYELMEZTETÉS
+    <span class="status-badge" style="background:#dc2626;">
+      🔴 KRITIKUS
     </span>
   </div>
 </div>
@@ -386,22 +458,35 @@
 
   <!-- ALERTS -->
   
-<div class="alert alert-warning" style="background:#fef9c3;border-left:5px solid #facc15;color:#854d0e;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
-  <strong>🟡 FIGYELMEZTETÉS</strong>
-  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>Hiányzó output fájlok: data_toplist.json. Az importance-szűrt és toplist szekciók elavult tartalmat mutatnak.</li>
-<li>Sok cikk maradt kép nélkül: 41.3% a cikkeknek.</li>
+<div class="alert alert-critical" style="background:#fee2e2;border-left:5px solid #f87171;color:#991b1b;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
+  <strong>🔴 KRITIKUS</strong>
+  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>🔴 KRITIKUS: a hírek git-push NEM sikerült — a weboldal nem frissült! Ok: 
+remote: Internal Server Error        
+remote: Request ID 1DF3:13F02B:4BF8DB0:6A39B1E:6AEB0965        
+remote: Time 2026-11-04T10:31:02Z
+To https://github.com/ViktorPosa/hirek.git
+ ! [remote rejected]</li>
 </ul>
 </div>
 
   <!-- PUBLISH STATUS (prominent) -->
   
+<div style="background:#7f1d1d;color:#fff;padding:1rem 1.25rem;border-radius:10px;margin-bottom:1rem;border:3px solid #dc2626;font-size:1.05rem;font-weight:800;">
+  🔴 GIT PUSH SIKERTELEN — a weboldal NEM frissült!
+  <div style="font-weight:500;font-size:0.85rem;margin-top:0.35rem;opacity:0.95;">Ok: 
+remote: Internal Server Error        
+remote: Request ID 1DF3:13F02B:4BF8DB0:6A39B1E:6AEB0965        
+remote: Time 2026-11-04T10:31:02Z
+To https://github.com/ViktorPosa/hirek.git
+ ! [remote rejected]</div>
+</div>
 
   <!-- KEY METRICS -->
   <div class="section-title">Fő mutatók</div>
-  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Hírek: – n/a</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
+  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:0.8rem;font-weight:700;">Hírek: 🔴 SIKERTELEN</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
   <div class="grid-4">
-    <div class="metric-card" style="border-top-color:#ca8a04;">
-      <div class="metric-value" style="color:#ca8a04;">341</div>
+    <div class="metric-card" style="border-top-color:#dc2626;">
+      <div class="metric-value" style="color:#dc2626;">341</div>
       <div class="metric-label">Cikk összesen</div>
     </div>
     <div class="metric-card" style="border-top-color:#22c55e;">
@@ -412,8 +497,8 @@
       <div class="metric-value" style="color:#ef4444;">58.7%</div>
       <div class="metric-label">Képek rendben</div>
     </div>
-    <div class="metric-card" style="border-top-color:#ca8a04;">
-      <div class="metric-value" style="color:#ca8a04;">🟡</div>
+    <div class="metric-card" style="border-top-color:#dc2626;">
+      <div class="metric-value" style="color:#dc2626;">🔴</div>
       <div class="metric-label">Pipeline státusz</div>
     </div>
   </div>
@@ -429,8 +514,8 @@
         <tbody><tr>
           <td>közvetlen</td>
           <td>11:15:42</td>
-          <td>11:29:58</td>
-          <td>14p 16s</td>
+          <td>11:37:56</td>
+          <td>22p 14s</td>
           <td>0</td>
           <td> </td>
           <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
@@ -449,8 +534,8 @@
     <div class="grid-4" style="margin-bottom:1rem;">
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Dátum</div><div style="font-size:1.15rem;font-weight:800;">2026-11-04</div></div>
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Indítás</div><div style="font-size:1.15rem;font-weight:800;">11:15:42</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">11:29:58</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">14p 16s</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">11:37:56</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">22p 14s</div></div>
     </div>
     <div style="overflow-x:auto;">
       <table>
@@ -551,6 +636,54 @@
               <td>11:28:57</td>
               <td style="font-weight:700;"><1s</td>
               <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Writing per-image tag sidecars (local only) <span style="color:#6b7280;font-size:0.85em;">(image_tags_sidecar.py)</span></td>
+              <td>11:31:34</td>
+              <td>11:31:34</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating Links by Topic <span style="color:#6b7280;font-size:0.85em;">(link_dedup.py)</span></td>
+              <td>11:31:35</td>
+              <td>11:31:36</td>
+              <td style="font-weight:700;">1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Summarizing to JSON (Filter + Categorize) <span style="color:#6b7280;font-size:0.85em;">(summarizer_json.py)</span></td>
+              <td>11:31:39</td>
+              <td>11:34:12</td>
+              <td style="font-weight:700;">2p 33s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating News (Multi-file) <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>11:34:12</td>
+              <td>11:37:33</td>
+              <td style="font-weight:700;">3p 22s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Validating Section Fields <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>11:37:33</td>
+              <td>11:37:34</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Unified Topic Review: Scores, Audience & Language <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>11:37:34</td>
+              <td>11:37:34</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Importance 4–7 into Separate Files <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>11:37:34</td>
+              <td>11:37:35</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>11:37:35</td>
+              <td>11:37:35</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
             </tr></tbody>
       </table>
     </div>
@@ -636,7 +769,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-04T11:29:58
+    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-04T11:37:56
   </div>
 
 </div>
