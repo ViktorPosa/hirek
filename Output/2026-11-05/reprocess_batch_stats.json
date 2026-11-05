@@ -1,24 +1,24 @@
 {
   "token_budget_state": {},
   "date": "2026-11-05",
-  "updated_at": "2026-11-05T20:03:20.658364",
-  "current_batch_size": 6,
-  "base_batch_size": 6,
+  "updated_at": "2026-11-05T20:27:22.172454",
+  "current_batch_size": 15,
+  "base_batch_size": 15,
   "min_batch_size": 8,
   "max_batch_size": 35,
   "consecutive_truncations": 0,
-  "consecutive_clean_batches": 2,
-  "total_batches": 2,
-  "successful_batches": 2,
+  "consecutive_clean_batches": 1,
+  "total_batches": 7,
+  "successful_batches": 5,
   "truncated_batches": 0,
-  "failed_batches": 0,
-  "total_articles_submitted": 2,
-  "total_articles_succeeded": 2,
+  "failed_batches": 2,
+  "total_articles_submitted": 77,
+  "total_articles_succeeded": 46,
   "total_articles_retried": 0,
-  "total_articles_failed": 0,
-  "article_success_rate_pct": 100.0,
+  "total_articles_failed": 30,
+  "article_success_rate_pct": 59.7,
   "final_success_rate_pct": 100.0,
-  "unique_articles_succeeded": 2,
+  "unique_articles_succeeded": 46,
   "permanently_failed_articles": 0,
   "articles_recovered": 0,
   "truncation_events": 0,
@@ -27,36 +27,72 @@
     "truncation": 0,
     "invalid_json": 0,
     "api_timeout": 0,
-    "empty_response": 0,
+    "empty_response": 2,
     "backend_exhausted": 0,
-    "missing_items": 0,
+    "missing_items": 1,
     "rate_limit": 0,
     "other": 0
   },
-  "errors_by_backend": {},
+  "errors_by_backend": {
+    "gemini-3.8-flash-selenium": 2,
+    "perplexity-fallback-gemini-3.8-flash": 1
+  },
   "model_stats": {
     "gemini-3.8-flash-selenium": {
-      "submitted": 1,
-      "succeeded": 1,
-      "errors": 0
+      "submitted": 46,
+      "succeeded": 16,
+      "errors": 2
     },
     "gemini-3.8-flash": {
       "submitted": 1,
       "succeeded": 1,
       "errors": 0
+    },
+    "perplexity-fallback-gemini-3.8-flash": {
+      "submitted": 30,
+      "succeeded": 29,
+      "errors": 1
     }
   },
-  "recent_events": [],
+  "recent_events": [
+    {
+      "timestamp": "2026-11-05T20:20:58.338798",
+      "event": "batch_failure",
+      "backend": "gemini-3.8-flash-selenium",
+      "error_type": "empty_response",
+      "articles_count": 15,
+      "details": "Gemini Selenium (3.8 Flash) nem adott érvényes választ (sport)",
+      "is_rescue": false
+    },
+    {
+      "timestamp": "2026-11-05T20:24:35.572988",
+      "event": "batch_failure",
+      "backend": "gemini-3.8-flash-selenium",
+      "error_type": "empty_response",
+      "articles_count": 15,
+      "details": "Gemini Selenium (3.8 Flash) nem adott érvényes választ (tech)",
+      "is_rescue": false
+    },
+    {
+      "timestamp": "2026-11-05T20:24:50.379464",
+      "event": "partial_batch",
+      "backend": "perplexity-fallback-gemini-3.8-flash",
+      "succeeded_count": 14,
+      "filtered_count": 0,
+      "missing_count": 1,
+      "details": "Részleges köteg: 14/15 kész, 1 hiányzó cikk mentő kötegbe irányítva"
+    }
+  ],
   "batch_quality_distribution": {
-    "total_first_batches": 2,
-    "tier_100": 2,
-    "tier_80": 0,
+    "total_first_batches": 7,
+    "tier_100": 4,
+    "tier_80": 1,
     "tier_50": 0,
-    "tier_below_50": 0,
-    "first_articles_submitted": 2,
-    "first_articles_succeeded": 2,
-    "first_articles_missing": 0,
-    "first_article_error_pct": 0.0,
-    "first_article_success_pct": 100.0
+    "tier_below_50": 2,
+    "first_articles_submitted": 77,
+    "first_articles_succeeded": 46,
+    "first_articles_missing": 31,
+    "first_article_error_pct": 40.3,
+    "first_article_success_pct": 59.7
   }
 }
