@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-05T17:19:21",
+  "generated_at": "2026-11-05T17:27:28",
   "date": "2026-11-05",
   "criticality": "WARNING",
   "criticality_reasons": [
@@ -11,8 +11,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-05T14:31:42",
-        "ended_at": "2026-11-05T17:19:21",
-        "duration_seconds": 10058,
+        "ended_at": "2026-11-05T17:27:28",
+        "duration_seconds": 10546,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -79,24 +79,18 @@
     "ok_feeds": 97,
     "failed_feeds": 2,
     "success_rate_pct": 98.0,
-    "failed_feed_list": [
-      {
-        "url": "https://gsplus.hu/site/rss/rss.xml",
-        "error_type": "rss_timeout",
-        "error_short": "Response is not an RSS/Atom feed (possible challenge or logi"
-      }
-    ]
+    "failed_feed_list": []
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 1,
+    "rss_timeout": 0,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 15,
+    "api_no_response": 12,
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
@@ -175,8 +169,8 @@
   "run_timing": {
     "date": "2026-11-05",
     "started_at": "2026-11-05T14:31:42",
-    "ended_at": "2026-11-05T17:19:21",
-    "duration_seconds": 10058.4,
+    "ended_at": "2026-11-05T17:27:28",
+    "duration_seconds": 10546.1,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -1384,6 +1378,78 @@
         "started_at": "2026-11-05T17:19:01",
         "ended_at": "2026-11-05T17:19:02",
         "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-05T17:19:55",
+        "ended_at": "2026-11-05T17:21:33",
+        "duration_seconds": 97.8,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-05T17:19:55",
+        "ended_at": "2026-11-05T17:21:36",
+        "duration_seconds": 101.0,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-05T17:21:37",
+        "ended_at": "2026-11-05T17:21:40",
+        "duration_seconds": 2.4,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-05T17:21:43",
+        "ended_at": "2026-11-05T17:26:14",
+        "duration_seconds": 271.0,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-05T17:26:14",
+        "ended_at": "2026-11-05T17:27:06",
+        "duration_seconds": 52.7,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-05T17:27:06",
+        "ended_at": "2026-11-05T17:27:07",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-05T17:27:07",
+        "ended_at": "2026-11-05T17:27:07",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-05T17:27:07",
+        "ended_at": "2026-11-05T17:27:08",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-05T17:27:08",
+        "ended_at": "2026-11-05T17:27:08",
+        "duration_seconds": 0.5,
         "status": "OK"
       }
     ],
