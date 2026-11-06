@@ -1,20 +1,19 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-07T00:18:26",
+  "generated_at": "2026-11-07T00:27:21",
   "date": "2026-11-07",
   "criticality": "WARNING",
   "criticality_reasons": [
     "missing_files:data_toplist.json",
-    "low_article_count:7",
-    "image_missing_rate:14.3%"
+    "low_article_count:7"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-07T00:12:43",
-        "ended_at": "2026-11-07T00:18:26",
-        "duration_seconds": 343,
+        "ended_at": "2026-11-07T00:27:21",
+        "duration_seconds": 878,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -26,6 +25,7 @@
       "dedup_fast.py",
       "filter_importance.py",
       "importance_assessor.py",
+      "importance_calibrator.py",
       "link_dedup.py",
       "news_filter.py",
       "section_validator.py",
@@ -41,8 +41,8 @@
   },
   "articles": {
     "total": 7,
-    "with_image": 6,
-    "without_image": 1,
+    "with_image": 7,
+    "without_image": 0,
     "by_importance": {
       "1": 1,
       "2": 0,
@@ -62,10 +62,10 @@
   },
   "images": {
     "attempted": 7,
-    "with_image": 6,
-    "without_image": 1,
-    "failed": 1,
-    "failure_rate_pct": 14.3,
+    "with_image": 7,
+    "without_image": 0,
+    "failed": 0,
+    "failure_rate_pct": 0.0,
     "download_errors_logged": 0
   },
   "rss": {
@@ -163,8 +163,8 @@
   "run_timing": {
     "date": "2026-11-07",
     "started_at": "2026-11-07T00:12:43",
-    "ended_at": "2026-11-07T00:18:26",
-    "duration_seconds": 342.8,
+    "ended_at": "2026-11-07T00:27:21",
+    "duration_seconds": 877.6,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -235,6 +235,70 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-11-07T00:17:42",
         "ended_at": "2026-11-07T00:17:43",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "importance_calibrator.py",
+        "description": "Retry Pending Unified Reviews (Cache First)",
+        "started_at": "2026-11-07T00:18:26",
+        "ended_at": "2026-11-07T00:18:27",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-07T00:18:38",
+        "ended_at": "2026-11-07T00:18:41",
+        "duration_seconds": 2.4,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-07T00:21:35",
+        "ended_at": "2026-11-07T00:24:14",
+        "duration_seconds": 158.9,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-07T00:24:14",
+        "ended_at": "2026-11-07T00:27:04",
+        "duration_seconds": 170.1,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-07T00:27:04",
+        "ended_at": "2026-11-07T00:27:05",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-07T00:27:05",
+        "ended_at": "2026-11-07T00:27:05",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-07T00:27:05",
+        "ended_at": "2026-11-07T00:27:06",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-07T00:27:06",
+        "ended_at": "2026-11-07T00:27:07",
         "duration_seconds": 0.7,
         "status": "OK"
       }

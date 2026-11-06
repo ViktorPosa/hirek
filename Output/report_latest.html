@@ -51,21 +51,20 @@
 <body>
 <script>const REPORT = {
   "schema_version": "1.1",
-  "generated_at": "2026-11-07T00:18:26",
+  "generated_at": "2026-11-07T00:27:21",
   "date": "2026-11-07",
   "criticality": "WARNING",
   "criticality_reasons": [
     "missing_files:data_toplist.json",
-    "low_article_count:7",
-    "image_missing_rate:14.3%"
+    "low_article_count:7"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-07T00:12:43",
-        "ended_at": "2026-11-07T00:18:26",
-        "duration_seconds": 343,
+        "ended_at": "2026-11-07T00:27:21",
+        "duration_seconds": 878,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -77,6 +76,7 @@
       "dedup_fast.py",
       "filter_importance.py",
       "importance_assessor.py",
+      "importance_calibrator.py",
       "link_dedup.py",
       "news_filter.py",
       "section_validator.py",
@@ -92,8 +92,8 @@
   },
   "articles": {
     "total": 7,
-    "with_image": 6,
-    "without_image": 1,
+    "with_image": 7,
+    "without_image": 0,
     "by_importance": {
       "1": 1,
       "2": 0,
@@ -113,10 +113,10 @@
   },
   "images": {
     "attempted": 7,
-    "with_image": 6,
-    "without_image": 1,
-    "failed": 1,
-    "failure_rate_pct": 14.3,
+    "with_image": 7,
+    "without_image": 0,
+    "failed": 0,
+    "failure_rate_pct": 0.0,
     "download_errors_logged": 0
   },
   "rss": {
@@ -214,8 +214,8 @@
   "run_timing": {
     "date": "2026-11-07",
     "started_at": "2026-11-07T00:12:43",
-    "ended_at": "2026-11-07T00:18:26",
-    "duration_seconds": 342.8,
+    "ended_at": "2026-11-07T00:27:21",
+    "duration_seconds": 877.6,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -288,6 +288,70 @@
         "ended_at": "2026-11-07T00:17:43",
         "duration_seconds": 0.7,
         "status": "OK"
+      },
+      {
+        "name": "importance_calibrator.py",
+        "description": "Retry Pending Unified Reviews (Cache First)",
+        "started_at": "2026-11-07T00:18:26",
+        "ended_at": "2026-11-07T00:18:27",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-07T00:18:38",
+        "ended_at": "2026-11-07T00:18:41",
+        "duration_seconds": 2.4,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-07T00:21:35",
+        "ended_at": "2026-11-07T00:24:14",
+        "duration_seconds": 158.9,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-07T00:24:14",
+        "ended_at": "2026-11-07T00:27:04",
+        "duration_seconds": 170.1,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-07T00:27:04",
+        "ended_at": "2026-11-07T00:27:05",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-07T00:27:05",
+        "ended_at": "2026-11-07T00:27:05",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-07T00:27:05",
+        "ended_at": "2026-11-07T00:27:06",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-07T00:27:06",
+        "ended_at": "2026-11-07T00:27:07",
+        "duration_seconds": 0.7,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -319,7 +383,7 @@
 <div class="header">
   <div>
     <h1>📰 Derűshírek Pipeline Monitor</h1>
-    <div class="meta">Dátum: <strong>2026-11-07</strong> &nbsp;·&nbsp; Generálva: 2026-11-07T00:18:26</div>
+    <div class="meta">Dátum: <strong>2026-11-07</strong> &nbsp;·&nbsp; Generálva: 2026-11-07T00:27:21</div>
   </div>
   <div>
     <span class="status-badge" style="background:#ca8a04;">
@@ -336,7 +400,6 @@
   <strong>🟡 FIGYELMEZTETÉS</strong>
   <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>Hiányzó output fájlok: data_toplist.json. Az importance-szűrt és toplist szekciók elavult tartalmat mutatnak.</li>
 <li>Kevés cikk: csak 7 db készült el (minimum elvárás: 100).</li>
-<li>Sok cikk maradt kép nélkül: 14.3% a cikkeknek.</li>
 </ul>
 </div>
 
@@ -358,8 +421,8 @@
       <div class="metric-value" style="color:#22c55e;">96.0%</div>
       <div class="metric-label">RSS sikerráta</div>
     </div>
-    <div class="metric-card" style="border-top-color:#eab308;">
-      <div class="metric-value" style="color:#eab308;">85.7%</div>
+    <div class="metric-card" style="border-top-color:#22c55e;">
+      <div class="metric-value" style="color:#22c55e;">100.0%</div>
       <div class="metric-label">Képek rendben</div>
     </div>
     <div class="metric-card" style="border-top-color:#ca8a04;">
@@ -379,8 +442,8 @@
         <tbody><tr>
           <td>közvetlen</td>
           <td>00:12:43</td>
-          <td>00:18:26</td>
-          <td>5p 43s</td>
+          <td>00:27:21</td>
+          <td>14p 38s</td>
           <td>0</td>
           <td> </td>
           <td><span class="badge" style="background:#ca8a04;color:#fff;">WARNING</span></td>
@@ -399,8 +462,8 @@
     <div class="grid-4" style="margin-bottom:1rem;">
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Dátum</div><div style="font-size:1.15rem;font-weight:800;">2026-11-07</div></div>
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Indítás</div><div style="font-size:1.15rem;font-weight:800;">00:12:43</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">00:18:26</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">5p 43s</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">00:27:21</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">14p 38s</div></div>
     </div>
     <div style="overflow-x:auto;">
       <table>
@@ -457,6 +520,54 @@
               <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
               <td>00:17:42</td>
               <td>00:17:43</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Retry Pending Unified Reviews (Cache First) <span style="color:#6b7280;font-size:0.85em;">(importance_calibrator.py)</span></td>
+              <td>00:18:26</td>
+              <td>00:18:27</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating Links by Topic <span style="color:#6b7280;font-size:0.85em;">(link_dedup.py)</span></td>
+              <td>00:18:38</td>
+              <td>00:18:41</td>
+              <td style="font-weight:700;">2s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Summarizing to JSON (Filter + Categorize) <span style="color:#6b7280;font-size:0.85em;">(summarizer_json.py)</span></td>
+              <td>00:21:35</td>
+              <td>00:24:14</td>
+              <td style="font-weight:700;">2p 39s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Deduplicating News (Multi-file) <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>00:24:14</td>
+              <td>00:27:04</td>
+              <td style="font-weight:700;">2p 50s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Validating Section Fields <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>00:27:04</td>
+              <td>00:27:05</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Unified Topic Review: Scores, Audience & Language <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>00:27:05</td>
+              <td>00:27:05</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Importance 4–7 into Separate Files <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>00:27:05</td>
+              <td>00:27:06</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>00:27:06</td>
+              <td>00:27:07</td>
               <td style="font-weight:700;"><1s</td>
               <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
             </tr></tbody>
@@ -536,7 +647,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-07T00:18:26
+    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-07T00:27:21
   </div>
 
 </div>
