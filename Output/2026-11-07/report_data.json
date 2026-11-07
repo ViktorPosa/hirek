@@ -1,19 +1,19 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-07T04:15:51",
+  "generated_at": "2026-11-07T04:21:03",
   "date": "2026-11-07",
   "criticality": "WARNING",
   "criticality_reasons": [
     "missing_files:data_toplist.json",
-    "low_article_count:27"
+    "low_article_count:30"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-07T00:12:43",
-        "ended_at": "2026-11-07T04:15:50",
-        "duration_seconds": 14587,
+        "ended_at": "2026-11-07T04:21:03",
+        "duration_seconds": 14900,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -42,14 +42,14 @@
     ]
   },
   "articles": {
-    "total": 27,
-    "with_image": 27,
+    "total": 30,
+    "with_image": 30,
     "without_image": 0,
     "by_importance": {
       "1": 2,
-      "2": 3,
-      "3": 7,
-      "4": 11,
+      "2": 4,
+      "3": 8,
+      "4": 12,
       "5": 4,
       "6": 0,
       "7": 0
@@ -58,14 +58,15 @@
       "szorakozas": 9,
       "tech": 7,
       "belfold_kulfold": 5,
+      "eletmod": 4,
       "uzlet": 3,
-      "eletmod": 2,
+      "sport": 1,
       "bulvar": 1
     }
   },
   "images": {
-    "attempted": 27,
-    "with_image": 27,
+    "attempted": 30,
+    "with_image": 30,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
@@ -76,17 +77,11 @@
     "ok_feeds": 96,
     "failed_feeds": 3,
     "success_rate_pct": 97.0,
-    "failed_feed_list": [
-      {
-        "url": "https://www.drive.com.au/feed/",
-        "error_type": "rss_403",
-        "error_short": "HTTP 403"
-      }
-    ]
+    "failed_feed_list": []
   },
   "errors": {
     "rss_404": 0,
-    "rss_403": 1,
+    "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
     "rss_timeout": 0,
@@ -104,11 +99,11 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 10
+      "item_count": 12
     },
     "data_i4_json": {
       "exists": true,
-      "item_count": 13
+      "item_count": 14
     },
     "data_i5_json": {
       "exists": true,
@@ -164,7 +159,7 @@
     },
     {
       "date": "2026-11-07",
-      "articles": 27,
+      "articles": 30,
       "status": "WARNING",
       "exit_code": 0
     }
@@ -172,8 +167,8 @@
   "run_timing": {
     "date": "2026-11-07",
     "started_at": "2026-11-07T00:12:43",
-    "ended_at": "2026-11-07T04:15:50",
-    "duration_seconds": 14587.2,
+    "ended_at": "2026-11-07T04:21:03",
+    "duration_seconds": 14900.2,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -2356,6 +2351,78 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-11-07T04:15:36",
         "ended_at": "2026-11-07T04:15:37",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-07T04:16:16",
+        "ended_at": "2026-11-07T04:17:49",
+        "duration_seconds": 92.9,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-07T04:16:16",
+        "ended_at": "2026-11-07T04:17:51",
+        "duration_seconds": 95.2,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-07T04:17:52",
+        "ended_at": "2026-11-07T04:17:54",
+        "duration_seconds": 1.8,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-07T04:18:02",
+        "ended_at": "2026-11-07T04:20:33",
+        "duration_seconds": 151.0,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-07T04:20:33",
+        "ended_at": "2026-11-07T04:20:41",
+        "duration_seconds": 8.4,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-07T04:20:41",
+        "ended_at": "2026-11-07T04:20:42",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-07T04:20:42",
+        "ended_at": "2026-11-07T04:20:46",
+        "duration_seconds": 4.1,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-07T04:20:46",
+        "ended_at": "2026-11-07T04:20:46",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-07T04:20:46",
+        "ended_at": "2026-11-07T04:20:47",
         "duration_seconds": 0.7,
         "status": "OK"
       }
