@@ -51,19 +51,19 @@
 <body>
 <script>const REPORT = {
   "schema_version": "1.1",
-  "generated_at": "2026-11-09T07:06:17",
+  "generated_at": "2026-11-09T07:07:48",
   "date": "2026-11-09",
-  "criticality": "CRITICAL",
+  "criticality": "WARNING",
   "criticality_reasons": [
-    "news_push_failed:Git push blocked by batch recovery for 26 minutes"
+    "missing_files:data_toplist.json"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-09T05:53:14",
-        "ended_at": "2026-11-09T07:06:17",
-        "duration_seconds": 4382,
+        "ended_at": "2026-11-09T07:07:48",
+        "duration_seconds": 4474,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -92,8 +92,8 @@
   },
   "articles": {
     "total": 111,
-    "with_image": 109,
-    "without_image": 2,
+    "with_image": 110,
+    "without_image": 1,
     "by_importance": {
       "1": 11,
       "2": 12,
@@ -119,10 +119,10 @@
   },
   "images": {
     "attempted": 111,
-    "with_image": 109,
-    "without_image": 2,
-    "failed": 2,
-    "failure_rate_pct": 1.8,
+    "with_image": 110,
+    "without_image": 1,
+    "failed": 1,
+    "failure_rate_pct": 0.9,
     "download_errors_logged": 0
   },
   "rss": {
@@ -220,8 +220,8 @@
   "run_timing": {
     "date": "2026-11-09",
     "started_at": "2026-11-09T05:53:14",
-    "ended_at": "2026-11-09T07:06:17",
-    "duration_seconds": 4382.5,
+    "ended_at": "2026-11-09T07:07:48",
+    "duration_seconds": 4474.0,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -1134,6 +1134,62 @@
         "ended_at": "2026-11-09T07:06:15",
         "duration_seconds": 0.6,
         "status": "OK"
+      },
+      {
+        "name": "image_generation_merge.py",
+        "description": "Merging generated illustration images",
+        "started_at": "2026-11-09T07:06:48",
+        "ended_at": "2026-11-09T07:07:05",
+        "duration_seconds": 16.2,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-09T07:07:05",
+        "ended_at": "2026-11-09T07:07:05",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Hírek deduplikálása",
+        "started_at": "2026-11-09T07:07:05",
+        "ended_at": "2026-11-09T07:07:32",
+        "duration_seconds": 27.0,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Szekció mezők validálása",
+        "started_at": "2026-11-09T07:07:32",
+        "ended_at": "2026-11-09T07:07:33",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Fontossági pontozás és szűrés",
+        "started_at": "2026-11-09T07:07:33",
+        "ended_at": "2026-11-09T07:07:33",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Fontosság és spec szétválogatás",
+        "started_at": "2026-11-09T07:07:33",
+        "ended_at": "2026-11-09T07:07:34",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Lokalizáció szétválogatás",
+        "started_at": "2026-11-09T07:07:34",
+        "ended_at": "2026-11-09T07:07:35",
+        "duration_seconds": 0.5,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -1141,12 +1197,10 @@
         "status": "disabled"
       },
       "images_push": {
-        "status": "failed",
-        "error": "Git push blocked by batch recovery for 26 minutes"
+        "status": "ok"
       },
       "news_push": {
-        "status": "failed",
-        "error": "Git push blocked by batch recovery for 26 minutes"
+        "status": "ok"
       }
     }
   },
@@ -1155,12 +1209,10 @@
       "status": "disabled"
     },
     "images_push": {
-      "status": "failed",
-      "error": "Git push blocked by batch recovery for 26 minutes"
+      "status": "ok"
     },
     "news_push": {
-      "status": "failed",
-      "error": "Git push blocked by batch recovery for 26 minutes"
+      "status": "ok"
     }
   }
 };</script>
@@ -1169,11 +1221,11 @@
 <div class="header">
   <div>
     <h1>📰 Derűshírek Pipeline Monitor</h1>
-    <div class="meta">Dátum: <strong>2026-11-09</strong> &nbsp;·&nbsp; Generálva: 2026-11-09T07:06:17</div>
+    <div class="meta">Dátum: <strong>2026-11-09</strong> &nbsp;·&nbsp; Generálva: 2026-11-09T07:07:48</div>
   </div>
   <div>
-    <span class="status-badge" style="background:#dc2626;">
-      🔴 KRITIKUS
+    <span class="status-badge" style="background:#ca8a04;">
+      🟡 FIGYELMEZTETÉS
     </span>
   </div>
 </div>
@@ -1182,47 +1234,24 @@
 
   <!-- ALERTS -->
   
-<div class="alert alert-critical" style="background:#fee2e2;border-left:5px solid #f87171;color:#991b1b;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
-  <strong>🔴 KRITIKUS</strong>
-  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>🔴 KRITIKUS: a hírek git-push NEM sikerült — a weboldal nem frissült! Ok: Git push blocked by batch recovery for 26 minutes</li>
+<div class="alert alert-warning" style="background:#fef9c3;border-left:5px solid #facc15;color:#854d0e;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
+  <strong>🟡 FIGYELMEZTETÉS</strong>
+  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>Hiányzó output fájlok: data_toplist.json. Az importance-szűrt és toplist szekciók elavult tartalmat mutatnak.</li>
 </ul>
 </div>
 
   <!-- PUBLISH STATUS (prominent) -->
   
-<div style="background:#7f1d1d;color:#fff;padding:1.25rem;border-radius:12px;margin-bottom:1.25rem;border:3px solid #dc2626;box-shadow:0 4px 12px rgba(220,38,38,0.3);">
-  <div style="font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;">
-    <span>🔴 GIT PUSH SIKERTELEN — a weboldal NEM frissült!</span>
-  </div>
-  <div style="font-size:0.95rem;font-weight:700;margin-top:0.4rem;color:#fecaca;">
-    ⚠️ Általános Git push hiba
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:0.75rem;margin-top:0.85rem;font-size:0.82rem;">
-    <div style="background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);">
-      <div style="font-weight:700;text-transform:uppercase;margin-bottom:0.25rem;color:#fca5a5;">🔍 Mi lehet az ok?</div>
-      <div style="opacity:0.95;line-height:1.4;">A Git parancs hibakóddal tért vissza a távoli repository-ba történő pusholás során.</div>
-    </div>
-    <div style="background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);">
-      <div style="font-weight:700;text-transform:uppercase;margin-bottom:0.25rem;color:#fca5a5;">⚙️ Mi fog történni?</div>
-      <div style="opacity:0.95;line-height:1.4;">A helyi commitok épek maradnak, a pipeline a következő futáskor újrapróbálkozik.</div>
-    </div>
-    <div style="background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);">
-      <div style="font-weight:700;text-transform:uppercase;margin-bottom:0.25rem;color:#fca5a5;">🛠️ Mit tudsz tenni?</div>
-      <div style="opacity:0.95;line-height:1.4;">Olvasd el a részletes hibakimenetet, és szükség esetén teszteld manuálisan a git push parancsot a terminálban.</div>
-    </div>
-  </div>
-  <div style="margin-top:0.75rem;padding:0.6rem 0.85rem;background:rgba(16,185,129,0.2);border:1px solid #10b981;border-radius:8px;font-size:0.82rem;font-weight:600;color:#dcfce7;">
-    🔄 <strong>Ha megoldódik:</strong> Amint a push sikeresen lefut, a jelzés újra zöld színre vált (✅ Publikálva, git push OK).
-  </div>
-  <div style="margin-top:0.6rem;background:#1e1e1e;color:#f87171;padding:0.5rem 0.75rem;border-radius:6px;font-family:monospace;font-size:0.75rem;overflow-x:auto;white-space:pre-wrap;">Git push blocked by batch recovery for 26 minutes</div>
+<div style="background:#dcfce7;color:#166534;padding:0.85rem 1.25rem;border-radius:10px;margin-bottom:1rem;border-left:5px solid #22c55e;font-weight:700;">
+  ✅ Publikálva (git push OK) — Minden friss hír és adat sikeresen szinkronizálva a távoli repóra (a weboldal naprakész).
 </div>
 
   <!-- KEY METRICS -->
   <div class="section-title">Fő mutatók</div>
-  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:0.8rem;font-weight:700;">Hírek: 🔴 SIKERTELEN</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:0.8rem;font-weight:700;">Képek: 🔴 SIKERTELEN</span></div>
+  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Hírek: ✅ OK</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
   <div class="grid-4">
-    <div class="metric-card" style="border-top-color:#dc2626;">
-      <div class="metric-value" style="color:#dc2626;">111</div>
+    <div class="metric-card" style="border-top-color:#ca8a04;">
+      <div class="metric-value" style="color:#ca8a04;">111</div>
       <div class="metric-label">Cikk összesen</div>
     </div>
     <div class="metric-card" style="border-top-color:#22c55e;">
@@ -1230,11 +1259,11 @@
       <div class="metric-label">RSS sikerráta</div>
     </div>
     <div class="metric-card" style="border-top-color:#22c55e;">
-      <div class="metric-value" style="color:#22c55e;">98.2%</div>
+      <div class="metric-value" style="color:#22c55e;">99.1%</div>
       <div class="metric-label">Képek rendben</div>
     </div>
-    <div class="metric-card" style="border-top-color:#dc2626;">
-      <div class="metric-value" style="color:#dc2626;">🔴</div>
+    <div class="metric-card" style="border-top-color:#ca8a04;">
+      <div class="metric-value" style="color:#ca8a04;">🟡</div>
       <div class="metric-label">Pipeline státusz</div>
     </div>
   </div>
@@ -1250,8 +1279,8 @@
         <tbody><tr>
           <td>közvetlen</td>
           <td>05:53:14</td>
-          <td>07:06:17</td>
-          <td>1ó 13p</td>
+          <td>07:07:48</td>
+          <td>1ó 14p</td>
           <td>0</td>
           <td> </td>
           <td><span class="badge" style="background:#ca8a04;color:#fff;">WARNING</span></td>
@@ -1270,8 +1299,8 @@
     <div class="grid-4" style="margin-bottom:1rem;">
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Dátum</div><div style="font-size:1.15rem;font-weight:800;">2026-11-09</div></div>
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Indítás</div><div style="font-size:1.15rem;font-weight:800;">05:53:14</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">07:06:17</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">1ó 13p</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">07:07:48</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">1ó 14p</div></div>
     </div>
     <div style="overflow-x:auto;">
       <table>
@@ -1960,6 +1989,48 @@
               <td>07:06:15</td>
               <td style="font-weight:700;"><1s</td>
               <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Merging generated illustration images <span style="color:#6b7280;font-size:0.85em;">(image_generation_merge.py)</span></td>
+              <td>07:06:48</td>
+              <td>07:07:05</td>
+              <td style="font-weight:700;">16s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Splitting Data Files by Localization <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>07:07:05</td>
+              <td>07:07:05</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Hírek deduplikálása <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>07:07:05</td>
+              <td>07:07:32</td>
+              <td style="font-weight:700;">27s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Szekció mezők validálása <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>07:07:32</td>
+              <td>07:07:33</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Fontossági pontozás és szűrés <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>07:07:33</td>
+              <td>07:07:33</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Fontosság és spec szétválogatás <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>07:07:33</td>
+              <td>07:07:34</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Lokalizáció szétválogatás <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>07:07:34</td>
+              <td>07:07:35</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
             </tr></tbody>
       </table>
     </div>
@@ -2020,7 +2091,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-09T07:06:17
+    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-09T07:07:48
   </div>
 
 </div>
