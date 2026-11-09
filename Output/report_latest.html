@@ -51,20 +51,19 @@
 <body>
 <script>const REPORT = {
   "schema_version": "1.1",
-  "generated_at": "2026-11-09T05:51:59",
+  "generated_at": "2026-11-09T05:52:38",
   "date": "2026-11-09",
-  "criticality": "WARNING",
+  "criticality": "CRITICAL",
   "criticality_reasons": [
-    "missing_files:data_toplist.json",
-    "low_article_count:64"
+    "news_push_failed:\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Failed to connect to github.com port 443 after 17 ms: Couldn't connect to server\n"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-09T05:27:21",
-        "ended_at": "2026-11-09T05:51:59",
-        "duration_seconds": 1478,
+        "ended_at": "2026-11-09T05:52:38",
+        "duration_seconds": 1517,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -232,8 +231,8 @@
   "run_timing": {
     "date": "2026-11-09",
     "started_at": "2026-11-09T05:27:21",
-    "ended_at": "2026-11-09T05:51:59",
-    "duration_seconds": 1478.5,
+    "ended_at": "2026-11-09T05:52:38",
+    "duration_seconds": 1517.1,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -546,6 +545,54 @@
         "ended_at": "2026-11-09T05:51:51",
         "duration_seconds": 101.0,
         "status": "OK"
+      },
+      {
+        "name": "image_generation_merge.py",
+        "description": "Merging generated illustration images",
+        "started_at": "2026-11-09T05:51:59",
+        "ended_at": "2026-11-09T05:52:00",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Hírek deduplikálása",
+        "started_at": "2026-11-09T05:52:00",
+        "ended_at": "2026-11-09T05:52:15",
+        "duration_seconds": 14.9,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Szekció mezők validálása",
+        "started_at": "2026-11-09T05:52:15",
+        "ended_at": "2026-11-09T05:52:16",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Fontossági pontozás és szűrés",
+        "started_at": "2026-11-09T05:52:16",
+        "ended_at": "2026-11-09T05:52:16",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Fontosság és spec szétválogatás",
+        "started_at": "2026-11-09T05:52:16",
+        "ended_at": "2026-11-09T05:52:17",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Lokalizáció szétválogatás",
+        "started_at": "2026-11-09T05:52:17",
+        "ended_at": "2026-11-09T05:52:17",
+        "duration_seconds": 0.6,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -556,7 +603,8 @@
         "status": "ok"
       },
       "news_push": {
-        "status": "ok"
+        "status": "failed",
+        "error": "\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Failed to connect to github.com port 443 after 17 ms: Couldn't connect to server\n"
       }
     }
   },
@@ -568,7 +616,8 @@
       "status": "ok"
     },
     "news_push": {
-      "status": "ok"
+      "status": "failed",
+      "error": "\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Failed to connect to github.com port 443 after 17 ms: Couldn't connect to server\n"
     }
   }
 };</script>
@@ -577,11 +626,11 @@
 <div class="header">
   <div>
     <h1>📰 Derűshírek Pipeline Monitor</h1>
-    <div class="meta">Dátum: <strong>2026-11-09</strong> &nbsp;·&nbsp; Generálva: 2026-11-09T05:51:59</div>
+    <div class="meta">Dátum: <strong>2026-11-09</strong> &nbsp;·&nbsp; Generálva: 2026-11-09T05:52:38</div>
   </div>
   <div>
-    <span class="status-badge" style="background:#ca8a04;">
-      🟡 FIGYELMEZTETÉS
+    <span class="status-badge" style="background:#dc2626;">
+      🔴 KRITIKUS
     </span>
   </div>
 </div>
@@ -590,25 +639,51 @@
 
   <!-- ALERTS -->
   
-<div class="alert alert-warning" style="background:#fef9c3;border-left:5px solid #facc15;color:#854d0e;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
-  <strong>🟡 FIGYELMEZTETÉS</strong>
-  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>Hiányzó output fájlok: data_toplist.json. Az importance-szűrt és toplist szekciók elavult tartalmat mutatnak.</li>
-<li>Kevés cikk: csak 64 db készült el (minimum elvárás: 100).</li>
+<div class="alert alert-critical" style="background:#fee2e2;border-left:5px solid #f87171;color:#991b1b;padding:1rem 1.25rem;border-radius:8px;margin-bottom:1rem;">
+  <strong>🔴 KRITIKUS</strong>
+  <ul style="margin:0.5rem 0 0 1.2rem;padding:0;"><li>🔴 KRITIKUS: a hírek git-push NEM sikerült — a weboldal nem frissült! Ok: 
+fatal: unable to access 'https://github.com/ViktorPosa/hirek/': Failed to connect to github.com port 443 after 17 ms: Couldn't connect to server
+</li>
 </ul>
 </div>
 
   <!-- PUBLISH STATUS (prominent) -->
   
-<div style="background:#dcfce7;color:#166534;padding:0.85rem 1.25rem;border-radius:10px;margin-bottom:1rem;border-left:5px solid #22c55e;font-weight:700;">
-  ✅ Publikálva (git push OK) — Minden friss hír és adat sikeresen szinkronizálva a távoli repóra (a weboldal naprakész).
+<div style="background:#7f1d1d;color:#fff;padding:1.25rem;border-radius:12px;margin-bottom:1.25rem;border:3px solid #dc2626;box-shadow:0 4px 12px rgba(220,38,38,0.3);">
+  <div style="font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:0.5rem;">
+    <span>🔴 GIT PUSH SIKERTELEN — a weboldal NEM frissült!</span>
+  </div>
+  <div style="font-size:0.95rem;font-weight:700;margin-top:0.4rem;color:#fecaca;">
+    ⚠️ Hálózati csatlakozási vagy DNS feloldási hiba
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:0.75rem;margin-top:0.85rem;font-size:0.82rem;">
+    <div style="background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);">
+      <div style="font-weight:700;text-transform:uppercase;margin-bottom:0.25rem;color:#fca5a5;">🔍 Mi lehet az ok?</div>
+      <div style="opacity:0.95;line-height:1.4;">A számítógép nem tudott kapcsolatot létesíteni a github.com szervereivel. Ennek oka lehet internetkapcsolat-megszakadás, sikertelen DNS feloldás, vagy a VPN kapcsolat bontása/beragadása.</div>
+    </div>
+    <div style="background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);">
+      <div style="font-weight:700;text-transform:uppercase;margin-bottom:0.25rem;color:#fca5a5;">⚙️ Mi fog történni?</div>
+      <div style="opacity:0.95;line-height:1.4;">A pipeline öngyógyító modulja megkísérli a kapcsolat automatikus helyreállítását. A helyi cikkek megmaradnak, nem vesznek el.</div>
+    </div>
+    <div style="background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);">
+      <div style="font-weight:700;text-transform:uppercase;margin-bottom:0.25rem;color:#fca5a5;">🛠️ Mit tudsz tenni?</div>
+      <div style="opacity:0.95;line-height:1.4;">Ellenőrizd a gép internetkapcsolatát és a NordVPN állapotát. Ha a kapcsolat helyreállt, a pipeline a következő periódusban automatikusan feltölti a változtatásokat.</div>
+    </div>
+  </div>
+  <div style="margin-top:0.75rem;padding:0.6rem 0.85rem;background:rgba(16,185,129,0.2);border:1px solid #10b981;border-radius:8px;font-size:0.82rem;font-weight:600;color:#dcfce7;">
+    🔄 <strong>Ha megoldódik:</strong> A hálózati kapcsolat stabilizálódása után a következő push feltölti az adatokat, és a panel automatikusan zölddé válik.
+  </div>
+  <div style="margin-top:0.6rem;background:#1e1e1e;color:#f87171;padding:0.5rem 0.75rem;border-radius:6px;font-family:monospace;font-size:0.75rem;overflow-x:auto;white-space:pre-wrap;">
+fatal: unable to access 'https://github.com/ViktorPosa/hirek/': Failed to connect to github.com port 443 after 17 ms: Couldn't connect to server
+</div>
 </div>
 
   <!-- KEY METRICS -->
   <div class="section-title">Fő mutatók</div>
-  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Hírek: ✅ OK</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
+  <div style="margin-bottom:1rem;"><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:0.8rem;font-weight:700;">Hírek: 🔴 SIKERTELEN</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569;font-size:0.8rem;font-weight:700;">Időjárás/Piac: ⚪ kikapcsolva</span><span style="display:inline-block;margin-right:0.5rem;padding:0.25rem 0.6rem;border-radius:999px;background:#dcfce7;color:#166534;font-size:0.8rem;font-weight:700;">Képek: ✅ OK</span></div>
   <div class="grid-4">
-    <div class="metric-card" style="border-top-color:#ca8a04;">
-      <div class="metric-value" style="color:#ca8a04;">64</div>
+    <div class="metric-card" style="border-top-color:#dc2626;">
+      <div class="metric-value" style="color:#dc2626;">64</div>
       <div class="metric-label">Cikk összesen</div>
     </div>
     <div class="metric-card" style="border-top-color:#22c55e;">
@@ -619,8 +694,8 @@
       <div class="metric-value" style="color:#22c55e;">100.0%</div>
       <div class="metric-label">Képek rendben</div>
     </div>
-    <div class="metric-card" style="border-top-color:#ca8a04;">
-      <div class="metric-value" style="color:#ca8a04;">🟡</div>
+    <div class="metric-card" style="border-top-color:#dc2626;">
+      <div class="metric-value" style="color:#dc2626;">🔴</div>
       <div class="metric-label">Pipeline státusz</div>
     </div>
   </div>
@@ -636,8 +711,8 @@
         <tbody><tr>
           <td>közvetlen</td>
           <td>05:27:21</td>
-          <td>05:51:59</td>
-          <td>24p 38s</td>
+          <td>05:52:38</td>
+          <td>25p 17s</td>
           <td>0</td>
           <td> </td>
           <td><span class="badge" style="background:#ca8a04;color:#fff;">WARNING</span></td>
@@ -656,8 +731,8 @@
     <div class="grid-4" style="margin-bottom:1rem;">
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Dátum</div><div style="font-size:1.15rem;font-weight:800;">2026-11-09</div></div>
       <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Indítás</div><div style="font-size:1.15rem;font-weight:800;">05:27:21</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">05:51:59</div></div>
-      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">24p 38s</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Befejezés</div><div style="font-size:1.15rem;font-weight:800;">05:52:38</div></div>
+      <div><div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">Teljes idő</div><div style="font-size:1.15rem;font-weight:800;">25p 17s</div></div>
     </div>
     <div style="overflow-x:auto;">
       <table>
@@ -896,6 +971,42 @@
               <td>05:51:51</td>
               <td style="font-weight:700;">1p 41s</td>
               <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Merging generated illustration images <span style="color:#6b7280;font-size:0.85em;">(image_generation_merge.py)</span></td>
+              <td>05:51:59</td>
+              <td>05:52:00</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Hírek deduplikálása <span style="color:#6b7280;font-size:0.85em;">(dedup_fast.py)</span></td>
+              <td>05:52:00</td>
+              <td>05:52:15</td>
+              <td style="font-weight:700;">15s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Szekció mezők validálása <span style="color:#6b7280;font-size:0.85em;">(section_validator.py)</span></td>
+              <td>05:52:15</td>
+              <td>05:52:16</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Fontossági pontozás és szűrés <span style="color:#6b7280;font-size:0.85em;">(importance_assessor.py)</span></td>
+              <td>05:52:16</td>
+              <td>05:52:16</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Fontosság és spec szétválogatás <span style="color:#6b7280;font-size:0.85em;">(filter_importance.py)</span></td>
+              <td>05:52:16</td>
+              <td>05:52:17</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
+            </tr><tr>
+              <td>Lokalizáció szétválogatás <span style="color:#6b7280;font-size:0.85em;">(split_localization.py)</span></td>
+              <td>05:52:17</td>
+              <td>05:52:17</td>
+              <td style="font-weight:700;"><1s</td>
+              <td><span class="badge" style="background:#22c55e;color:#fff;">OK</span></td>
             </tr></tbody>
       </table>
     </div>
@@ -981,7 +1092,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-09T05:51:59
+    Derűshírek Pipeline Monitor &nbsp;·&nbsp; schema_version 1.1 &nbsp;·&nbsp; 2026-11-09T05:52:38
   </div>
 
 </div>

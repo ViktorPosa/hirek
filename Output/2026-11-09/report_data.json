@@ -1,19 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-09T05:51:59",
+  "generated_at": "2026-11-09T05:52:38",
   "date": "2026-11-09",
-  "criticality": "WARNING",
+  "criticality": "CRITICAL",
   "criticality_reasons": [
-    "missing_files:data_toplist.json",
-    "low_article_count:64"
+    "news_push_failed:\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Failed to connect to github.com port 443 after 17 ms: Couldn't connect to server\n"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-09T05:27:21",
-        "ended_at": "2026-11-09T05:51:59",
-        "duration_seconds": 1478,
+        "ended_at": "2026-11-09T05:52:38",
+        "duration_seconds": 1517,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -181,8 +180,8 @@
   "run_timing": {
     "date": "2026-11-09",
     "started_at": "2026-11-09T05:27:21",
-    "ended_at": "2026-11-09T05:51:59",
-    "duration_seconds": 1478.5,
+    "ended_at": "2026-11-09T05:52:38",
+    "duration_seconds": 1517.1,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -495,6 +494,54 @@
         "ended_at": "2026-11-09T05:51:51",
         "duration_seconds": 101.0,
         "status": "OK"
+      },
+      {
+        "name": "image_generation_merge.py",
+        "description": "Merging generated illustration images",
+        "started_at": "2026-11-09T05:51:59",
+        "ended_at": "2026-11-09T05:52:00",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Hírek deduplikálása",
+        "started_at": "2026-11-09T05:52:00",
+        "ended_at": "2026-11-09T05:52:15",
+        "duration_seconds": 14.9,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Szekció mezők validálása",
+        "started_at": "2026-11-09T05:52:15",
+        "ended_at": "2026-11-09T05:52:16",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Fontossági pontozás és szűrés",
+        "started_at": "2026-11-09T05:52:16",
+        "ended_at": "2026-11-09T05:52:16",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Fontosság és spec szétválogatás",
+        "started_at": "2026-11-09T05:52:16",
+        "ended_at": "2026-11-09T05:52:17",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Lokalizáció szétválogatás",
+        "started_at": "2026-11-09T05:52:17",
+        "ended_at": "2026-11-09T05:52:17",
+        "duration_seconds": 0.6,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -505,7 +552,8 @@
         "status": "ok"
       },
       "news_push": {
-        "status": "ok"
+        "status": "failed",
+        "error": "\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Failed to connect to github.com port 443 after 17 ms: Couldn't connect to server\n"
       }
     }
   },
@@ -517,7 +565,8 @@
       "status": "ok"
     },
     "news_push": {
-      "status": "ok"
+      "status": "failed",
+      "error": "\nfatal: unable to access 'https://github.com/ViktorPosa/hirek/': Failed to connect to github.com port 443 after 17 ms: Couldn't connect to server\n"
     }
   }
 }
