@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-10T04:22:55",
+  "generated_at": "2026-11-10T04:27:48",
   "date": "2026-11-10",
   "criticality": "WARNING",
   "criticality_reasons": [
@@ -11,8 +11,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-10T03:55:06",
-        "ended_at": "2026-11-10T04:22:55",
-        "duration_seconds": 1669,
+        "ended_at": "2026-11-10T04:27:47",
+        "duration_seconds": 1962,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -73,21 +73,42 @@
   },
   "rss": {
     "total_feeds": 99,
-    "ok_feeds": 99,
-    "failed_feeds": 0,
-    "success_rate_pct": 100.0,
-    "failed_feed_list": []
+    "ok_feeds": 98,
+    "failed_feeds": 1,
+    "success_rate_pct": 99.0,
+    "failed_feed_list": [
+      {
+        "url": "https://ipon.hu/rss/contents-feed",
+        "error_type": "rss_timeout",
+        "error_short": "Response is not an RSS/Atom feed (possible challenge or logi"
+      },
+      {
+        "url": "https://www.todayifoundout.com/?feed=rss2",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.todayi"
+      },
+      {
+        "url": "https://www.theneuron.ai/newsletter/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.theneu"
+      },
+      {
+        "url": "https://www.independent.co.uk/news/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.indepe"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
+    "rss_timeout": 4,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 0,
+    "api_no_response": 6,
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
@@ -166,8 +187,8 @@
   "run_timing": {
     "date": "2026-11-10",
     "started_at": "2026-11-10T03:55:06",
-    "ended_at": "2026-11-10T04:22:55",
-    "duration_seconds": 1669.0,
+    "ended_at": "2026-11-10T04:27:47",
+    "duration_seconds": 1961.6,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -502,6 +523,78 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-11-10T04:22:50",
         "ended_at": "2026-11-10T04:22:51",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-10T04:23:01",
+        "ended_at": "2026-11-10T04:24:30",
+        "duration_seconds": 89.2,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-10T04:23:01",
+        "ended_at": "2026-11-10T04:24:33",
+        "duration_seconds": 92.6,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-10T04:24:35",
+        "ended_at": "2026-11-10T04:24:35",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-10T04:24:38",
+        "ended_at": "2026-11-10T04:27:34",
+        "duration_seconds": 176.0,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-10T04:27:34",
+        "ended_at": "2026-11-10T04:27:41",
+        "duration_seconds": 7.6,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-10T04:27:41",
+        "ended_at": "2026-11-10T04:27:42",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-10T04:27:42",
+        "ended_at": "2026-11-10T04:27:43",
+        "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-10T04:27:43",
+        "ended_at": "2026-11-10T04:27:43",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-10T04:27:43",
+        "ended_at": "2026-11-10T04:27:44",
         "duration_seconds": 0.6,
         "status": "OK"
       }
