@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-10T06:57:41",
+  "generated_at": "2026-11-10T07:05:05",
   "date": "2026-11-10",
   "criticality": "WARNING",
   "criticality_reasons": [
-    "low_article_count:30"
+    "low_article_count:32"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-10T06:20:50",
-        "ended_at": "2026-11-10T06:57:40",
-        "duration_seconds": 2210,
+        "ended_at": "2026-11-10T07:05:04",
+        "duration_seconds": 2654,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -28,6 +28,7 @@
       "importance_assessor.py",
       "justwatch_scraper.py",
       "link_dedup.py",
+      "market_generator.py",
       "news_filter.py",
       "rss_creator.py",
       "section_validator.py",
@@ -36,18 +37,17 @@
       "weather_generator.py"
     ],
     "missing_steps": [
-      "market_generator.py",
       "image_downloader.py"
     ]
   },
   "articles": {
-    "total": 30,
-    "with_image": 30,
+    "total": 32,
+    "with_image": 32,
     "without_image": 0,
     "by_importance": {
       "1": 0,
       "2": 10,
-      "3": 11,
+      "3": 13,
       "4": 4,
       "5": 5,
       "6": 0,
@@ -55,9 +55,9 @@
     },
     "by_section": {
       "tech": 7,
-      "film_sorozat": 4,
+      "film_sorozat": 5,
+      "tudomany": 4,
       "kulfold": 4,
-      "tudomany": 3,
       "uzlet": 3,
       "eletmod": 3,
       "gamer": 2,
@@ -67,8 +67,8 @@
     }
   },
   "images": {
-    "attempted": 30,
-    "with_image": 30,
+    "attempted": 32,
+    "with_image": 32,
     "without_image": 0,
     "failed": 0,
     "failure_rate_pct": 0.0,
@@ -79,14 +79,50 @@
     "ok_feeds": 99,
     "failed_feeds": 0,
     "success_rate_pct": 100.0,
-    "failed_feed_list": []
+    "failed_feed_list": [
+      {
+        "url": "https://www.hollywoodreporter.com/feed/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.hollyw"
+      },
+      {
+        "url": "https://refresher.hu/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to refresher."
+      },
+      {
+        "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.cnbc.c"
+      },
+      {
+        "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.cnbc.c"
+      },
+      {
+        "url": "https://www.todayifoundout.com/?feed=rss2",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.todayi"
+      },
+      {
+        "url": "https://www.independent.co.uk/news/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.indepe"
+      },
+      {
+        "url": "https://vt.co/rss/",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to vt.co port"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
+    "rss_timeout": 7,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
@@ -101,7 +137,7 @@
   "files": {
     "data_json": {
       "exists": true,
-      "item_count": 21
+      "item_count": 23
     },
     "data_i4_json": {
       "exists": true,
@@ -119,7 +155,7 @@
       "exists": true
     },
     "piacok_json": {
-      "exists": false
+      "exists": true
     }
   },
   "history_7d": [
@@ -161,7 +197,7 @@
     },
     {
       "date": "2026-11-10",
-      "articles": 30,
+      "articles": 32,
       "status": "WARNING",
       "exit_code": 0
     }
@@ -169,8 +205,8 @@
   "run_timing": {
     "date": "2026-11-10",
     "started_at": "2026-11-10T06:20:50",
-    "ended_at": "2026-11-10T06:57:40",
-    "duration_seconds": 2210.2,
+    "ended_at": "2026-11-10T07:05:04",
+    "duration_seconds": 2654.2,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -705,6 +741,86 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-11-10T06:57:36",
         "ended_at": "2026-11-10T06:57:37",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "market_generator.py",
+        "description": "Generating Market Analysis",
+        "started_at": "2026-11-10T06:57:46",
+        "ended_at": "2026-11-10T06:57:55",
+        "duration_seconds": 8.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-10T06:57:55",
+        "ended_at": "2026-11-10T06:59:34",
+        "duration_seconds": 98.9,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-10T06:57:55",
+        "ended_at": "2026-11-10T06:59:36",
+        "duration_seconds": 101.2,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-10T06:59:37",
+        "ended_at": "2026-11-10T06:59:38",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-10T06:59:40",
+        "ended_at": "2026-11-10T07:04:38",
+        "duration_seconds": 297.8,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-10T07:04:38",
+        "ended_at": "2026-11-10T07:04:48",
+        "duration_seconds": 10.2,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-10T07:04:48",
+        "ended_at": "2026-11-10T07:04:49",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-10T07:04:49",
+        "ended_at": "2026-11-10T07:04:51",
+        "duration_seconds": 2.3,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-10T07:04:51",
+        "ended_at": "2026-11-10T07:04:52",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-10T07:04:52",
+        "ended_at": "2026-11-10T07:04:52",
         "duration_seconds": 0.6,
         "status": "OK"
       }
