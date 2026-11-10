@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-10T05:44:51",
+  "generated_at": "2026-11-10T05:51:18",
   "date": "2026-11-10",
   "criticality": "WARNING",
   "criticality_reasons": [
@@ -11,8 +11,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-10T04:51:19",
-        "ended_at": "2026-11-10T05:44:51",
-        "duration_seconds": 3212,
+        "ended_at": "2026-11-10T05:51:18",
+        "duration_seconds": 3599,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -76,17 +76,23 @@
   },
   "rss": {
     "total_feeds": 99,
-    "ok_feeds": 98,
-    "failed_feeds": 1,
-    "success_rate_pct": 99.0,
-    "failed_feed_list": []
+    "ok_feeds": 97,
+    "failed_feeds": 2,
+    "success_rate_pct": 98.0,
+    "failed_feed_list": [
+      {
+        "url": "https://www.theneuron.ai/newsletter/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.theneu"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
+    "rss_timeout": 1,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
@@ -169,8 +175,8 @@
   "run_timing": {
     "date": "2026-11-10",
     "started_at": "2026-11-10T04:51:19",
-    "ended_at": "2026-11-10T05:44:51",
-    "duration_seconds": 3212.4,
+    "ended_at": "2026-11-10T05:51:18",
+    "duration_seconds": 3599.4,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -802,6 +808,78 @@
         "started_at": "2026-11-10T05:44:47",
         "ended_at": "2026-11-10T05:44:47",
         "duration_seconds": 0.7,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-10T05:44:58",
+        "ended_at": "2026-11-10T05:46:30",
+        "duration_seconds": 92.4,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-10T05:44:58",
+        "ended_at": "2026-11-10T05:46:31",
+        "duration_seconds": 93.6,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-10T05:46:33",
+        "ended_at": "2026-11-10T05:46:33",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-10T05:46:36",
+        "ended_at": "2026-11-10T05:51:04",
+        "duration_seconds": 268.3,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-10T05:51:04",
+        "ended_at": "2026-11-10T05:51:12",
+        "duration_seconds": 7.6,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-10T05:51:12",
+        "ended_at": "2026-11-10T05:51:12",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-10T05:51:12",
+        "ended_at": "2026-11-10T05:51:13",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-10T05:51:13",
+        "ended_at": "2026-11-10T05:51:14",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-10T05:51:14",
+        "ended_at": "2026-11-10T05:51:14",
+        "duration_seconds": 0.6,
         "status": "OK"
       }
     ],
