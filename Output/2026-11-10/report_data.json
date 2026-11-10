@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-10T07:57:30",
+  "generated_at": "2026-11-10T08:04:14",
   "date": "2026-11-10",
   "criticality": "WARNING",
   "criticality_reasons": [
@@ -11,8 +11,8 @@
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-10T06:20:50",
-        "ended_at": "2026-11-10T07:57:29",
-        "duration_seconds": 5799,
+        "ended_at": "2026-11-10T08:04:14",
+        "duration_seconds": 6204,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -77,42 +77,12 @@
   },
   "rss": {
     "total_feeds": 99,
-    "ok_feeds": 99,
-    "failed_feeds": 0,
-    "success_rate_pct": 100.0,
+    "ok_feeds": 98,
+    "failed_feeds": 1,
+    "success_rate_pct": 99.0,
     "failed_feed_list": [
       {
-        "url": "https://www.hollywoodreporter.com/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.hollyw"
-      },
-      {
-        "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.cnbc.c"
-      },
-      {
-        "url": "https://www.independent.co.uk/news/rss",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.indepe"
-      },
-      {
-        "url": "https://refresher.hu/rss",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to refresher."
-      },
-      {
-        "url": "https://www.cnbc.com/id/19854910/device/rss/rss.html",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to www.cnbc.c"
-      },
-      {
-        "url": "https://wccftech.com/feed/",
-        "error_type": "rss_timeout",
-        "error_short": "Failed to perform, curl: (7) Failed to connect to wccftech.c"
-      },
-      {
-        "url": "https://vt.co/rss/",
+        "url": "https://vt.co/rss",
         "error_type": "rss_timeout",
         "error_short": "Failed to perform, curl: (7) Failed to connect to vt.co port"
       }
@@ -123,11 +93,11 @@
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 7,
+    "rss_timeout": 1,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 0,
+    "api_no_response": 6,
     "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
@@ -206,8 +176,8 @@
   "run_timing": {
     "date": "2026-11-10",
     "started_at": "2026-11-10T06:20:50",
-    "ended_at": "2026-11-10T07:57:29",
-    "duration_seconds": 5799.2,
+    "ended_at": "2026-11-10T08:04:14",
+    "duration_seconds": 6204.0,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -1390,6 +1360,78 @@
         "description": "Splitting Data Files by Localization",
         "started_at": "2026-11-10T07:57:21",
         "ended_at": "2026-11-10T07:57:22",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-10T07:57:37",
+        "ended_at": "2026-11-10T07:59:58",
+        "duration_seconds": 141.2,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-10T07:57:37",
+        "ended_at": "2026-11-10T07:59:59",
+        "duration_seconds": 142.3,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-10T08:00:00",
+        "ended_at": "2026-11-10T08:00:01",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-10T08:00:03",
+        "ended_at": "2026-11-10T08:03:52",
+        "duration_seconds": 228.4,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-10T08:03:52",
+        "ended_at": "2026-11-10T08:04:06",
+        "duration_seconds": 14.1,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-10T08:04:06",
+        "ended_at": "2026-11-10T08:04:06",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-10T08:04:06",
+        "ended_at": "2026-11-10T08:04:07",
+        "duration_seconds": 0.5,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-10T08:04:07",
+        "ended_at": "2026-11-10T08:04:08",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-10T08:04:08",
+        "ended_at": "2026-11-10T08:04:08",
         "duration_seconds": 0.6,
         "status": "OK"
       }
