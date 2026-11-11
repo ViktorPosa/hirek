@@ -1,18 +1,18 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-11T21:28:37",
+  "generated_at": "2026-11-11T21:36:25",
   "date": "2026-11-11",
-  "criticality": "CRITICAL",
+  "criticality": "WARNING",
   "criticality_reasons": [
-    "news_push_failed:Git push blocked by batch recovery for 50 minutes"
+    "missing_files:data_toplist.json"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
         "started_at": "2026-11-11T20:22:28",
-        "ended_at": "2026-11-11T21:28:36",
-        "duration_seconds": 3969,
+        "ended_at": "2026-11-11T21:36:25",
+        "duration_seconds": 4437,
         "exit_code": 0,
         "status": "WARNING",
         "process_killed": false,
@@ -77,14 +77,14 @@
   },
   "rss": {
     "total_feeds": 99,
-    "ok_feeds": 98,
-    "failed_feeds": 1,
-    "success_rate_pct": 99.0,
+    "ok_feeds": 99,
+    "failed_feeds": 0,
+    "success_rate_pct": 100.0,
     "failed_feed_list": [
       {
-        "url": "https://vt.co/rss",
-        "error_type": "rss_500",
-        "error_short": "HTTP 500"
+        "url": "https://www.todayifoundout.com/?feed=rss2",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.todayi"
       }
     ]
   },
@@ -92,13 +92,13 @@
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
-    "rss_500": 1,
-    "rss_timeout": 0,
+    "rss_500": 0,
+    "rss_timeout": 1,
     "rss_dns": 0,
     "rss_ssl": 0,
     "api_timeout": 0,
     "api_no_response": 0,
-    "items_missing_from_batch": 1,
+    "items_missing_from_batch": 0,
     "pairing_failures": 0,
     "pairing_fixed": 0,
     "image_failures": 0,
@@ -176,8 +176,8 @@
   "run_timing": {
     "date": "2026-11-11",
     "started_at": "2026-11-11T20:22:28",
-    "ended_at": "2026-11-11T21:28:36",
-    "duration_seconds": 3968.7,
+    "ended_at": "2026-11-11T21:36:25",
+    "duration_seconds": 4437.2,
     "steps": [
       {
         "name": "rss_creator.py",
@@ -818,6 +818,78 @@
         "ended_at": "2026-11-11T21:28:22",
         "duration_seconds": 0.6,
         "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-11T21:29:30",
+        "ended_at": "2026-11-11T21:31:25",
+        "duration_seconds": 115.0,
+        "status": "OK"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-11T21:29:30",
+        "ended_at": "2026-11-11T21:31:26",
+        "duration_seconds": 116.0,
+        "status": "OK"
+      },
+      {
+        "name": "link_dedup.py",
+        "description": "Deduplicating Links by Topic",
+        "started_at": "2026-11-11T21:31:33",
+        "ended_at": "2026-11-11T21:31:35",
+        "duration_seconds": 1.6,
+        "status": "OK"
+      },
+      {
+        "name": "summarizer_json.py",
+        "description": "Summarizing to JSON (Filter + Categorize)",
+        "started_at": "2026-11-11T21:31:37",
+        "ended_at": "2026-11-11T21:35:21",
+        "duration_seconds": 223.9,
+        "status": "OK"
+      },
+      {
+        "name": "dedup_fast.py",
+        "description": "Deduplicating News (Multi-file)",
+        "started_at": "2026-11-11T21:35:21",
+        "ended_at": "2026-11-11T21:36:13",
+        "duration_seconds": 52.6,
+        "status": "OK"
+      },
+      {
+        "name": "section_validator.py",
+        "description": "Validating Section Fields",
+        "started_at": "2026-11-11T21:36:13",
+        "ended_at": "2026-11-11T21:36:14",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "importance_assessor.py",
+        "description": "Unified Topic Review: Scores, Audience & Language",
+        "started_at": "2026-11-11T21:36:14",
+        "ended_at": "2026-11-11T21:36:15",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "filter_importance.py",
+        "description": "Splitting Importance 4–7 into Separate Files",
+        "started_at": "2026-11-11T21:36:15",
+        "ended_at": "2026-11-11T21:36:15",
+        "duration_seconds": 0.6,
+        "status": "OK"
+      },
+      {
+        "name": "split_localization.py",
+        "description": "Splitting Data Files by Localization",
+        "started_at": "2026-11-11T21:36:15",
+        "ended_at": "2026-11-11T21:36:16",
+        "duration_seconds": 0.6,
+        "status": "OK"
       }
     ],
     "publish": {
@@ -825,8 +897,7 @@
         "status": "disabled"
       },
       "news_push": {
-        "status": "failed",
-        "error": "Git push blocked by batch recovery for 50 minutes"
+        "status": "ok"
       },
       "images_push": {
         "status": "ok"
@@ -838,8 +909,7 @@
       "status": "disabled"
     },
     "news_push": {
-      "status": "failed",
-      "error": "Git push blocked by batch recovery for 50 minutes"
+      "status": "ok"
     },
     "images_push": {
       "status": "ok"
