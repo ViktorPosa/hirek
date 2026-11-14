@@ -1,32 +1,33 @@
 {
   "schema_version": "1.1",
-  "generated_at": "2026-11-14T10:44:45",
+  "generated_at": "2026-11-14T13:41:25",
   "date": "2026-11-14",
-  "criticality": "CRITICAL",
+  "criticality": "WARNING",
   "criticality_reasons": [
-    "no_articles"
+    "missing_files:data_toplist.json",
+    "image_missing_rate:57.8%"
   ],
   "pipeline": {
     "runs": [
       {
         "scheduled_at": "közvetlen",
-        "started_at": "2026-11-14T10:39:57",
-        "ended_at": "2026-11-14T10:44:45",
-        "duration_seconds": 288,
+        "started_at": "2026-11-14T13:31:02",
+        "ended_at": "2026-11-14T13:41:25",
+        "duration_seconds": 623,
         "exit_code": 0,
-        "status": "OK",
+        "status": "WARNING",
         "process_killed": false,
         "watchdog_triggered": false
       }
     ],
     "overall_exit_code": 0,
     "completed_steps": [
-      "market_generator.py",
-      "weather_generator.py"
+      "news_filter.py",
+      "rss_creator.py"
     ],
     "missing_steps": [
-      "rss_creator.py",
-      "news_filter.py",
+      "weather_generator.py",
+      "market_generator.py",
       "link_dedup.py",
       "summarizer_json.py",
       "image_downloader.py",
@@ -35,46 +36,85 @@
     ]
   },
   "articles": {
-    "total": 0,
-    "with_image": 0,
-    "without_image": 0,
+    "total": 481,
+    "with_image": 203,
+    "without_image": 278,
     "by_importance": {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 0,
-      "6": 0,
+      "1": 7,
+      "2": 95,
+      "3": 163,
+      "4": 141,
+      "5": 66,
+      "6": 9,
       "7": 0
     },
-    "by_section": {}
+    "by_section": {
+      "tech": 122,
+      "eletmod": 73,
+      "film_sorozat": 58,
+      "uzlet": 40,
+      "gamer": 40,
+      "tudomany": 28,
+      "kulfold": 24,
+      "belfold": 22,
+      "kripto": 22,
+      "bulvar": 22,
+      "szorakozas": 21,
+      "sport": 9
+    }
   },
   "images": {
-    "attempted": 0,
-    "with_image": 0,
-    "without_image": 0,
-    "failed": 0,
-    "failure_rate_pct": 0.0,
+    "attempted": 481,
+    "with_image": 203,
+    "without_image": 278,
+    "failed": 278,
+    "failure_rate_pct": 57.8,
     "download_errors_logged": 0
   },
   "rss": {
     "total_feeds": 99,
-    "ok_feeds": 94,
-    "failed_feeds": 5,
-    "success_rate_pct": 94.9,
-    "failed_feed_list": []
+    "ok_feeds": 95,
+    "failed_feeds": 4,
+    "success_rate_pct": 96.0,
+    "failed_feed_list": [
+      {
+        "url": "https://ipon.hu/rss/contents-feed",
+        "error_type": "rss_timeout",
+        "error_short": "Response is not an RSS/Atom feed (possible challenge or logi"
+      },
+      {
+        "url": "https://rss.hiivinternal.com/feeds/0WDaJWk5G1.xml",
+        "error_type": "rss_dns",
+        "error_short": "DNS Error"
+      },
+      {
+        "url": "https://gsplus.hu/site/rss/rss.xml",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://mafab.hu/rss",
+        "error_type": "rss_timeout",
+        "error_short": "Timeout"
+      },
+      {
+        "url": "https://www.mentalfloss.com/feed",
+        "error_type": "rss_timeout",
+        "error_short": "Failed to perform, curl: (7) Failed to connect to www.mental"
+      }
+    ]
   },
   "errors": {
     "rss_404": 0,
     "rss_403": 0,
     "rss_503": 0,
     "rss_500": 0,
-    "rss_timeout": 0,
-    "rss_dns": 0,
+    "rss_timeout": 5,
+    "rss_dns": 1,
     "rss_ssl": 0,
     "api_timeout": 0,
-    "api_no_response": 0,
-    "items_missing_from_batch": 0,
+    "api_no_response": 8,
+    "items_missing_from_batch": 78,
     "pairing_failures": 0,
     "pairing_fixed": 0,
     "image_failures": 0,
@@ -83,16 +123,16 @@
   },
   "files": {
     "data_json": {
-      "exists": false,
-      "item_count": null
+      "exists": true,
+      "item_count": 400
     },
     "data_i4_json": {
-      "exists": false,
-      "item_count": null
+      "exists": true,
+      "item_count": 115
     },
     "data_i5_json": {
-      "exists": false,
-      "item_count": null
+      "exists": true,
+      "item_count": 6
     },
     "data_toplist_json": {
       "exists": false,
@@ -108,79 +148,109 @@
   "history_7d": [
     {
       "date": "2026-11-08",
-      "articles": 0,
-      "status": "MISSING",
-      "exit_code": 1
+      "articles": 423,
+      "status": "OK",
+      "exit_code": 0
     },
     {
       "date": "2026-11-09",
-      "articles": 0,
-      "status": "MISSING",
-      "exit_code": 1
+      "articles": 815,
+      "status": "OK",
+      "exit_code": 0
     },
     {
       "date": "2026-11-10",
-      "articles": 0,
-      "status": "MISSING",
-      "exit_code": 1
+      "articles": 287,
+      "status": "OK",
+      "exit_code": 0
     },
     {
       "date": "2026-11-11",
-      "articles": 0,
-      "status": "MISSING",
-      "exit_code": 1
+      "articles": 289,
+      "status": "OK",
+      "exit_code": 0
     },
     {
       "date": "2026-11-12",
-      "articles": 0,
-      "status": "CRITICAL",
-      "exit_code": 1
+      "articles": 1222,
+      "status": "OK",
+      "exit_code": 0
     },
     {
       "date": "2026-11-13",
-      "articles": 0,
-      "status": "CRITICAL",
-      "exit_code": 1
+      "articles": 251,
+      "status": "OK",
+      "exit_code": 0
     },
     {
       "date": "2026-11-14",
-      "articles": 0,
-      "status": "CRITICAL",
-      "exit_code": 1
+      "articles": 481,
+      "status": "OK",
+      "exit_code": 0
     }
   ],
   "run_timing": {
     "date": "2026-11-14",
-    "started_at": "2026-11-14T10:39:57",
-    "ended_at": "2026-11-14T10:44:45",
-    "duration_seconds": 288.2,
+    "started_at": "2026-11-14T13:31:02",
+    "ended_at": "2026-11-14T13:41:25",
+    "duration_seconds": 623.1,
     "steps": [
       {
-        "name": "weather_generator.py",
-        "description": "Generating Weather Forecast",
-        "started_at": "2026-11-14T10:40:01",
-        "ended_at": "2026-11-14T10:40:49",
-        "duration_seconds": 47.9,
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-14T13:31:09",
+        "ended_at": "2026-11-14T13:31:36",
+        "duration_seconds": 27.1,
         "status": "OK"
       },
       {
-        "name": "market_generator.py",
-        "description": "Generating Market Analysis",
-        "started_at": "2026-11-14T10:40:49",
-        "ended_at": "2026-11-14T10:41:18",
-        "duration_seconds": 29.3,
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-14T13:31:09",
+        "ended_at": "2026-11-14T13:31:40",
+        "duration_seconds": 31.1,
+        "status": "OK"
+      },
+      {
+        "name": "rss_creator.py",
+        "description": "Generating Custom RSS Feeds",
+        "started_at": "2026-11-14T13:36:14",
+        "ended_at": "2026-11-14T13:38:37",
+        "duration_seconds": 142.9,
+        "status": "ERROR"
+      },
+      {
+        "name": "news_filter.py",
+        "description": "Collecting RSS Links",
+        "started_at": "2026-11-14T13:36:14",
+        "ended_at": "2026-11-14T13:38:43",
+        "duration_seconds": 148.9,
         "status": "OK"
       }
     ],
     "publish": {
       "weather_market_push": {
         "status": "disabled"
+      },
+      "news_push": {
+        "status": "pending",
+        "error": "blocked"
+      },
+      "images_push": {
+        "status": "ok"
       }
     }
   },
   "publish": {
     "weather_market_push": {
       "status": "disabled"
+    },
+    "news_push": {
+      "status": "pending",
+      "error": "blocked"
+    },
+    "images_push": {
+      "status": "ok"
     }
   }
 }
