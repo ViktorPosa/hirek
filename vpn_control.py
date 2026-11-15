@@ -38,6 +38,7 @@ REQUIREMENTS / ONE-TIME SETTING:
     time-boxed; polling is bounded by `timeout`).
 """
 
+import os
 import subprocess
 import time
 import json
@@ -63,11 +64,39 @@ _NORD_FINGERPRINTS = (
 )
 
 
+_LAST_DEEPLINK_TIME = 0.0
+_MIN_DEEPLINK_INTERVAL = 8.0  # seconds between macOS `open` deep link calls
+
+
+def is_bot_execution():
+    """
+    Return True only if running as the dedicated macOS bot account (UID 503 or username 'bot').
+    Guards machine-wide VPN controls so non-bot users (e.g. viktorposa) never trigger GUI popups
+    or network route changes.
+    """
+    try:
+        if os.getuid() == 503:
+            return True
+        import pwd
+        return pwd.getpwuid(os.getuid()).pw_name == "bot"
+    except Exception:
+        return False
+
+
 def _open_deeplink(url):
-    """Fire a NordVPN deep link via the macOS `open` command. Non-fatal."""
+    """Fire a NordVPN deep link via the macOS `open` command. Rate-limited and non-fatal."""
+    if "connect" in url and not is_bot_execution():
+        print(f"[vpn_control] WARNING: Refusing deep link {url} from non-bot user (uid={os.getuid()}).")
+        return False
+    global _LAST_DEEPLINK_TIME
+    now = time.time()
+    elapsed = now - _LAST_DEEPLINK_TIME
+    if elapsed < _MIN_DEEPLINK_INTERVAL:
+        time.sleep(_MIN_DEEPLINK_INTERVAL - elapsed)
+    _LAST_DEEPLINK_TIME = time.time()
     try:
         subprocess.run(
-            ["open", url],
+            ["open", "-g", url],
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -104,18 +133,71 @@ def _ip_org():
         return ""
 
 
+def _emit_alert(kind, title, message, level="critical"):
+    """
+    Best-effort cross-user desktop alert. Scrapers run as the `bot` user, whose
+    osascript banners land in bot's GUI session — NOT the human's. So instead we
+    drop a small JSON into the shared DerusAlerts mailbox on the internal disk;
+    a LaunchAgent in the human's (viktorposa) session watches it and pops a modal.
+    Deduplicated per `kind` within 10 minutes. Never raises.
+    """
+    try:
+        import os
+        import json
+        import time as _t
+        import tempfile
+        base = "/Users/Shared/DerusAlerts"
+        inbox = os.path.join(base, "inbox")
+        os.makedirs(inbox, exist_ok=True)
+        for _d in (base, inbox):
+            try:
+                os.chmod(_d, 0o777)
+            except Exception:
+                pass
+        now = _t.time()
+        try:
+            for fn in os.listdir(inbox):
+                if fn.startswith(kind + ".") and fn.endswith(".json"):
+                    if now - os.path.getmtime(os.path.join(inbox, fn)) < 600:
+                        return
+        except Exception:
+            pass
+        payload = {"kind": kind, "title": title, "message": message,
+                   "level": level, "ts": now}
+        fd, tmp = tempfile.mkstemp(dir=inbox, suffix=".tmp")
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False)
+        try:
+            os.chmod(tmp, 0o666)
+        except Exception:
+            pass
+        os.replace(tmp, os.path.join(inbox, f"{kind}.{int(now)}.json"))
+    except Exception:
+        pass
+
+
 def is_connected():
     """
     Best-effort check: is the machine's public traffic going through NordVPN?
 
     Returns True if the current public IP's org/hostname matches a known
-    NordVPN fingerprint, else False. On network failure returns False
-    (treated as "unknown / assume not connected"). Never raises.
+    NordVPN fingerprint, else False. If IP check fails (e.g. DNS resolution broken),
+    checks whether NordVPN app is still running under current user. Never raises.
     """
     org = _ip_org()
-    if not org:
-        return False
-    return any(fp in org for fp in _NORD_FINGERPRINTS)
+    if org:
+        return any(fp in org for fp in _NORD_FINGERPRINTS)
+
+    # Ha az IP ellenőrzés meghiúsult (pl. DNS hiba miatt), megnézzük, fut-e még az app folyamata
+    try:
+        my_uid = str(os.getuid())
+        res = subprocess.run(["pgrep", "-u", my_uid, "-x", _APP_NAME],
+                             capture_output=True, text=True, check=False)
+        if res.returncode == 0 and res.stdout.strip():
+            return True  # Még fut az app, tehát még nem kapcsolódott le tisztán
+    except Exception:
+        pass
+    return False
 
 
 def _wait_for_ip_change(baseline_ip, timeout):
@@ -142,22 +224,44 @@ _APP_NAME = "NordVPN"
 
 def _quit_app():
     """Quit NordVPN.app (tears down the tunnel). Non-fatal."""
+    ok = False
     try:
-        subprocess.run(
+        res = subprocess.run(
             ["osascript", "-e", f'tell application "{_APP_NAME}" to quit'],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5,
         )
-        return True
+        if res.returncode == 0:
+            ok = True
+    except Exception:
+        pass
+
+    # Fej nélküli / daemon folyamat esetén (pl. bot felhasználó) a pkill -9 megbízhatóan leállítja az appot
+    try:
+        my_uid = str(os.getuid())
+        subprocess.run(["pkill", "-9", "-u", my_uid, "-x", _APP_NAME],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+        subprocess.run(["pkill", "-9", "-u", my_uid, "-f", f"{_APP_NAME}.app"],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+        ok = True
     except Exception as e:
-        print(f"[vpn_control] WARNING: could not quit {_APP_NAME}: {e}")
-        return False
+        print(f"[vpn_control] WARNING: could not kill {_APP_NAME}: {e}")
+
+    return ok
 
 
 def _launch_app():
     """Launch/foreground NordVPN.app so it can honor the connect deep link."""
+    if not is_bot_execution():
+        print(f"[vpn_control] WARNING: Refusing NordVPN launch from non-bot user (uid={os.getuid()}).")
+        return False
     try:
+        my_uid = str(os.getuid())
+        res = subprocess.run(["pgrep", "-u", my_uid, "-x", _APP_NAME],
+                             capture_output=True, text=True, check=False)
+        if res.returncode == 0 and res.stdout.strip():
+            return True
         subprocess.run(
-            ["open", "-a", _APP_NAME],
+            ["open", "-g", "-j", "-a", _APP_NAME],
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15,
         )
         return True
@@ -166,80 +270,110 @@ def _launch_app():
         return False
 
 
-_APP_BIN_PATTERN = "NordVPN.app/Contents/MacOS/NordVPN"
+# Keywords (lowercase) that appear on the NordVPN login / sign-in / onboarding
+# screen. Their presence in the app's visible UI means the account is LOGGED
+# OUT — the connect deep link launches the app to this screen instead of
+# connecting, so the public IP never rotates. Multilingual (hu/en) to survive
+# the app's UI language.
+_LOGIN_UI_KEYWORDS = (
+    "log in", "login", "bejelentkez", "sign in", "sign up",
+    "continue with", "log in with", "already have an account",
+    "jelszó", "password", "e-mail",
+)
 
 
-def _force_kill_app():
-    """A NordVPN.app FŐ folyamatának kilövése (SIGTERM, majd szükség esetén SIGKILL).
-    Újabb NordVPN-buildek figyelmen kívül hagyják az AppleScript `quit`-et, de a folyamat
-    kilövése ugyanúgy lebontja a Network Extension tunnelt, mint korábban a quit. Csak a
-    saját (azonos user) NordVPN.app-ot tudjuk kilőni; a root system extension/helper marad,
-    de a tunnelt a fő app leállása bontja. Non-fatal."""
-    killed = False
-    for sig in ("-TERM", "-KILL"):
-        try:
-            r = subprocess.run(["pkill", sig, "-f", _APP_BIN_PATTERN],
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
-            if r.returncode == 0:
-                killed = True
-                print(f"[vpn_control] NordVPN.app killed with pkill {sig}")
-        except Exception as e:
-            print(f"[vpn_control] WARNING: pkill {sig} failed: {e}")
-        time.sleep(2)
-        # ha már nem fut a fő app, nincs értelme a SIGKILL-nek
-        try:
-            still = subprocess.run(["pgrep", "-f", _APP_BIN_PATTERN],
-                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
-            if still.returncode != 0:
-                break
-        except Exception:
-            break
-    return killed
+def _ax_dump():
+    """
+    Return a lowercase dump of NordVPN's visible window titles, static texts
+    and button names via Accessibility (System Events), or None if AX is
+    unavailable (no Accessibility permission for the controlling process, or
+    the app is not scriptable). Never raises.
+
+    When logged IN, NordVPN is a menu-bar app with NO open window, so the dump
+    is empty. When logged OUT, the connect attempt raises the login window,
+    which this surfaces.
+    """
+    script = (
+        'tell application "System Events"\n'
+        '  if not (exists process "NordVPN") then return "NO_PROCESS"\n'
+        '  tell process "NordVPN"\n'
+        '    set out to ""\n'
+        '    try\n'
+        '      repeat with w in windows\n'
+        '        set out to out & " win:" & (name of w as string)\n'
+        '        try\n'
+        '          set out to out & " " & (value of static texts of w as string)\n'
+        '        end try\n'
+        '        try\n'
+        '          set out to out & " " & (name of buttons of w as string)\n'
+        '        end try\n'
+        '      end repeat\n'
+        '    end try\n'
+        '    return out\n'
+        '  end tell\n'
+        'end tell\n'
+    )
+    try:
+        res = subprocess.run(
+            ["osascript", "-e", script],
+            capture_output=True, text=True, timeout=15,
+        )
+        if res.returncode != 0:
+            return None
+        return res.stdout.strip().lower()
+    except Exception as e:
+        print(f"[vpn_control] WARNING: could not read NordVPN UI (Accessibility): {e}")
+        return None
+
+
+def login_state():
+    """
+    Best-effort NordVPN account login-state, inferred from the app's UI via
+    Accessibility. Returns one of:
+      "logged_out" — a login/sign-in screen is visible; manual sign-in needed;
+      "logged_in"  — app running with no login UI (normal menu-bar state);
+      "unknown"    — could not determine (no Accessibility permission, or the
+                     app is not running).
+    Never raises. This is a heuristic, not an API — treat "logged_out" as a
+    strong hint to check the app, not a hard guarantee.
+    """
+    dump = _ax_dump()
+    if dump is None or dump == "no_process":
+        return "unknown"
+    if any(k in dump for k in _LOGIN_UI_KEYWORDS):
+        return "logged_out"
+    return "logged_in"
 
 
 def disconnect(wait=True, timeout=60):
     """
-    Disconnect NordVPN. Fokozatos eszkaláció (mindegyik lépés után ellenőrizzük a publikus
-    IP-t): (1) `nordvpn://disconnect` deep link, (2) AppleScript quit, (3) a NordVPN.app fő
-    folyamatának force-kill-je. A folyamat leállása lebontja a Network Extension tunnelt, a
-    publikus IP visszaáll az ISP-re.
+    Disconnect NordVPN by QUITTING the app. Quitting tears down the Network
+    Extension tunnel and the public IP reverts to the ISP — the only method
+    proven reliable on this build (the disconnect deep link is ignored and the
+    menu-bar click is flaky).
 
-    FONTOS: ha a NordVPN kill-switch aktív, a tunnel lebontása után is blokkolhatja a netet —
-    ekkor a generáláshoz a kill-switch/auto-connect KIKAPCSOLÁSA szükséges a NordVPN-ben.
-
-    Non-fatal: logol és False-t ad vissza timeoutnál; sosem dob kivételt.
+    Confirms by polling the public IP until it no longer fingerprints as a
+    NordVPN exit node. Non-fatal: logs a warning and returns False on
+    timeout/failure; never raises.
     """
-    def _off():
-        try:
-            return not is_connected()
-        except Exception:
-            return False
-
-    # 1) deep link (egyes buildeken működik)
-    try:
-        _open_deeplink("nordvpn://disconnect")
-    except Exception:
-        pass
-    time.sleep(3)
-    # 2) graceful quit
-    if not _off():
-        _quit_app()
-        time.sleep(3)
-    # 3) force-kill, ha még mindig aktív
-    if not _off():
-        print("[vpn_control] graceful disconnect nem hatott – force-kill…")
-        _force_kill_app()
-
+    if not is_connected():
+        return True
+    _quit_app()
     if not wait:
         return True
     deadline = time.time() + max(0, timeout)
     while time.time() < deadline:
-        if _off():
-            print("[vpn_control] NordVPN DISCONNECTED (public IP is ISP).")
+        if not is_connected():
+            try:
+                subprocess.run(["dscacheutil", "-flushcache"], check=False, timeout=5)
+            except Exception:
+                pass
+            # Settle macOS network routing & endpoint security filters
+            time.sleep(2)
+            print("[vpn_control] NordVPN DISCONNECTED (app quit; public IP is ISP).")
             return True
         time.sleep(_POLL_INTERVAL)
-    print("[vpn_control] WARNING: disconnect not confirmed within timeout; "
-          "továbbmegyünk (ellenőrizd a NordVPN kill-switch/auto-connect beállítást!).")
+    print("[vpn_control] WARNING: disconnect not confirmed within timeout; continuing anyway.")
     return False
 
 
@@ -252,6 +386,9 @@ def connect(wait=True, timeout=90):
     node. Non-fatal: logs a warning and returns False on timeout/failure;
     never raises.
     """
+    if not is_bot_execution():
+        print(f"[vpn_control] WARNING: Refusing VPN connect from non-bot user (uid={os.getuid()}). VPN control is restricted to user Bot.")
+        return False
     _launch_app()
     time.sleep(5)  # give the app a moment to be ready to honor the deep link
     _open_deeplink("nordvpn://connect")
@@ -263,7 +400,17 @@ def connect(wait=True, timeout=90):
             print("[vpn_control] NordVPN CONNECTED (deep link; public IP is NordVPN).")
             return True
         time.sleep(_POLL_INTERVAL)
-    print("[vpn_control] WARNING: connect not confirmed within timeout; continuing anyway.")
+    if login_state() == "logged_out":
+        print("[vpn_control] ERROR: NordVPN is LOGGED OUT of its account — open the "
+              "NordVPN app and sign in. VPN cannot connect until you log in.")
+        _emit_alert(
+            "vpn_logged_out",
+            "⚠️ NordVPN kijelentkezve (bot)",
+            "A NordVPN app ki van jelentkezve a bot fiókból — nyisd meg és jelentkezz be. "
+            "A VPN nem tud csatlakozni, amíg be nem lépsz.",
+        )
+    else:
+        print("[vpn_control] WARNING: connect not confirmed within timeout; continuing anyway.")
     return False
 
 
@@ -275,6 +422,9 @@ def reconnect(wait=True, timeout=120):
     Non-fatal: never raises. Returns connect()'s result and warns if the IP
     did not change.
     """
+    if not is_bot_execution():
+        print(f"[vpn_control] WARNING: Refusing VPN reconnect from non-bot user (uid={os.getuid()}). VPN control is restricted to user Bot.")
+        return False
     baseline_ip = _public_ip()
     print(f"[vpn_control] reconnect: baseline IP = {baseline_ip}")
     disconnect(wait=True, timeout=min(timeout, 60))
@@ -283,6 +433,15 @@ def reconnect(wait=True, timeout=120):
     print(f"[vpn_control] reconnect: new IP = {new_ip}")
     if baseline_ip and new_ip and baseline_ip == new_ip:
         print("[vpn_control] WARNING: IP did not change after reconnect.")
+        if login_state() == "logged_out":
+            print("[vpn_control] ERROR: NordVPN is LOGGED OUT of its account — open the "
+                  "NordVPN app and sign in. IP rotation is impossible while logged out.")
+            _emit_alert(
+                "vpn_logged_out",
+                "⚠️ NordVPN kijelentkezve (bot)",
+                "A NordVPN app ki van jelentkezve a bot fiókból — jelentkezz be. "
+                "IP-rotáció (limit-megkerülés) így nem lehetséges.",
+            )
     return ok
 
 
@@ -296,5 +455,8 @@ if __name__ == "__main__":
         print("result:", disconnect())
     elif action == "reconnect":
         print("result:", reconnect())
+    elif action == "login":
+        print("login_state:", login_state())
     else:
-        print("is_connected:", is_connected(), "public_ip:", _public_ip())
+        print("is_connected:", is_connected(), "public_ip:", _public_ip(),
+              "login_state:", login_state())
